@@ -13,8 +13,9 @@ export default function CardList(props: { dataList?: DataListItem[] }) {
         flex-wrap: wrap;
       `}
     >
-      {dataList?.map((data: DataListItem) => (
+      {dataList?.map((data: DataListItem, index: number) => (
         <div
+          key={index}
           css={css`
             width: 220px;
             height: 321px;

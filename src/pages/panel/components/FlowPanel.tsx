@@ -1,18 +1,11 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import {
-  Button,
-  IconButton,
-  styled,
-  Tooltip,
-  tooltipClasses,
-  TooltipProps,
-} from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { howLongBefore } from "src/utils/string";
 import Icon_more from "src/assets/icon_more.png";
 import Icon_start from "src/assets/icon_start.png";
-import { StepTipItem } from "src/pages/dataCollection";
+import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
 
 export interface FlowItem {
   id: string;
@@ -29,19 +22,23 @@ export default function FlowPanel(props: {
 
   handleBatch?: (event: any, value: boolean) => void;
 
+  handleClose?: () => void;
   handleToNextStepTip?: () => void;
+  handleShowOrCloseAssistant?: () => void;
+  handleShowTooltip?: () => void;
 }) {
   const {
     flowSource,
     stepTips,
     currentStep,
     handleBatch,
+    handleClose,
     handleToNextStepTip,
+    handleShowOrCloseAssistant,
+    handleShowTooltip,
   } = props;
 
   const [flow, setFlow] = useState<FlowItem[]>([]);
-
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (flowSource) {
@@ -70,37 +67,12 @@ export default function FlowPanel(props: {
     handleBatch?.(event.currentTarget, false);
   }, []);
 
-  useEffect(() => {
-    if (currentStep === 1) {
-      setOpen(true);
-    }
-  }, [currentStep]);
-
-  const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
-  ))(() => ({
-    [`& .${tooltipClasses.arrow}`]: {
-      color: "#3D65E4",
-    },
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: "#3D65E4",
-      color: "#FFFFFF",
-      fontSize: "20px",
-      fontWeight: "500px",
-      zIndex: "999999",
-      width: "260px",
-      height: "76px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: "8px",
-    },
-  }));
-
   const onCollectData = useCallback(() => {
-    setOpen(false);
     handleToNextStepTip?.();
-  }, [handleToNextStepTip]);
+    handleClose?.();
+    handleShowOrCloseAssistant?.();
+    handleShowTooltip?.();
+  }, [handleToNextStepTip, handleShowOrCloseAssistant, handleClose]);
 
   return (
     <div
@@ -283,7 +255,7 @@ export default function FlowPanel(props: {
               <StyledTooltip
                 arrow
                 placement="top"
-                open={open}
+                open={true}
                 title={
                   stepTips?.filter(
                     (tip: StepTipItem) => tip.index === currentStep

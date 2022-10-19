@@ -24,7 +24,10 @@ export default function Panel(props: {
   handleBatch?: (event: any, value: boolean) => void;
   handleClose?: () => void;
   handleGainExistingData?: (data: DataItem[]) => void;
+
   handleToNextStepTip?: () => void;
+  handleShowOrCloseAssistant?: () => void;
+  handleShowTooltip?: () => void;
 }) {
   const {
     activeTab = "flow",
@@ -38,7 +41,11 @@ export default function Panel(props: {
 
     handleBatch,
     handleGainExistingData,
+
+    handleClose,
     handleToNextStepTip,
+    handleShowOrCloseAssistant,
+    handleShowTooltip,
   } = props;
   const [activeItem, setActiveItem] = useState<string>("");
   const [datalist, setDatalist] = useState<DataItem>();
@@ -223,9 +230,12 @@ export default function Panel(props: {
             <FlowPanel
               flowSource={flowlist}
               handleBatch={handleBatch}
-              handleToNextStepTip={handleToNextStepTip}
               stepTips={stepTips}
               currentStep={currentStep}
+              handleClose={handleClose}
+              handleShowTooltip={handleShowTooltip}
+              handleToNextStepTip={handleToNextStepTip}
+              handleShowOrCloseAssistant={handleShowOrCloseAssistant}
             />
           )}
           {activeItem === "data" && (
