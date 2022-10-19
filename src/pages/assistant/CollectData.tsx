@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import { Button } from "@mui/material";
+import { useCallback } from "react";
 import Icon_assistant from "src/assets/icon_assistant.png";
 
 export default function CollectData(props: {
@@ -15,6 +16,11 @@ export default function CollectData(props: {
     isMouseOver,
     handleShowOrCloseAssistant,
   } = props;
+
+  const onClose = useCallback(() => {
+    handleShowOrCloseAssistant?.();
+  }, [handleShowOrCloseAssistant]);
+
   return (
     <div
       css={css`
@@ -254,6 +260,7 @@ export default function CollectData(props: {
                 border: 1px solid #ff3c31;
               }
             `}
+            onClick={onClose}
           >
             结束
           </Button>

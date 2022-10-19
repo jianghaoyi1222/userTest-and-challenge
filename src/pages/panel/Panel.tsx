@@ -27,7 +27,6 @@ export default function Panel(props: {
 
   handleToNextStepTip?: () => void;
   handleShowOrCloseAssistant?: () => void;
-  handleShowTooltip?: () => void;
 }) {
   const {
     activeTab = "flow",
@@ -45,7 +44,6 @@ export default function Panel(props: {
     handleClose,
     handleToNextStepTip,
     handleShowOrCloseAssistant,
-    handleShowTooltip,
   } = props;
   const [activeItem, setActiveItem] = useState<string>("");
   const [datalist, setDatalist] = useState<DataItem>();
@@ -233,7 +231,6 @@ export default function Panel(props: {
               stepTips={stepTips}
               currentStep={currentStep}
               handleClose={handleClose}
-              handleShowTooltip={handleShowTooltip}
               handleToNextStepTip={handleToNextStepTip}
               handleShowOrCloseAssistant={handleShowOrCloseAssistant}
             />

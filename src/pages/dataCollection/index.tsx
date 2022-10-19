@@ -22,6 +22,7 @@ import Panel from "../panel/Panel";
 import CardList from "./components/CardList";
 import DataTable from "./components/DataTable";
 import Icon_home from "src/assets/icon_home.png";
+import DownLoadBar from "./components/DownLoadBar";
 
 export interface DataListItem {
   id: number;
@@ -292,7 +293,6 @@ export default function DataCollection() {
             handleToNextStepTip={onToNextStepTip}
             stepTips={stepTips}
             currentStep={currentStep}
-            // handleShowTooltip={onShowTooltip}
             handleClose={onShowOrClosePanel}
             handleShowOrCloseAssistant={onShowOrCloseAssistant}
           />
@@ -317,6 +317,7 @@ export default function DataCollection() {
               handleToNextStepTip={onToNextStepTip}
             />
           </div>
+
           <div
             css={css`
               display: ${isMouseOver ? "flex" : "none"};
@@ -356,6 +357,9 @@ export default function DataCollection() {
               <span>按住“Ctrl+单击”获取数据</span>
             </div>
           </div>
+          {currentStep === 6 && (
+            <DownLoadBar stepTips={stepTips} currentStep={currentStep} />
+          )}
         </div>
       ) : (
         <div

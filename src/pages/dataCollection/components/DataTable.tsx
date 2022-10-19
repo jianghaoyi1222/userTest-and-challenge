@@ -24,6 +24,7 @@ import Icon_add from "src/assets/icon_add.png";
 import Icon_more from "src/assets/icon_more.png";
 import { StepTipItem, StyledTooltip } from "..";
 import { ChevronRight } from "@mui/icons-material";
+import { dataConversionUtil } from "src/utils/excel";
 
 export interface TabPanelProps {
   children?: React.ReactNode;
@@ -49,6 +50,7 @@ export default function DataTable(props: {
 
   const [tab, setTab] = useState(1);
   const [openPopover, setOpenPopover] = useState(false);
+  const [addList, setAddList] = useState(false);
 
   const buttonCss = css`
     min-width: 80px;
@@ -148,6 +150,38 @@ export default function DataTable(props: {
           "荣耀X30 骁龙6nm疾速5G芯 66W超级快充 120Hz全视屏 全网通版 8GB+",
         store: "荣耀旗舰店",
       },
+      {
+        id: 5,
+        image: "https://img10.360buyimg.com/n7/jfs/...",
+        price: "￥1599",
+        description:
+          "荣耀X30 骁龙6nm疾速5G芯 66W超级快充 120Hz全视屏 全网通版 8GB+",
+        store: "荣耀旗舰店",
+      },
+      {
+        id: 6,
+        image: "https://img10.360buyimg.com/n7/jfs/...",
+        price: "￥1499",
+        description:
+          "荣耀Play6T Pro 天玑810 40W超级快充 6nm疾速芯 4800万超清双摄 全...",
+        store: "荣耀旗舰店",
+      },
+      {
+        id: 7,
+        image: "https://img10.360buyimg.com/n7/jfs/...",
+        price: "￥3399",
+        description:
+          "Redmi Note 11 4G FHD+ 90Hz高刷屏5000万三摄G88芯片5000mAh电池",
+        store: "荣耀旗舰店",
+      },
+      {
+        id: 8,
+        image: "https://img10.360buyimg.com/n7/jfs/...",
+        price: "￥2549",
+        description:
+          "荣耀70 IMX800三主摄 双曲屏设计 高通骁龙778G Plus 66W快充 5G手机",
+        store: "荣耀旗舰店",
+      },
     ],
     []
   );
@@ -186,7 +220,24 @@ export default function DataTable(props: {
   const onListItemClick = useCallback(() => {
     setOpenPopover(false);
     handleToNextStepTip?.();
+    setAddList(true);
   }, [handleToNextStepTip]);
+
+  const onLoadExcel = useCallback(() => {
+    handleToNextStepTip?.();
+    const tableHeader = ["列1", "列2", "列3", "列4", "列5"];
+    const dataList: any[] = [];
+    list?.map((item: TableListItem) => {
+      dataList.push([
+        item?.image,
+        item?.price,
+        item?.description,
+        item?.image,
+        item?.store,
+      ]);
+    });
+    dataConversionUtil["dataToExcel"]("表格", tableHeader, dataList);
+  }, [dataConversionUtil, list, handleToNextStepTip]);
 
   return (
     <div
@@ -299,7 +350,9 @@ export default function DataTable(props: {
                 )[0]?.tip
               }
             >
-              <Button css={buttonCss}>下载</Button>
+              <Button css={buttonCss} onClick={onLoadExcel}>
+                下载
+              </Button>
             </StyledTooltip>
           ) : (
             <Button css={buttonCss}>下载</Button>
@@ -352,7 +405,7 @@ export default function DataTable(props: {
                         css={[
                           tableCellCss,
                           css`
-                            width: 294.5;
+                            width: ${addList ? "235.6px" : "294.5px"};
                           `,
                         ]}
                       >
@@ -380,7 +433,7 @@ export default function DataTable(props: {
                         css={[
                           tableCellCss,
                           css`
-                            width: 294.5;
+                            width: ${addList ? "235.6px" : "294.5px"};
                           `,
                         ]}
                       >
@@ -408,7 +461,7 @@ export default function DataTable(props: {
                         css={[
                           tableCellCss,
                           css`
-                            width: 294.5;
+                            width: ${addList ? "235.6px" : "294.5px"};
                           `,
                         ]}
                       >
@@ -461,7 +514,7 @@ export default function DataTable(props: {
                         css={[
                           tableCellCss,
                           css`
-                            width: 294.5;
+                            width: ${addList ? "235.6px" : "294.5px"};
                           `,
                         ]}
                       >
@@ -485,6 +538,36 @@ export default function DataTable(props: {
                           </IconButton>
                         </div>
                       </TableCell>
+                      {addList && (
+                        <TableCell
+                          css={[
+                            tableCellCss,
+                            css`
+                              width: ${addList ? "235.6px" : "294.5px"};
+                            `,
+                          ]}
+                        >
+                          <div
+                            css={css`
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              padding-right: 8px;
+                            `}
+                          >
+                            <StyledTableCellName name={"列5"} />
+                            <IconButton>
+                              <img
+                                src={Icon_more}
+                                css={css`
+                                  width: 24px;
+                                  height: 24px;
+                                `}
+                              />
+                            </IconButton>
+                          </div>
+                        </TableCell>
+                      )}
                       <TableCell
                         css={[
                           tableCellCss,
@@ -512,93 +595,109 @@ export default function DataTable(props: {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {list?.map((item: TableListItem, index: number) => (
-                      <TableRow
-                        key={index}
-                        css={css`
-                          height: 40px;
-                        `}
-                      >
-                        <TableCell
-                          css={[
-                            tableCellCss,
-                            css`
-                              height: 40px;
-                              display: flex;
-                              align-items: center;
-                              justify-content: center;
-                            `,
-                          ]}
-                        >
-                          <span>{index + 1}</span>
-                        </TableCell>
-                        <TableCell
-                          css={[
-                            tableCellCss,
-                            ,
-                            css`
-                              width: 294.5px;
-                              padding-left: 20px;
-                            `,
-                          ]}
-                        >
-                          {item?.image}
-                        </TableCell>
-                        <TableCell
-                          css={[
-                            tableCellCss,
-                            ,
-                            css`
-                              width: 294.5px;
-                              padding-left: 20px;
-                            `,
-                          ]}
-                        >
-                          {item?.price}
-                        </TableCell>
-                        <TableCell
-                          css={[
-                            tableCellCss,
-                            ,
-                            css`
-                              width: 294.5px;
-                              padding-left: 20px;
-                            `,
-                          ]}
-                        >
-                          <div
-                            css={css`
-                              width: 294.5px;
-                              overflow: hidden;
-                              white-space: nowrap;
-                              text-overflow: ellipsis;
-                            `}
-                          >
-                            {item?.description}
-                          </div>
-                        </TableCell>
-                        <TableCell
-                          css={[
-                            tableCellCss,
-                            ,
-                            css`
-                              width: 294.5px;
-                              padding-left: 20px;
-                            `,
-                          ]}
-                        >
-                          {item?.store}
-                        </TableCell>
-                        <TableCell
+                    {list
+                      ?.slice(0, 4)
+                      ?.map((item: TableListItem, index: number) => (
+                        <TableRow
+                          key={index}
                           css={css`
-                            width: 56px;
-                            padding: 0px;
-                            border-right: 1px solid #f0f0f0;
-                            border-bottom: unset;
+                            height: 40px;
                           `}
-                        ></TableCell>
-                      </TableRow>
-                    ))}
+                        >
+                          <TableCell
+                            css={[
+                              tableCellCss,
+                              css`
+                                height: 40px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                              `,
+                            ]}
+                          >
+                            <span>{index + 1}</span>
+                          </TableCell>
+                          <TableCell
+                            css={[
+                              tableCellCss,
+                              ,
+                              css`
+                                width: ${addList ? "235.6px" : "294.5px"};
+                                padding-left: 20px;
+                              `,
+                            ]}
+                          >
+                            {item?.image}
+                          </TableCell>
+                          <TableCell
+                            css={[
+                              tableCellCss,
+                              ,
+                              css`
+                                width: ${addList ? "235.6px" : "294.5px"};
+                                padding-left: 20px;
+                              `,
+                            ]}
+                          >
+                            {item?.price}
+                          </TableCell>
+                          <TableCell
+                            css={[
+                              tableCellCss,
+                              ,
+                              css`
+                                width: ${addList ? "235.6px" : "294.5px"};
+                                padding-left: 20px;
+                              `,
+                            ]}
+                          >
+                            <div
+                              css={css`
+                                width: ${addList ? "235.6px" : "294.5px"};
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                              `}
+                            >
+                              {item?.description}
+                            </div>
+                          </TableCell>
+                          {addList && (
+                            <TableCell
+                              css={[
+                                tableCellCss,
+                                ,
+                                css`
+                                  width: ${addList ? "235.6px" : "294.5px"};
+                                  padding-left: 20px;
+                                `,
+                              ]}
+                            >
+                              {item?.image}
+                            </TableCell>
+                          )}
+                          <TableCell
+                            css={[
+                              tableCellCss,
+                              ,
+                              css`
+                                width: ${addList ? "235.6px" : "294.5px"};
+                                padding-left: 20px;
+                              `,
+                            ]}
+                          >
+                            {item?.store}
+                          </TableCell>
+                          <TableCell
+                            css={css`
+                              width: 56px;
+                              padding: 0px;
+                              border-right: 1px solid #f0f0f0;
+                              border-bottom: unset;
+                            `}
+                          ></TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
