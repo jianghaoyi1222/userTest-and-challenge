@@ -3,8 +3,8 @@ import { jsx, css } from "@emotion/react";
 import { Button, IconButton, TextField, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useCallback, useEffect, useState } from "react";
-import { CurrentModeItem } from "src/pages/assistant";
 import Icon_batch from "src/assets/icon_batch.png";
+import { CurrentModeItem } from "src/pages/assistant/BatchClicks";
 
 export interface ListItem {
   id: number;

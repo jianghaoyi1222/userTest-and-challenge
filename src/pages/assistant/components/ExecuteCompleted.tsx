@@ -42,7 +42,7 @@ export default function ExecuteCompleted(props: {
         position: absolute;
         top: 10px;
         right: 120px;
-        z-index: 99990;
+        z-index: 30;
       `}
     >
       <div

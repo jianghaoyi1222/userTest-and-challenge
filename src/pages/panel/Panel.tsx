@@ -27,6 +27,8 @@ export default function Panel(props: {
 
   handleToNextStepTip?: () => void;
   handleShowOrCloseAssistant?: () => void;
+
+  handleOpenTable?: () => void;
 }) {
   const {
     activeTab = "flow",
@@ -44,6 +46,8 @@ export default function Panel(props: {
     handleClose,
     handleToNextStepTip,
     handleShowOrCloseAssistant,
+
+    handleOpenTable,
   } = props;
   const [activeItem, setActiveItem] = useState<string>("");
   const [datalist, setDatalist] = useState<DataItem>();
@@ -239,8 +243,12 @@ export default function Panel(props: {
             <DataPanel
               existingData={existingData}
               dataSource={datalist}
+              currentStep={currentStep}
+              stepTips={stepTips}
               handleGainExistingData={handleGainExistingData}
               handleChangeDataSourceSituation={handleChangeDataSourceSituation}
+              handleOpenTable={handleOpenTable}
+              handleToNextStepTip={handleToNextStepTip}
             />
           )}
         </div>

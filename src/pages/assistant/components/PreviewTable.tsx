@@ -1,6 +1,14 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import { Button, Chip, Dialog, Divider, IconButton } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Dialog,
+  Divider,
+  IconButton,
+  Popover,
+  Typography,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Icon_setpattern from "src/assets/icon_setpattern.png";
 import Icon_colation from "src/assets/icon_colation.png";
@@ -19,8 +27,9 @@ import Icon_reset from "src/assets/icon_reset.png";
 import Icon_download from "src/assets/icon_download.png";
 import Icon_addcolumns from "src/assets/icon_addcolumns.png";
 import Icon_more from "src/assets/icon_more.png";
-import { useCallback } from "react";
+import { useCallback, MouseEvent, useState } from "react";
 import { dataConversionUtil } from "src/utils/excel";
+import { StyledTooltip } from "src/pages/dataCollection";
 
 export type EnterType = "import" | "preview";
 
@@ -30,9 +39,17 @@ export default function PreviewTable(props: {
   confirmedColumn?: number;
   enter?: EnterType;
   chip?: string;
+
+  type?: string;
+  name?: string;
+  currentStep?: number;
+  tip?: string;
+
   onClose?: () => void;
   onConfirmImport?: (index: number, list: any) => void;
   onImportConfirmedData?: () => void;
+
+  handleToNextStepTip?: () => void;
 }) {
   const {
     open,
@@ -40,13 +57,23 @@ export default function PreviewTable(props: {
     confirmedColumn,
     chip = "text",
     enter = "import",
+
+    type,
+    name,
+    currentStep,
+    tip,
+
     onConfirmImport,
     onClose,
     onImportConfirmedData,
+
+    handleToNextStepTip,
   } = props;
 
+  const [transcriptionOpen, setTranscriptionOpen] = useState(false);
+
   const head = file?.[0] && Object.keys(file?.[0]);
-  const length = 968 / head?.length;
+  // const length = 968 / head?.length;
 
   const values = [];
 
@@ -63,69 +90,30 @@ export default function PreviewTable(props: {
 
   for (let i = 0; i < row; i++) {
     const rowList = values.slice(start, end);
-    list.push(rowList);
+    list.push([head[i]].concat(rowList));
     start = start + Number(file?.length);
     end = end + Number(file?.length);
   }
 
   const onLoadExcel = useCallback(() => {
-    const tableHeader = ["标题列表", "列表内容"];
+    const tableHeader = head;
     const dataList: any[] = [];
     file?.map((item: any) => {
-      dataList.push([item?.title, item?.description]);
+      dataList.push(Object.values(item));
     });
     console.log("dataList", dataList);
-    dataConversionUtil["dataToExcel"]("批量添加列表", tableHeader, dataList);
-  }, [dataConversionUtil, file]);
+    dataConversionUtil["dataToExcel"](name, tableHeader, dataList);
+  }, [name, dataConversionUtil, file]);
 
-  return (
-    <Dialog
-      open={open ?? false}
-      css={css`
-        display: flex;
-        flex-direction: column;
-        z-index: 99999;
-        .MuiBackdrop-root {
-          background-color: transparent;
-        }
-        .MuiPaper-root {
-          width: 1000px;
-          max-width: 1000px;
-          height: 612px;
-          border-radius: 8px 8px 0px 0px;
-        }
-      `}
-    >
-      <div
-        css={css`
-          width: 100%;
-          height: 40px;
-          background: #151515;
-          border-radius: 8px 8px 0px 0px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-        `}
-      >
-        <span
-          css={css`
-            font-size: 14px;
-            line-height: 16px;
-            color: #ffffff;
-            margin-left: 16px;
-          `}
-        >
-          批量添加列表
-        </span>
-        <IconButton onClick={onClose}>
-          <CloseIcon
-            css={css`
-              color: #ffffff;
-            `}
-          />
-        </IconButton>
-      </div>
+  const onTranscription = useCallback(() => {
+    if (currentStep === 2) {
+      handleToNextStepTip?.();
+      setTranscriptionOpen(true);
+    }
+  }, [currentStep, handleToNextStepTip]);
+
+  const OperationList = () => {
+    return (
       <div
         css={css`
           width: 100%;
@@ -176,7 +164,7 @@ export default function PreviewTable(props: {
           <img src={Icon_moreoperation} />
         </IconButton>
         <Divider orientation="vertical" variant="middle" flexItem />
-        <IconButton>
+        <IconButton onClick={onTranscription}>
           <img src={Icon_transcription} />
         </IconButton>
         <IconButton>
@@ -190,6 +178,92 @@ export default function PreviewTable(props: {
           <img src={Icon_download} />
         </IconButton>
       </div>
+    );
+  };
+
+  const handleClose = useCallback(() => {}, []);
+
+  return (
+    <Dialog
+      open={open ?? false}
+      css={[
+        css`
+          display: flex;
+          flex-direction: column;
+          z-index: 50;
+          .MuiBackdrop-root {
+            background-color: transparent;
+          }
+          .MuiPaper-root {
+            width: 1000px;
+            max-width: 1000px;
+            height: 612px;
+            border-radius: 8px 8px 0px 0px;
+          }
+        `,
+        type === "dataProcess" &&
+          css`
+            .MuiDialog-container {
+              width: 1400px;
+              height: 800px;
+              position: relative;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+          `,
+      ]}
+    >
+      <div
+        css={css`
+          width: 100%;
+          height: 40px;
+          background: #151515;
+          border-radius: 8px 8px 0px 0px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        `}
+      >
+        <span
+          css={css`
+            font-size: 14px;
+            line-height: 16px;
+            color: #ffffff;
+            margin-left: 16px;
+          `}
+        >
+          {name}
+        </span>
+        <IconButton onClick={onClose}>
+          <CloseIcon
+            css={css`
+              color: #ffffff;
+            `}
+          />
+        </IconButton>
+      </div>
+      {currentStep === 2 ? (
+        <StyledTooltip open={true} arrow placement="top" title={tip}>
+          <div
+            css={css`
+              width: 100%;
+            `}
+          >
+            <OperationList />
+          </div>
+        </StyledTooltip>
+      ) : (
+        <div
+          css={css`
+            width: 100%;
+          `}
+        >
+          <OperationList />
+        </div>
+      )}
+
       <div
         css={css`
           display: flex;
@@ -208,106 +282,6 @@ export default function PreviewTable(props: {
         >
           <div
             css={css`
-              width: 100%;
-              height: 40px;
-              display: flex;
-              flex-direction: row;
-              flex-grow: 1;
-            `}
-          >
-            <div
-              css={css`
-                width: 56px;
-                border: 1px solid #f0f0f0;
-                box-sizing: border-box;
-              `}
-            ></div>
-            {head?.map((item: any, index: number) => (
-              <div
-                css={css`
-                  display: flex;
-                  flex-direction: row;
-                  align-items: center;
-                  justify-content: space-between;
-                  flex-grow: 1;
-                  border: 1px solid #f0f0f0;
-                  box-sizing: border-box;
-                  width: ${index === 0
-                    ? length - 56
-                    : index === head?.length - 1
-                    ? length - 56
-                    : length}px;
-                `}
-              >
-                <div
-                  css={css`
-                    padding-top: 10px;
-                    padding-left: 12px;
-                    padding-bottom: 10px;
-                    flex-grow: 1;
-                    display: flex;
-                    align-items: center;
-                  `}
-                >
-                  <span
-                    css={css`
-                      font-size: 14px;
-                      font-weight: bold;
-                      line-height: 20px;
-                      ::before {
-                        content: "";
-                        display: inline-block;
-                        height: 12px;
-                        border: 3px solid #ffcc00;
-                        box-sizing: border-box;
-                        border-radius: 5px;
-                        margin-right: 8px;
-                      }
-                    `}
-                  >
-                    {item}
-                  </span>
-                  <Chip
-                    label={chip === "text" && "文本"}
-                    variant="outlined"
-                    css={css`
-                      width: 36px;
-                      height: 20px;
-                      border-radius: 4px;
-                      background: #d6e2ff;
-                      margin-left: 8px;
-                      .MuiChip-label {
-                        font-size: 10px;
-                        font-weight: 500;
-                        line-height: 12px;
-                        color: #3662ec;
-                        padding: 0px;
-                      }
-                    `}
-                  />
-                </div>
-                <IconButton>
-                  <img src={Icon_more} />
-                </IconButton>
-              </div>
-            ))}
-            <div
-              css={css`
-                width: 56px;
-                border: 1px solid #f0f0f0;
-                box-sizing: border-box;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-              `}
-            >
-              <IconButton>
-                <img src={Icon_addcolumns} />
-              </IconButton>
-            </div>
-          </div>
-          <div
-            css={css`
               display: flex;
               flex-direction: row;
               flex-grow: 1;
@@ -317,7 +291,6 @@ export default function PreviewTable(props: {
               css={css`
                 display: flex;
                 flex-direction: column;
-                flex-grow: 1;
               `}
             >
               <div
@@ -327,6 +300,14 @@ export default function PreviewTable(props: {
                   box-sizing: border-box;
                 `}
               >
+                <div
+                  css={css`
+                    width: 56px;
+                    height: 40px;
+                    border: 1px solid #f0f0f0;
+                    box-sizing: border-box;
+                  `}
+                />
                 {file?.map((_openfile: any, index: number) => (
                   <div
                     css={css`
@@ -358,11 +339,7 @@ export default function PreviewTable(props: {
                     display: flex;
                     flex-direction: column;
                     box-sizing: border-box;
-                    width: ${resultIndex === 0
-                      ? length - 56
-                      : resultIndex === list?.length - 1
-                      ? length - 56
-                      : length}px;
+                    flex-grow: 1;
                     border: ${resultIndex === confirmedColumn
                       ? "1px solid #FFC300"
                       : "1px solid #f0f0f0"};
@@ -375,8 +352,72 @@ export default function PreviewTable(props: {
                     }
                   }}
                 >
-                  {result?.map((resultItem: any) => {
-                    return (
+                  {result?.map((resultItem: any, index: number) =>
+                    index === 0 ? (
+                      <div
+                        css={css`
+                          height: 40px;
+                          display: flex;
+                          flex-direction: row;
+                          align-items: center;
+                          justify-content: space-between;
+                          flex-grow: 1;
+                          border-bottom: 1px solid #f0f0f0;
+                          box-sizing: border-box;
+                        `}
+                      >
+                        <div
+                          css={css`
+                            padding-top: 10px;
+                            padding-left: 12px;
+                            padding-bottom: 10px;
+                            flex-grow: 1;
+                            display: flex;
+                            align-items: center;
+                          `}
+                        >
+                          <span
+                            css={css`
+                              font-size: 14px;
+                              font-weight: bold;
+                              line-height: 20px;
+                              ::before {
+                                content: "";
+                                display: inline-block;
+                                height: 12px;
+                                border: 3px solid #ffcc00;
+                                box-sizing: border-box;
+                                border-radius: 5px;
+                                margin-right: 8px;
+                              }
+                            `}
+                          >
+                            {resultItem}
+                          </span>
+                          <Chip
+                            label={chip === "text" && "文本"}
+                            variant="outlined"
+                            css={css`
+                              width: 36px;
+                              height: 20px;
+                              border-radius: 4px;
+                              background: #d6e2ff;
+                              margin-left: 8px;
+                              .MuiChip-label {
+                                font-size: 10px;
+                                font-weight: 500;
+                                line-height: 12px;
+                                color: #3662ec;
+                                padding: 0px;
+                              }
+                            `}
+                          />
+                        </div>
+                        <IconButton>
+                          <img src={Icon_more} />
+                        </IconButton>
+                      </div>
+                    ) : (
                       <div
                         css={css`
                           height: 40px;
@@ -403,8 +444,8 @@ export default function PreviewTable(props: {
                           {resultItem}
                         </span>
                       </div>
-                    );
-                  })}
+                    )
+                  )}
                 </div>
               );
             })}
@@ -414,7 +455,23 @@ export default function PreviewTable(props: {
                 border: 1px solid #f0f0f0;
                 box-sizing: border-box;
               `}
-            ></div>
+            >
+              <div
+                css={css`
+                  width: 56px;
+                  height: 40px;
+                  border-bottom: 1px solid #f0f0f0;
+                  box-sizing: border-box;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                `}
+              >
+                <IconButton>
+                  <img src={Icon_addcolumns} />
+                </IconButton>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -439,7 +496,7 @@ export default function PreviewTable(props: {
             `}
           >
             <span>
-              共2列，<span>{file?.length}</span>行
+              共{list?.length}列，<span>{file?.length}</span>行
             </span>
           </div>
         )}
@@ -501,6 +558,14 @@ export default function PreviewTable(props: {
             {enter === "import" ? "导入" : "下载"}
           </Button>
         </div>
+      </div>
+
+      <div
+        css={css`
+          display: ${transcriptionOpen ? "flex" : "none"};
+        `}
+      >
+        <Typography>The content of the Popover.</Typography>
       </div>
     </Dialog>
   );

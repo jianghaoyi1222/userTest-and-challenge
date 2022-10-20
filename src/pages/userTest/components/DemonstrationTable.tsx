@@ -14,7 +14,7 @@ import {
 import Icon_homebee from "src/assets/icon_homebee.png";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import AddContent from "./AddContent";
-import { CurrentModeItem } from "src/pages/assistant";
+import { CurrentModeItem } from "src/pages/assistant/BatchClicks";
 
 export interface ListItem {
   id: number;

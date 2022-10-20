@@ -34,7 +34,7 @@ export interface DataListItem {
 
 export interface StepTipItem {
   index: number;
-  tip: String;
+  tip: string;
 }
 
 export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => {
@@ -48,7 +48,7 @@ export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => {
     color: "#FFFFFF",
     fontSize: "20px",
     fontWeight: "500px",
-    minWidth: "260px",
+    minWidth: "248px",
     height: "76px",
     display: "flex",
     justifyContent: "center",
@@ -217,6 +217,7 @@ export default function DataCollection() {
       css={css`
         width: 1400px;
         height: 800px;
+        position: relative;
       `}
     >
       {startChanllenge ? (

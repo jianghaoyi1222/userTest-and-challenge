@@ -14,7 +14,6 @@ dataConversionUtil["dataToExcel"] = function (
   let aoa = [];
   // aoa的数据格式：[[],[],[],[]]   数组的第一个子数组可以指定为表头  根据情况而定
   aoa = [tableHeader].concat(dataList);
-  console.log("aoa", aoa);
 
   let workSheet = XLSX.utils.aoa_to_sheet(aoa);
   let workBook = XLSX.utils.book_new();

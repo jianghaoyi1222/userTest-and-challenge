@@ -202,7 +202,7 @@ export default function BatchClicks(props: {
 
   const onConfirmImport = useCallback((index: number, list: any) => {
     setConfirmedColumn(index);
-    setReaderColumnedList(list);
+    setReaderColumnedList(list.slice(1, list.length));
   }, []);
 
   const onImportConfirmedData = useCallback(() => {
@@ -880,7 +880,7 @@ export default function BatchClicks(props: {
           horizontal: "right",
         }}
         css={css`
-          z-index: 99999;
+          z-index: 50;
           .MuiPaper-root {
             background-color: #151515;
             width: 108px;
@@ -989,7 +989,7 @@ export default function BatchClicks(props: {
   return (
     <div
       css={css`
-        z-index: 99990;
+        z-index: 50;
       `}
     >
       {isExecuted && isContinuous ? (
@@ -1466,6 +1466,7 @@ export default function BatchClicks(props: {
       <PreviewTable
         open={isOpenPreviewTable}
         file={rowlist}
+        name="批量添加列表"
         confirmedColumn={confirmedColumn}
         enter={enter}
         onConfirmImport={onConfirmImport}

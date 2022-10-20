@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 const UserTest = React.lazy(() => import("./pages/userTest"));
 const DataCollection = React.lazy(() => import("./pages/dataCollection"));
+const DataProcess = React.lazy(() => import("./pages/dataProcess"));
 const Panel = React.lazy(() => import("./pages/panel/Panel"));
 
 export function App() {
@@ -21,6 +22,14 @@ export function App() {
           element={
             <Suspense fallback={<></>}>
               <DataCollection />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/dataProcess"
+          element={
+            <Suspense fallback={<></>}>
+              <DataProcess />
             </Suspense>
           }
         />

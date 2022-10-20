@@ -1,12 +1,15 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import Icon_upload from "src/assets/icon_upload.png";
 import { howLongBefore } from "src/utils/string";
 import Icon_xlsx from "src/assets/icon_xlsx.png";
 import moment from "moment";
 import * as xlsx from "xlsx";
+import Icon_update from "src/assets/icon_update.png";
+import Icon_more from "src/assets/icon_more.png";
+import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
 
 export interface DataItem {
   id: string;
@@ -21,15 +24,28 @@ export interface DataItem {
 export default function DataPanel(props: {
   dataSource?: DataItem;
   existingData?: DataItem[];
+
+  currentStep?: number;
+  stepTips?: StepTipItem[];
+
   handleGainExistingData?: (data: DataItem[]) => void;
   handleChangeDataSourceSituation?: () => void;
+  handleOpenTable?: () => void;
+  handleToNextStepTip?: () => void;
 }) {
   const {
     dataSource,
     existingData,
+
+    currentStep,
+    stepTips,
+
     handleGainExistingData,
     handleChangeDataSourceSituation,
+    handleOpenTable,
+    handleToNextStepTip,
   } = props;
+
   const [data, setData] = useState<DataItem[]>([]);
 
   useEffect(() => {
@@ -49,7 +65,7 @@ export default function DataPanel(props: {
     }
   }, [dataSource, data, existingData, handleChangeDataSourceSituation]);
 
-  // // file对象转为Buffer数据
+  // file对象转为Buffer数据
   const fileDataPaserBuffer = useCallback((fileData: any) => {
     return new Promise((res, _rej) => {
       const reader = new FileReader();
@@ -121,244 +137,304 @@ export default function DataPanel(props: {
     [data]
   );
 
+  const onView = useCallback(() => {
+    handleOpenTable?.();
+    handleToNextStepTip?.();
+  }, [handleOpenTable, handleToNextStepTip]);
+
   return (
     <div
       css={css`
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 344px;
+        position: relative;
       `}
     >
-      {data.length > 0 ? (
-        <Fragment>
-          <div
-            css={css`
-              margin-top: 18px;
-            `}
-          >
-            <Button
-              component="label"
+      <div
+        css={css`
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 344px;
+        `}
+      >
+        {data.length > 0 ? (
+          <Fragment>
+            <div
               css={css`
-                min-width: 240px;
-                min-height: 40px;
-                border-radius: 2px;
-                border: 1px dashed #bbbec5;
+                margin-top: 18px;
               `}
             >
-              <div
+              <Button
+                component="label"
                 css={css`
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                `}
-              >
-                <p
-                  css={css`
-                    font-size: 14px;
-                    color: #1e293e;
-                    line-height: 20px;
-                    text-align: center;
-                  `}
-                >
-                  +导入数据
-                </p>
-              </div>
-              <input
-                type="file"
-                accept=".xlsx,.csv"
-                hidden
-                onChange={onUploadFile}
-              />
-            </Button>
-          </div>
-          {data?.map((data) => {
-            return (
-              <div
-                css={css`
-                  position: relative;
-                  width: 296px;
-                  height: 70px;
-                  margin-top: 20px;
-                  background: #fbfbfb;
-                  border-radius: 4px;
+                  min-width: 240px;
+                  min-height: 40px;
+                  border-radius: 2px;
+                  border: 1px dashed #bbbec5;
                 `}
               >
                 <div
                   css={css`
                     display: flex;
-                    flex-direction: column;
-                    margin-top: 16px;
-                    margin-left: 16px;
+                    justify-content: center;
+                    align-items: center;
+                  `}
+                >
+                  <p
+                    css={css`
+                      font-size: 14px;
+                      color: #1e293e;
+                      line-height: 20px;
+                      text-align: center;
+                    `}
+                  >
+                    +导入数据
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept=".xlsx,.csv"
+                  hidden
+                  onChange={onUploadFile}
+                />
+              </Button>
+            </div>
+            {data?.map((data) => {
+              return (
+                <div
+                  css={css`
+                    position: relative;
+                    width: 296px;
+                    height: 70px;
+                    margin-top: 20px;
+                    background: #fbfbfb;
+                    border-radius: 4px;
                   `}
                 >
                   <div
                     css={css`
                       display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      align-items: center;
+                      flex-direction: column;
+                      margin-top: 16px;
+                      margin-left: 16px;
                     `}
                   >
                     <div
                       css={css`
                         display: flex;
                         flex-direction: row;
+                        justify-content: space-between;
                         align-items: center;
                       `}
                     >
-                      <img
-                        src={data?.icon}
+                      <div
                         css={css`
-                          width: 24px;
-                          height: 24px;
-                        `}
-                      />
-                      <span
-                        css={css`
-                          color: #303030;
-                          font-size: 16px;
-                          line-height: 16px;
-                          margin-left: 8px;
+                          display: flex;
+                          flex-direction: row;
+                          align-items: center;
                         `}
                       >
-                        {data?.name}
-                      </span>
+                        <img
+                          src={data?.icon}
+                          css={css`
+                            width: 24px;
+                            height: 24px;
+                          `}
+                        />
+                        <span
+                          css={css`
+                            color: #303030;
+                            font-size: 16px;
+                            line-height: 16px;
+                            margin-left: 8px;
+                          `}
+                        >
+                          {data?.name}
+                        </span>
+                        <span
+                          css={css`
+                            color: #bbbec5;
+                            font-size: 12px;
+                            line-height: 12px;
+                            margin-left: 8px;
+                          `}
+                        >
+                          {howLongBefore(data?.createTime)}
+                        </span>
+                      </div>
+                      <div
+                        css={css`
+                          display: flex;
+                          flex-direction: row;
+                          align-items: center;
+                        `}
+                      >
+                        {currentStep === 1 ? (
+                          <StyledTooltip
+                            open={true}
+                            arrow
+                            placement="top-end"
+                            title={
+                              stepTips?.filter(
+                                (tip: StepTipItem) => tip.index === currentStep
+                              )[0]?.tip
+                            }
+                          >
+                            <IconButton
+                              onClick={onView}
+                              css={css`
+                                padding: 1px;
+                                margin-right: 16px;
+                              `}
+                            >
+                              <img src={Icon_update} />
+                            </IconButton>
+                          </StyledTooltip>
+                        ) : (
+                          <IconButton
+                            onClick={onView}
+                            css={css`
+                              padding: 1px;
+                              margin-right: 16px;
+                            `}
+                          >
+                            <img src={Icon_update} />
+                          </IconButton>
+                        )}
+
+                        <IconButton
+                          css={css`
+                            padding: 1px;
+                            margin-right: 8px;
+                          `}
+                        >
+                          <img src={Icon_more} />
+                        </IconButton>
+                      </div>
                     </div>
                     <span
                       css={css`
-                        color: #bbbec5;
+                        color: #999999;
                         font-size: 12px;
                         line-height: 12px;
-                        margin-right: 16px;
+                        margin-top: 10px;
+                        margin-left: 32px;
                       `}
                     >
-                      {howLongBefore(data?.createTime)}
+                      {data?.description}
                     </span>
                   </div>
-                  <span
-                    css={css`
-                      color: #999999;
-                      font-size: 12px;
-                      line-height: 12px;
-                      margin-top: 10px;
-                      margin-left: 32px;
-                    `}
-                  >
-                    {data?.description}
-                  </span>
                 </div>
-              </div>
-            );
-          })}
-        </Fragment>
-      ) : (
-        <Fragment>
-          <div
-            css={css`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              margin-top: 40px;
-            `}
-          >
-            <p
+              );
+            })}
+          </Fragment>
+        ) : (
+          <Fragment>
+            <div
               css={css`
-                font-size: 14px;
-                line-height: 20px;
-                color: #1e293e;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                margin-top: 40px;
               `}
             >
-              您还没有任何数据哦～
-            </p>
-          </div>
-
-          <div
-            css={css`
-              margin-top: 32px;
-              text-align: center;
-            `}
-          >
-            <Button
-              css={css`
-                font-size: 16px;
-                line-height: 20px;
-                padding: 2px 0px;
-                border-bottom: 1px solid;
-                border-radius: 0px;
-              `}
-            >
-              入门指南
-            </Button>
-            👈
-          </div>
-
-          <div
-            css={css`
-              margin-top: 44px;
-            `}
-          >
-            <Button
-              component="label"
-              css={css`
-                min-width: 240px;
-                min-height: 140px;
-                background: #fbfbfb;
-                border-radius: 2px;
-                border: 1px dashed #bbbec5;
-              `}
-            >
-              <div
+              <p
                 css={css`
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: center;
-                  align-items: center;
+                  font-size: 14px;
+                  line-height: 20px;
+                  color: #1e293e;
                 `}
               >
-                <img
-                  src={Icon_upload}
+                您还没有任何数据哦～
+              </p>
+            </div>
+
+            <div
+              css={css`
+                margin-top: 32px;
+                text-align: center;
+              `}
+            >
+              <Button
+                css={css`
+                  font-size: 16px;
+                  line-height: 20px;
+                  padding: 2px 0px;
+                  border-bottom: 1px solid;
+                  border-radius: 0px;
+                `}
+              >
+                入门指南
+              </Button>
+              👈
+            </div>
+
+            <div
+              css={css`
+                margin-top: 44px;
+              `}
+            >
+              <Button
+                component="label"
+                css={css`
+                  min-width: 240px;
+                  min-height: 140px;
+                  background: #fbfbfb;
+                  border-radius: 2px;
+                  border: 1px dashed #bbbec5;
+                `}
+              >
+                <div
                   css={css`
-                    width: 24px;
-                    height: 24px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
                   `}
+                >
+                  <img
+                    src={Icon_upload}
+                    css={css`
+                      width: 24px;
+                      height: 24px;
+                    `}
+                  />
+                  <p
+                    css={css`
+                      width: 145px;
+                      height: 40px;
+                      font-size: 14px;
+                      color: #1e293e;
+                      line-height: 20px;
+                      text-align: center;
+                      margin-top: 14px;
+                    `}
+                  >
+                    将文件拖拽到这里或者点击此区域开始导入
+                  </p>
+                  <p
+                    css={css`
+                      height: 20px;
+                      font-size: 12px;
+                      line-height: 20px;
+                      color: #bbbec5;
+                      margin-top: 8px;
+                    `}
+                  >
+                    支持上传.xlsx/.csv文件
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept=".xlsx,.csv"
+                  hidden
+                  onChange={onUploadFile}
                 />
-                <p
-                  css={css`
-                    width: 145px;
-                    height: 40px;
-                    font-size: 14px;
-                    color: #1e293e;
-                    line-height: 20px;
-                    text-align: center;
-                    margin-top: 14px;
-                  `}
-                >
-                  将文件拖拽到这里或者点击此区域开始导入
-                </p>
-                <p
-                  css={css`
-                    height: 20px;
-                    font-size: 12px;
-                    line-height: 20px;
-                    color: #bbbec5;
-                    margin-top: 8px;
-                  `}
-                >
-                  支持上传.xlsx/.csv文件
-                </p>
-              </div>
-              <input
-                type="file"
-                accept=".xlsx,.csv"
-                hidden
-                onChange={onUploadFile}
-              />
-            </Button>
-          </div>
-        </Fragment>
-      )}
+              </Button>
+            </div>
+          </Fragment>
+        )}
+      </div>
     </div>
   );
 }
