@@ -161,6 +161,11 @@ export default function DataProcess() {
     console.log(currentStep);
   }, [currentStep]);
 
+  const onToPreStepTip = useCallback((value: number) => {
+    setCurrentStep(value);
+    console.log(currentStep);
+  }, []);
+
   const onOpenTable = useCallback(() => {
     setOpen(true);
   }, []);
@@ -207,12 +212,9 @@ export default function DataProcess() {
               enter="preview"
               name={dataSource?.name}
               currentStep={currentStep}
-              tip={
-                stepTips?.filter(
-                  (tip: StepTipItem) => tip.index === currentStep
-                )[0]?.tip
-              }
+              stepTips={stepTips}
               handleToNextStepTip={onToNextStepTip}
+              handleToPreStepTip={onToPreStepTip}
             />
           </div>
         )

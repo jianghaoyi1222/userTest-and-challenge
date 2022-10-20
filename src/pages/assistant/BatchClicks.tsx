@@ -253,7 +253,7 @@ export default function BatchClicks(props: {
     divideTitle?.map((title: any, titleIndex: number) => {
       divideContent?.map((content: any, contentIndex: number) => {
         if (titleIndex === contentIndex) {
-          rows.push({ title: title, description: content });
+          rows.push({ 标题列表: title, 列表内容: content });
         }
       });
     });
@@ -651,8 +651,8 @@ export default function BatchClicks(props: {
           contents?.map((content: any, contentIndex: number) => {
             if (titleIndex === contentIndex) {
               rowlist.push({
-                title: title,
-                description: content,
+                标题列表: title,
+                列表内容: content,
               });
             }
           });
@@ -660,13 +660,13 @@ export default function BatchClicks(props: {
       } else if (titles && titles.length > 0) {
         titles?.map((title: any) => {
           rowlist.push({
-            title: title,
+            标题列表: title,
           });
         });
       } else if (contents && contents.length > 0) {
         contents?.map((content: any) => {
           rowlist.push({
-            description: content,
+            列表内容: content,
           });
         });
       }
@@ -785,7 +785,7 @@ export default function BatchClicks(props: {
                     {index + 1}
                   </span>
                 </div>
-                {item?.title && (
+                {item?.["标题列表"] && (
                   <div
                     css={css`
                       display: flex;
@@ -806,11 +806,11 @@ export default function BatchClicks(props: {
                         margin-left: 12px;
                       `}
                     >
-                      {item?.title}
+                      {item?.["标题列表"]}
                     </span>
                   </div>
                 )}
-                {item?.description && (
+                {item?.["列表内容"] && (
                   <div
                     css={css`
                       display: flex;
@@ -831,7 +831,7 @@ export default function BatchClicks(props: {
                         margin-left: 12px;
                       `}
                     >
-                      {item?.description}
+                      {item?.["列表内容"]}
                     </span>
                   </div>
                 )}

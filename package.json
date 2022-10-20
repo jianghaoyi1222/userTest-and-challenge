@@ -42,6 +42,7 @@
     "eslint": "^8.25.0",
     "lodash-es": "^4.17.21",
     "moment": "^2.29.4",
+    "pinyin-pro": "^3.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",

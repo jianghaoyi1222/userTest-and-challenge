@@ -1,14 +1,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import {
-  Button,
-  Chip,
-  Dialog,
-  Divider,
-  IconButton,
-  Popover,
-  Typography,
-} from "@mui/material";
+import { Button, Chip, Dialog, Divider, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Icon_setpattern from "src/assets/icon_setpattern.png";
 import Icon_colation from "src/assets/icon_colation.png";
@@ -27,9 +19,12 @@ import Icon_reset from "src/assets/icon_reset.png";
 import Icon_download from "src/assets/icon_download.png";
 import Icon_addcolumns from "src/assets/icon_addcolumns.png";
 import Icon_more from "src/assets/icon_more.png";
-import { useCallback, MouseEvent, useState } from "react";
+// import { ArrowBackIos } from "@mui/icons-material";
+import { useCallback, useEffect, useState } from "react";
 import { dataConversionUtil } from "src/utils/excel";
-import { StyledTooltip } from "src/pages/dataCollection";
+import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
+import FormDataPopover from "src/pages/dataProcess/FormDataPopover";
+import { pinyin } from "pinyin-pro";
 
 export type EnterType = "import" | "preview";
 
@@ -43,13 +38,14 @@ export default function PreviewTable(props: {
   type?: string;
   name?: string;
   currentStep?: number;
-  tip?: string;
+  stepTips?: StepTipItem[];
 
   onClose?: () => void;
   onConfirmImport?: (index: number, list: any) => void;
   onImportConfirmedData?: () => void;
 
   handleToNextStepTip?: () => void;
+  handleToPreStepTip?: (value: number) => void;
 }) {
   const {
     open,
@@ -61,238 +57,935 @@ export default function PreviewTable(props: {
     type,
     name,
     currentStep,
-    tip,
+    stepTips,
 
     onConfirmImport,
     onClose,
     onImportConfirmedData,
 
     handleToNextStepTip,
+    handleToPreStepTip,
   } = props;
 
-  const [transcriptionOpen, setTranscriptionOpen] = useState(false);
+  const [openPopover, setOpenPopover] = useState(false);
+  const [selectValue, setSelectValue] = useState<string | undefined>(undefined);
+  const [confirmedColumnIndex, setConfirmedColumnIndex] = useState<number>();
+  const [feature, setFeature] = useState<string | undefined>();
 
-  const head = file?.[0] && Object.keys(file?.[0]);
-  // const length = 968 / head?.length;
+  const [rows, setRows] = useState<any[]>([]);
+  const [originalRows, setOriginalRows] = useState<any[]>([]);
+  const [headlist, setHeadList] = useState<any[]>([]);
 
-  const values = [];
+  const [showCircle, setShowCircle] = useState(false);
 
-  for (let t = 0; t < head?.length; t++) {
-    for (let i = 0; i < Number(file?.length); i++) {
-      values.push(Object.values(file?.[i])[t]);
+  const [styled, setStyled] = useState<{
+    right: string;
+    bottom: string;
+  }>({ right: "150px", bottom: "310px" });
+  const [functionType, setFunctionType] = useState<string>("pinyin");
+
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    let timer: any = null;
+    if (currentStep === 2) {
+      timer = setTimeout(() => setShowCircle(true), 500);
     }
-  }
+    if (currentStep === 5) {
+      timer = setTimeout(() => handleToNextStepTip?.(), 500);
+    }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentStep, handleToNextStepTip]);
 
-  let start = 0;
-  let end = file?.length as number;
-  const list: any = [];
-  const row = Math.ceil(values.length / end);
+  useEffect(() => {
+    setConfirmedColumnIndex(confirmedColumn);
+  }, [confirmedColumn]);
 
-  for (let i = 0; i < row; i++) {
-    const rowList = values.slice(start, end);
-    list.push([head[i]].concat(rowList));
-    start = start + Number(file?.length);
-    end = end + Number(file?.length);
-  }
+  useEffect(() => {
+    const head = file?.[0] && Object.keys(file?.[0]);
+    const values = [];
+
+    for (let t = 0; t < head?.length; t++) {
+      for (let i = 0; i < Number(file?.length); i++) {
+        values.push(Object.values(file?.[i])[t]);
+      }
+    }
+
+    let start = 0;
+    let end = file?.length as number;
+    const list: any = [];
+    const row = Math.ceil(values.length / end);
+
+    for (let i = 0; i < row; i++) {
+      const rowList = values.slice(start, end);
+      list.push([head[i]].concat(rowList));
+      start = start + Number(file?.length);
+      end = end + Number(file?.length);
+    }
+    setHeadList(head);
+    setRows(list);
+    setOriginalRows(list);
+  }, [file]);
 
   const onLoadExcel = useCallback(() => {
-    const tableHeader = head;
+    const tableHeader = headlist;
     const dataList: any[] = [];
     file?.map((item: any) => {
       dataList.push(Object.values(item));
     });
-    console.log("dataList", dataList);
     dataConversionUtil["dataToExcel"](name, tableHeader, dataList);
-  }, [name, dataConversionUtil, file]);
+  }, [name, dataConversionUtil, file, headlist]);
 
   const onTranscription = useCallback(() => {
     if (currentStep === 2) {
+      setOpenPopover(true);
       handleToNextStepTip?.();
-      setTranscriptionOpen(true);
     }
   }, [currentStep, handleToNextStepTip]);
 
-  const OperationList = () => {
-    return (
-      <div
-        css={css`
-          width: 100%;
-          height: 64px;
-          background: #f5f6f7;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: space-around;
-        `}
-      >
-        <IconButton>
-          <img src={Icon_setpattern} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_colation} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_sort} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_replace} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_duplicate} />
-        </IconButton>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <IconButton>
-          <img src={Icon_calculation} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_quote} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_consolidatedtable} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_mergecolumns} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_deleterows} />
-        </IconButton>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <IconButton>
-          <img src={Icon_idcard} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_moreoperation} />
-        </IconButton>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <IconButton onClick={onTranscription}>
-          <img src={Icon_transcription} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_moreoperation} />
-        </IconButton>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <IconButton>
-          <img src={Icon_reset} />
-        </IconButton>
-        <IconButton>
-          <img src={Icon_download} />
-        </IconButton>
-      </div>
-    );
-  };
+  // const handleClose = useCallback(() => {}, []);
 
-  const handleClose = useCallback(() => {}, []);
+  const handleChangeColumns = useCallback(
+    (value?: string) => {
+      setSelectValue(value);
+      rows.map((item: any, index: number) => {
+        if (item[0] === value) {
+          setConfirmedColumnIndex(index);
+        }
+      });
+    },
+    [rows]
+  );
+
+  const handleChangeFunction = useCallback(
+    (value: string) => {
+      setFeature(value);
+      const length = file && file.length + 1;
+      const list: any[] = [];
+      const pinyinList: any[] = [];
+      const ageList: any[] = [];
+      if (value === "拼音") {
+        rows.map((selected: any) => {
+          if (selected[0] === selectValue) {
+            selected.slice(1, length).map((item: any) => {
+              pinyinList.push(pinyin(item, { toneType: "none" }));
+            });
+            list.push([selected[0]].concat(pinyinList));
+          } else {
+            list.push(selected);
+          }
+        });
+      }
+      if (value === "提取年龄") {
+        rows.map((selected: any) => {
+          if (selected[0] === selectValue) {
+            selected.slice(1, length).map((item: any) => {
+              const yearBirth = item.substring(6, 10);
+              const monthBirth = item.substring(10, 12);
+              const dayBirth = item.substring(12, 14);
+              const myDate = new Date();
+              const monthNow = myDate.getMonth() + 1;
+              const dayNow = myDate.getDate();
+              let age = myDate.getFullYear() - yearBirth;
+              if (
+                monthNow < monthBirth ||
+                (monthNow == monthBirth && dayNow < dayBirth)
+              ) {
+                age--;
+              }
+              ageList.push(age);
+              console.log("age", age);
+            });
+            list.push(["年龄"].concat(ageList));
+          } else {
+            list.push(selected);
+          }
+        });
+      }
+      setRows(list);
+      console.log("list", list);
+      handleToNextStepTip?.();
+    },
+    [rows, selectValue, file, handleToNextStepTip]
+  );
+
+  const onPopoverCancel = useCallback(() => {
+    setRows(originalRows);
+    functionType === "pinyin" && handleToPreStepTip?.(3);
+    functionType === "cardID" && handleToPreStepTip?.(8);
+    setSelectValue(undefined);
+    setFeature(undefined);
+    setConfirmedColumnIndex(undefined);
+  }, [originalRows, handleToPreStepTip, currentStep]);
+
+  const onPopoverConfirm = useCallback(() => {
+    setOpenPopover(false);
+    setShowCircle(false);
+    if (currentStep !== 11 && currentStep !== 12) {
+      setConfirmedColumnIndex(undefined);
+    }
+    setSelectValue(undefined);
+    setFeature(undefined);
+  }, [currentStep, confirmedColumnIndex]);
+
+  const onShowPopover = useCallback(() => {
+    setOpenPopover(true);
+    setStyled({ right: "280px", bottom: "310px" });
+    handleToNextStepTip?.();
+    setFunctionType("cardID");
+  }, [handleToNextStepTip]);
+
+  const onChecked = useCallback(() => {
+    setChecked(!checked);
+    handleToNextStepTip?.();
+    if (currentStep === 10) {
+      confirmedColumnIndex && setConfirmedColumnIndex(confirmedColumnIndex + 1);
+    }
+  }, [handleToNextStepTip, checked, confirmedColumnIndex]);
+
+  useEffect(() => {
+    const length = file && file.length + 1;
+    if (checked && confirmedColumnIndex) {
+      const rowlist = originalRows[confirmedColumnIndex - 1];
+      const list = rows.slice(0, confirmedColumnIndex - 1).concat([rowlist]);
+      const rearlist = rows.slice(confirmedColumnIndex - 1, length);
+      const row = list.concat(rearlist);
+      setRows(row);
+      console.log("rowlist", row);
+    }
+  }, [checked, originalRows, file]);
 
   return (
-    <Dialog
-      open={open ?? false}
-      css={[
-        css`
-          display: flex;
-          flex-direction: column;
-          z-index: 50;
-          .MuiBackdrop-root {
-            background-color: transparent;
-          }
-          .MuiPaper-root {
-            width: 1000px;
-            max-width: 1000px;
-            height: 612px;
-            border-radius: 8px 8px 0px 0px;
-          }
-        `,
-        type === "dataProcess" &&
+    <div
+      css={css`
+        width: 100%;
+        height: 100%;
+        position: relative;
+      `}
+    >
+      <Dialog
+        open={open ?? false}
+        css={[
           css`
-            .MuiDialog-container {
-              width: 1400px;
-              height: 800px;
-              position: relative;
-              display: flex;
-              justify-content: center;
-              align-items: center;
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+            .MuiBackdrop-root {
+              background-color: transparent;
+            }
+            .MuiPaper-root {
+              width: 1000px;
+              max-width: 1000px;
+              height: 612px;
+              border-radius: 8px 8px 0px 0px;
             }
           `,
-      ]}
-    >
-      <div
-        css={css`
-          width: 100%;
-          height: 40px;
-          background: #151515;
-          border-radius: 8px 8px 0px 0px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-        `}
+          type === "dataProcess" &&
+            css`
+              .MuiDialog-container {
+                width: 1400px;
+                height: 800px;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              }
+            `,
+        ]}
       >
-        <span
-          css={css`
-            font-size: 14px;
-            line-height: 16px;
-            color: #ffffff;
-            margin-left: 16px;
-          `}
-        >
-          {name}
-        </span>
-        <IconButton onClick={onClose}>
-          <CloseIcon
-            css={css`
-              color: #ffffff;
-            `}
-          />
-        </IconButton>
-      </div>
-      {currentStep === 2 ? (
-        <StyledTooltip open={true} arrow placement="top" title={tip}>
-          <div
-            css={css`
-              width: 100%;
-            `}
-          >
-            <OperationList />
-          </div>
-        </StyledTooltip>
-      ) : (
         <div
           css={css`
             width: 100%;
+            height: 40px;
+            background: #151515;
+            border-radius: 8px 8px 0px 0px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
           `}
         >
-          <OperationList />
-        </div>
-      )}
+          {/* <IconButton>
+              <ArrowBackIos
+                css={css`
+                  color: #ffffff;
+                  font-size: 1rem;
+                `}
+              />
+            </IconButton> */}
+          <span
+            css={css`
+              font-size: 14px;
+              line-height: 16px;
+              color: #ffffff;
+            `}
+          >
+            {name}
+          </span>
 
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          overflow-y: overlay;
-          margin-top: 12px;
-        `}
-      >
+          <IconButton onClick={onClose}>
+            <CloseIcon
+              css={css`
+                color: #ffffff;
+              `}
+            />
+          </IconButton>
+        </div>
+        {currentStep === 2 ? (
+          <StyledTooltip
+            open={true}
+            arrow
+            placement="top"
+            title={
+              stepTips?.filter(
+                (tip: StepTipItem) => tip.index === currentStep
+              )[0]?.tip
+            }
+          >
+            <div
+              css={css`
+                width: 100%;
+                height: 64px;
+                background: #f5f6f7;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-around;
+              `}
+            >
+              <IconButton>
+                <img src={Icon_setpattern} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_colation} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_sort} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_replace} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_duplicate} />
+              </IconButton>
+              <Divider orientation="vertical" variant="middle" flexItem />
+              <IconButton>
+                <img src={Icon_calculation} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_quote} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_consolidatedtable} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_mergecolumns} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_deleterows} />
+              </IconButton>
+              <Divider orientation="vertical" variant="middle" flexItem />
+              <IconButton>
+                <img src={Icon_idcard} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_moreoperation} />
+              </IconButton>
+              <Divider orientation="vertical" variant="middle" flexItem />
+              <IconButton
+                onClick={onTranscription}
+                css={css`
+                  border: 1px solid ${showCircle ? "#486ee5" : "transparent"};
+                  border-radius: 100%;
+                  box-sizing: border-box;
+                `}
+              >
+                <img src={Icon_transcription} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_moreoperation} />
+              </IconButton>
+              <Divider orientation="vertical" variant="middle" flexItem />
+              <IconButton>
+                <img src={Icon_reset} />
+              </IconButton>
+              <IconButton>
+                <img src={Icon_download} />
+              </IconButton>
+            </div>
+          </StyledTooltip>
+        ) : (
+          <div
+            css={css`
+              width: 100%;
+              height: 64px;
+              background: #f5f6f7;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: space-around;
+            `}
+          >
+            <IconButton>
+              <img src={Icon_setpattern} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_colation} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_sort} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_replace} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_duplicate} />
+            </IconButton>
+            <Divider orientation="vertical" variant="middle" flexItem />
+            <IconButton>
+              <img src={Icon_calculation} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_quote} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_consolidatedtable} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_mergecolumns} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_deleterows} />
+            </IconButton>
+            <Divider orientation="vertical" variant="middle" flexItem />
+            {currentStep === 7 ? (
+              <StyledTooltip
+                open={true}
+                arrow
+                placement="bottom"
+                title={
+                  stepTips?.filter(
+                    (tip: StepTipItem) => tip.index === currentStep
+                  )[0]?.tip
+                }
+              >
+                <IconButton onClick={onShowPopover}>
+                  <img src={Icon_idcard} />
+                </IconButton>
+              </StyledTooltip>
+            ) : (
+              <IconButton>
+                <img src={Icon_idcard} />
+              </IconButton>
+            )}
+            <IconButton>
+              <img src={Icon_moreoperation} />
+            </IconButton>
+            <Divider orientation="vertical" variant="middle" flexItem />
+            <IconButton
+              onClick={onTranscription}
+              css={css`
+                border: 1px solid ${showCircle ? "#486ee5" : "transparent"};
+                border-radius: 100%;
+                box-sizing: border-box;
+              `}
+            >
+              <img src={Icon_transcription} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_moreoperation} />
+            </IconButton>
+            <Divider orientation="vertical" variant="middle" flexItem />
+            <IconButton>
+              <img src={Icon_reset} />
+            </IconButton>
+            <IconButton>
+              <img src={Icon_download} />
+            </IconButton>
+          </div>
+        )}
+
         <div
           css={css`
-            width: 968px;
-            height: 440px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: overlay;
+            margin-top: 12px;
           `}
         >
           <div
             css={css`
-              display: flex;
-              flex-direction: row;
-              flex-grow: 1;
+              width: 968px;
+              height: 440px;
             `}
           >
             <div
               css={css`
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
+                flex-grow: 1;
               `}
             >
+              <div
+                css={css`
+                  display: flex;
+                  flex-direction: column;
+                `}
+              >
+                <div
+                  css={css`
+                    width: 56px;
+                    border: 1px solid #f0f0f0;
+                    box-sizing: border-box;
+                  `}
+                >
+                  <div
+                    css={css`
+                      width: 56px;
+                      height: 40px;
+                      border: 1px solid #f0f0f0;
+                      box-sizing: border-box;
+                    `}
+                  />
+                  {file?.map((_openfile: any, index: number) => (
+                    <div
+                      css={css`
+                        height: 40px;
+                        border-bottom: 1px solid #f0f0f0;
+                        box-sizing: border-box;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      `}
+                    >
+                      <span
+                        css={css`
+                          font-size: 14px;
+                          line-height: 20px;
+                          color: rgba(0, 0, 0, 0.6);
+                        `}
+                      >
+                        {index + 1}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {currentStep === 5 ? (
+                <StyledTooltip
+                  open={true}
+                  arrow
+                  placement="top"
+                  title={
+                    stepTips?.filter(
+                      (tip: StepTipItem) => tip.index === currentStep
+                    )[0]?.tip
+                  }
+                >
+                  <div
+                    css={css`
+                      width: 100%;
+                      display: flex;
+                    `}
+                  >
+                    {rows?.map((result: any, resultIndex: number) => {
+                      return (
+                        <div
+                          css={css`
+                            display: flex;
+                            flex-direction: column;
+                            box-sizing: border-box;
+                            flex-grow: 1;
+                            border: ${resultIndex === confirmedColumnIndex
+                              ? "1px solid #FFC300"
+                              : "1px solid #f0f0f0"};
+                            background: ${resultIndex ===
+                              confirmedColumnIndex && "rgba(255, 195, 0, 0.1)"};
+                          `}
+                          onClick={() => {
+                            if (enter === "import") {
+                              onConfirmImport?.(resultIndex, rows[resultIndex]);
+                            }
+                          }}
+                        >
+                          {result?.map((resultItem: any, index: number) =>
+                            index === 0 ? (
+                              <div
+                                css={css`
+                                  height: 40px;
+                                  display: flex;
+                                  flex-direction: row;
+                                  align-items: center;
+                                  justify-content: space-between;
+                                  flex-grow: 1;
+                                  border-bottom: 1px solid #f0f0f0;
+                                  box-sizing: border-box;
+                                `}
+                              >
+                                <div
+                                  css={css`
+                                    padding-top: 10px;
+                                    padding-left: 12px;
+                                    padding-bottom: 10px;
+                                    flex-grow: 1;
+                                    display: flex;
+                                    align-items: center;
+                                  `}
+                                >
+                                  <span
+                                    css={css`
+                                      font-size: 14px;
+                                      font-weight: bold;
+                                      line-height: 20px;
+                                      ::before {
+                                        content: "";
+                                        display: inline-block;
+                                        height: 12px;
+                                        border: 3px solid #ffcc00;
+                                        box-sizing: border-box;
+                                        border-radius: 5px;
+                                        margin-right: 8px;
+                                      }
+                                    `}
+                                  >
+                                    {resultItem}
+                                  </span>
+                                  <Chip
+                                    label={chip === "text" && "文本"}
+                                    variant="outlined"
+                                    css={css`
+                                      width: 36px;
+                                      height: 20px;
+                                      border-radius: 4px;
+                                      background: #d6e2ff;
+                                      margin-left: 8px;
+                                      .MuiChip-label {
+                                        font-size: 10px;
+                                        font-weight: 500;
+                                        line-height: 12px;
+                                        color: #3662ec;
+                                        padding: 0px;
+                                      }
+                                    `}
+                                  />
+                                </div>
+                                <IconButton>
+                                  <img src={Icon_more} />
+                                </IconButton>
+                              </div>
+                            ) : (
+                              <div
+                                css={css`
+                                  height: 40px;
+                                  padding-top: 9px;
+                                  padding-left: 12px;
+                                  padding-bottom: 9px;
+                                  font-size: 12px;
+                                  line-height: 12px;
+                                  flex-grow: 1;
+                                  border-bottom: 1px solid #f0f0f0;
+                                  box-sizing: border-box;
+                                  display: flex;
+                                  align-items: center;
+                                  padding-left: 26px;
+                                `}
+                              >
+                                <span
+                                  css={css`
+                                    font-size: 14px;
+                                    line-height: 20px;
+                                    color: rgba(0, 0, 0, 0.6);
+                                  `}
+                                >
+                                  {resultItem}
+                                </span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </StyledTooltip>
+              ) : currentStep === 12 ? (
+                <StyledTooltip
+                  open={true}
+                  arrow
+                  placement="top"
+                  title={
+                    stepTips?.filter(
+                      (tip: StepTipItem) => tip.index === currentStep
+                    )[0]?.tip
+                  }
+                >
+                  <div
+                    css={css`
+                      width: 100%;
+                      display: flex;
+                    `}
+                  >
+                    {rows?.map((result: any, resultIndex: number) => {
+                      return (
+                        <div
+                          css={css`
+                            display: flex;
+                            flex-direction: column;
+                            box-sizing: border-box;
+                            flex-grow: 1;
+                            border: ${resultIndex === confirmedColumnIndex
+                              ? "1px solid #FFC300"
+                              : "1px solid #f0f0f0"};
+                            background: ${resultIndex ===
+                              confirmedColumnIndex && "rgba(255, 195, 0, 0.1)"};
+                          `}
+                          onClick={() => {
+                            if (enter === "import") {
+                              onConfirmImport?.(resultIndex, rows[resultIndex]);
+                            }
+                          }}
+                        >
+                          {result?.map((resultItem: any, index: number) =>
+                            index === 0 ? (
+                              <div
+                                css={css`
+                                  height: 40px;
+                                  display: flex;
+                                  flex-direction: row;
+                                  align-items: center;
+                                  justify-content: space-between;
+                                  flex-grow: 1;
+                                  border-bottom: 1px solid #f0f0f0;
+                                  box-sizing: border-box;
+                                `}
+                              >
+                                <div
+                                  css={css`
+                                    padding-top: 10px;
+                                    padding-left: 12px;
+                                    padding-bottom: 10px;
+                                    flex-grow: 1;
+                                    display: flex;
+                                    align-items: center;
+                                  `}
+                                >
+                                  <span
+                                    css={css`
+                                      font-size: 14px;
+                                      font-weight: bold;
+                                      line-height: 20px;
+                                      overflow: hidden;
+                                      text-overflow: ellipsis;
+                                      white-space: nowrap;
+                                      ::before {
+                                        content: "";
+                                        display: inline-block;
+                                        height: 12px;
+                                        border: 3px solid #ffcc00;
+                                        box-sizing: border-box;
+                                        border-radius: 5px;
+                                        margin-right: 8px;
+                                      }
+                                    `}
+                                  >
+                                    {resultItem}
+                                  </span>
+                                  <Chip
+                                    label={chip === "text" && "文本"}
+                                    variant="outlined"
+                                    css={css`
+                                      width: 36px;
+                                      height: 20px;
+                                      border-radius: 4px;
+                                      background: #d6e2ff;
+                                      margin-left: 8px;
+                                      .MuiChip-label {
+                                        font-size: 10px;
+                                        font-weight: 500;
+                                        line-height: 12px;
+                                        color: #3662ec;
+                                        padding: 0px;
+                                      }
+                                    `}
+                                  />
+                                </div>
+                                <IconButton>
+                                  <img src={Icon_more} />
+                                </IconButton>
+                              </div>
+                            ) : (
+                              <div
+                                css={css`
+                                  height: 40px;
+                                  padding-top: 9px;
+                                  padding-left: 12px;
+                                  padding-bottom: 9px;
+                                  font-size: 12px;
+                                  line-height: 12px;
+                                  flex-grow: 1;
+                                  border-bottom: 1px solid #f0f0f0;
+                                  box-sizing: border-box;
+                                  display: flex;
+                                  align-items: center;
+                                  padding-left: 26px;
+                                `}
+                              >
+                                <span
+                                  css={css`
+                                    font-size: 14px;
+                                    line-height: 20px;
+                                    color: rgba(0, 0, 0, 0.6);
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                  `}
+                                >
+                                  {resultItem}
+                                </span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </StyledTooltip>
+              ) : (
+                <div
+                  css={css`
+                    width: 100%;
+                    display: flex;
+                  `}
+                >
+                  {rows?.map((result: any, resultIndex: number) => {
+                    return (
+                      <div
+                        css={css`
+                          display: flex;
+                          flex-direction: column;
+                          box-sizing: border-box;
+                          flex-grow: 1;
+                          border: ${resultIndex === confirmedColumnIndex
+                            ? "1px solid #FFC300"
+                            : "1px solid #f0f0f0"};
+                          background: ${resultIndex === confirmedColumnIndex &&
+                          "rgba(255, 195, 0, 0.1)"};
+                        `}
+                        onClick={() => {
+                          if (enter === "import") {
+                            onConfirmImport?.(resultIndex, rows[resultIndex]);
+                          }
+                        }}
+                      >
+                        {result?.map((resultItem: any, index: number) =>
+                          index === 0 ? (
+                            <div
+                              css={css`
+                                height: 40px;
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                justify-content: space-between;
+                                flex-grow: 1;
+                                border-bottom: 1px solid #f0f0f0;
+                                box-sizing: border-box;
+                              `}
+                            >
+                              <div
+                                css={css`
+                                  padding-top: 10px;
+                                  padding-left: 12px;
+                                  padding-bottom: 10px;
+                                  flex-grow: 1;
+                                  display: flex;
+                                  align-items: center;
+                                `}
+                              >
+                                <span
+                                  css={css`
+                                    font-size: 14px;
+                                    font-weight: bold;
+                                    line-height: 20px;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    ::before {
+                                      content: "";
+                                      display: inline-block;
+                                      height: 12px;
+                                      border: 3px solid #ffcc00;
+                                      box-sizing: border-box;
+                                      border-radius: 5px;
+                                      margin-right: 8px;
+                                    }
+                                  `}
+                                >
+                                  {resultItem}
+                                </span>
+                                <Chip
+                                  label={chip === "text" && "文本"}
+                                  variant="outlined"
+                                  css={css`
+                                    width: 36px;
+                                    height: 20px;
+                                    border-radius: 4px;
+                                    background: #d6e2ff;
+                                    margin-left: 8px;
+                                    .MuiChip-label {
+                                      font-size: 10px;
+                                      font-weight: 500;
+                                      line-height: 12px;
+                                      color: #3662ec;
+                                      padding: 0px;
+                                    }
+                                  `}
+                                />
+                              </div>
+                              <IconButton>
+                                <img src={Icon_more} />
+                              </IconButton>
+                            </div>
+                          ) : (
+                            <div
+                              css={css`
+                                height: 40px;
+                                padding-top: 9px;
+                                padding-left: 12px;
+                                padding-bottom: 9px;
+                                font-size: 12px;
+                                line-height: 12px;
+                                flex-grow: 1;
+                                border-bottom: 1px solid #f0f0f0;
+                                box-sizing: border-box;
+                                display: flex;
+                                align-items: center;
+                                padding-left: 26px;
+                              `}
+                            >
+                              <span
+                                css={css`
+                                  font-size: 14px;
+                                  line-height: 20px;
+                                  color: rgba(0, 0, 0, 0.6);
+                                  overflow: hidden;
+                                  text-overflow: ellipsis;
+                                  white-space: nowrap;
+                                `}
+                              >
+                                {resultItem}
+                              </span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               <div
                 css={css`
                   width: 56px;
@@ -304,269 +997,124 @@ export default function PreviewTable(props: {
                   css={css`
                     width: 56px;
                     height: 40px;
-                    border: 1px solid #f0f0f0;
+                    border-bottom: 1px solid #f0f0f0;
                     box-sizing: border-box;
-                  `}
-                />
-                {file?.map((_openfile: any, index: number) => (
-                  <div
-                    css={css`
-                      height: 40px;
-                      border-bottom: 1px solid #f0f0f0;
-                      box-sizing: border-box;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                    `}
-                  >
-                    <span
-                      css={css`
-                        font-size: 14px;
-                        line-height: 20px;
-                        color: rgba(0, 0, 0, 0.6);
-                      `}
-                    >
-                      {index + 1}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {list?.map((result: any, resultIndex: number) => {
-              return (
-                <div
-                  css={css`
                     display: flex;
-                    flex-direction: column;
-                    box-sizing: border-box;
-                    flex-grow: 1;
-                    border: ${resultIndex === confirmedColumn
-                      ? "1px solid #FFC300"
-                      : "1px solid #f0f0f0"};
-                    background: ${resultIndex === confirmedColumn &&
-                    "rgba(255, 195, 0, 0.1)"};
+                    justify-content: center;
+                    align-items: center;
                   `}
-                  onClick={() => {
-                    if (enter === "import") {
-                      onConfirmImport?.(resultIndex, list[resultIndex]);
-                    }
-                  }}
                 >
-                  {result?.map((resultItem: any, index: number) =>
-                    index === 0 ? (
-                      <div
-                        css={css`
-                          height: 40px;
-                          display: flex;
-                          flex-direction: row;
-                          align-items: center;
-                          justify-content: space-between;
-                          flex-grow: 1;
-                          border-bottom: 1px solid #f0f0f0;
-                          box-sizing: border-box;
-                        `}
-                      >
-                        <div
-                          css={css`
-                            padding-top: 10px;
-                            padding-left: 12px;
-                            padding-bottom: 10px;
-                            flex-grow: 1;
-                            display: flex;
-                            align-items: center;
-                          `}
-                        >
-                          <span
-                            css={css`
-                              font-size: 14px;
-                              font-weight: bold;
-                              line-height: 20px;
-                              ::before {
-                                content: "";
-                                display: inline-block;
-                                height: 12px;
-                                border: 3px solid #ffcc00;
-                                box-sizing: border-box;
-                                border-radius: 5px;
-                                margin-right: 8px;
-                              }
-                            `}
-                          >
-                            {resultItem}
-                          </span>
-                          <Chip
-                            label={chip === "text" && "文本"}
-                            variant="outlined"
-                            css={css`
-                              width: 36px;
-                              height: 20px;
-                              border-radius: 4px;
-                              background: #d6e2ff;
-                              margin-left: 8px;
-                              .MuiChip-label {
-                                font-size: 10px;
-                                font-weight: 500;
-                                line-height: 12px;
-                                color: #3662ec;
-                                padding: 0px;
-                              }
-                            `}
-                          />
-                        </div>
-                        <IconButton>
-                          <img src={Icon_more} />
-                        </IconButton>
-                      </div>
-                    ) : (
-                      <div
-                        css={css`
-                          height: 40px;
-                          padding-top: 9px;
-                          padding-left: 12px;
-                          padding-bottom: 9px;
-                          font-size: 12px;
-                          line-height: 12px;
-                          flex-grow: 1;
-                          border-bottom: 1px solid #f0f0f0;
-                          box-sizing: border-box;
-                          display: flex;
-                          align-items: center;
-                          padding-left: 26px;
-                        `}
-                      >
-                        <span
-                          css={css`
-                            font-size: 14px;
-                            line-height: 20px;
-                            color: rgba(0, 0, 0, 0.6);
-                          `}
-                        >
-                          {resultItem}
-                        </span>
-                      </div>
-                    )
-                  )}
+                  <IconButton>
+                    <img src={Icon_addcolumns} />
+                  </IconButton>
                 </div>
-              );
-            })}
-            <div
-              css={css`
-                width: 56px;
-                border: 1px solid #f0f0f0;
-                box-sizing: border-box;
-              `}
-            >
-              <div
-                css={css`
-                  width: 56px;
-                  height: 40px;
-                  border-bottom: 1px solid #f0f0f0;
-                  box-sizing: border-box;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                `}
-              >
-                <IconButton>
-                  <img src={Icon_addcolumns} />
-                </IconButton>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        css={css`
-          margin-top: 8px;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: ${enter === "preview"
-            ? "space-between"
-            : "flex-end"};
-        `}
-      >
-        {enter === "preview" && (
-          <div
-            css={css`
-              margin-left: 20px;
-              font-size: 14px;
-              line-height: 24px;
-              color: #303030;
-            `}
-          >
-            <span>
-              共{list?.length}列，<span>{file?.length}</span>行
-            </span>
-          </div>
-        )}
         <div
           css={css`
-            margin-right: 16px;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: ${enter === "preview"
+              ? "space-between"
+              : "flex-end"};
           `}
         >
-          <Button
-            variant="contained"
+          {enter === "preview" && (
+            <div
+              css={css`
+                margin-left: 20px;
+                font-size: 14px;
+                line-height: 24px;
+                color: #303030;
+              `}
+            >
+              <span>
+                共{rows?.length}列，<span>{file?.length}</span>行
+              </span>
+            </div>
+          )}
+          <div
             css={css`
-              width: 60px;
-              height: 32px;
-              border-radius: 4px;
-              font-size: 14px;
-              line-height: 20px;
-              color: #151515;
-              background: #ffffff;
-              :hover {
+              margin-right: 16px;
+            `}
+          >
+            <Button
+              variant="contained"
+              css={css`
+                width: 60px;
+                height: 32px;
+                border-radius: 4px;
+                font-size: 14px;
+                line-height: 20px;
+                color: #151515;
                 background: #ffffff;
+                :hover {
+                  background: #ffffff;
+                }
+              `}
+              onClick={() => onClose?.()}
+            >
+              取消
+            </Button>
+            <Button
+              variant="contained"
+              disabled={
+                enter === "import"
+                  ? confirmedColumnIndex !== undefined
+                    ? false
+                    : true
+                  : false
               }
-            `}
-            onClick={() => onClose?.()}
-          >
-            取消
-          </Button>
-          <Button
-            variant="contained"
-            disabled={
-              enter === "import"
-                ? confirmedColumn !== undefined
-                  ? false
-                  : true
-                : false
-            }
-            css={css`
-              width: 60px;
-              height: 32px;
-              border-radius: 4px;
-              background-color: #ffcc00 !important;
-              font-size: 14px;
-              line-height: 20px;
-              color: #151515;
-              margin-left: 16px;
-              :hover {
-                background: #ffcc00;
-              }
-            `}
-            onClick={() => {
-              if (enter === "import") {
-                onImportConfirmedData?.();
-                onClose?.();
-              }
-              if (enter === "preview") {
-                onLoadExcel();
-              }
-            }}
-          >
-            {enter === "import" ? "导入" : "下载"}
-          </Button>
+              css={css`
+                width: 60px;
+                height: 32px;
+                border-radius: 4px;
+                background-color: #ffcc00 !important;
+                font-size: 14px;
+                line-height: 20px;
+                color: #151515;
+                margin-left: 16px;
+                :hover {
+                  background: #ffcc00;
+                }
+              `}
+              onClick={() => {
+                if (enter === "import") {
+                  onImportConfirmedData?.();
+                  onClose?.();
+                }
+                if (enter === "preview") {
+                  onLoadExcel();
+                }
+              }}
+            >
+              {enter === "import" ? "导入" : "下载"}
+            </Button>
+          </div>
         </div>
-      </div>
+      </Dialog>
 
-      <div
-        css={css`
-          display: ${transcriptionOpen ? "flex" : "none"};
-        `}
-      >
-        <Typography>The content of the Popover.</Typography>
-      </div>
-    </Dialog>
+      {openPopover && (
+        <FormDataPopover
+          value={selectValue}
+          featureValue={feature}
+          currentStep={currentStep}
+          stepTips={stepTips}
+          styled={styled}
+          type={functionType}
+          checked={checked}
+          handleChecked={onChecked}
+          onChange={handleChangeColumns}
+          onChangeFunction={handleChangeFunction}
+          handleToNextStepTip={handleToNextStepTip}
+          handleClose={onPopoverCancel}
+          handleConfirm={onPopoverConfirm}
+        />
+      )}
+    </div>
   );
 }

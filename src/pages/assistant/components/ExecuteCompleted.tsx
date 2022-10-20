@@ -192,7 +192,7 @@ export default function ExecuteCompleted(props: {
             flex-grow: 1;
           `}
         >
-          {["列表标题", "列表内容"].map((item: string) => (
+          {["标题列表", "列表内容"].map((item: string) => (
             <div
               css={css`
                 height: 32px;
@@ -258,7 +258,7 @@ export default function ExecuteCompleted(props: {
                     line-height: 14px;
                   `}
                 >
-                  {listItem?.title}
+                  {listItem?.["标题列表"]}
                 </span>
               </div>
               <div
@@ -277,7 +277,7 @@ export default function ExecuteCompleted(props: {
                     line-height: 14px;
                   `}
                 >
-                  {listItem?.description}
+                  {listItem?.["列表内容"]}
                 </span>
               </div>
             </div>
