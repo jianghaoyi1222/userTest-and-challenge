@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { StepTipItem, StyledTooltip } from "../dataCollection";
 
 export default function FormDataPopover(props: {

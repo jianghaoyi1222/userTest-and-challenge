@@ -22,6 +22,12 @@ export default function BeeAssistant(props: {
   isDesignate?: boolean;
   //同步文本
   value?: any;
+  //显示搜索
+  isShow?: boolean;
+  //鼠标悬浮
+  isMouseOver?: boolean;
+  //单击
+  isMouseDown?: boolean;
   //显示或关闭助手
   handleShowAssistant?: () => void;
   //下一步
@@ -42,6 +48,9 @@ export default function BeeAssistant(props: {
     stepTips,
     isDesignate,
     value,
+    isShow,
+    isMouseOver,
+    isMouseDown,
     handleShowAssistant,
     handleToNextStepTip,
     handleStart,
@@ -150,9 +159,21 @@ export default function BeeAssistant(props: {
                       height: 400px;
                     `
                   : batchCompleted
-                  ? css`
-                      height: 220px;
-                    `
+                  ? isShow
+                    ? isMouseDown
+                      ? css`
+                          height: 220px;
+                        `
+                      : isMouseOver
+                      ? css`
+                          height: 224px;
+                        `
+                      : css`
+                          height: 220px;
+                        `
+                    : css`
+                        height: 220px;
+                      `
                   : css`
                       height: 294px;
                     `
@@ -350,7 +371,52 @@ export default function BeeAssistant(props: {
                     </span>
                   </div>
                 ) : batchCompleted ? (
-                  <StyledStepContent step={1} preStep={"批量输入了文本"} />
+                  isShow ? (
+                    isMouseDown ? (
+                      <StyledStepContent step={3} preStep={"抓取了数据"} />
+                    ) : isMouseOver ? (
+                      <div
+                        css={css`
+                          width: 308px;
+                          height: 92px;
+                          border-radius: 4px;
+                          background: #2c2c2c;
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: center;
+                          align-items: center;
+                        `}
+                      >
+                        <span
+                          css={css`
+                            font-size: 16px;
+                            font-weight: bold;
+                            line-height: 24px;
+                            color: #ffffff;
+                          `}
+                        >
+                          已进入采集模式
+                        </span>
+                        <span
+                          css={css`
+                            font-size: 14px;
+                            line-height: 20px;
+                            color: #ffffff;
+                            margin-top: 16px;
+                          `}
+                        >
+                          按住“Ctrl”后“点击”要采集的数据
+                        </span>
+                      </div>
+                    ) : (
+                      <StyledStepContent
+                        step={2}
+                        preStep={"点击了“搜索一下”按钮"}
+                      />
+                    )
+                  ) : (
+                    <StyledStepContent step={1} preStep={"批量输入了文本"} />
+                  )
                 ) : (
                   //选定搜索
                   <div

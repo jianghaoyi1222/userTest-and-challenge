@@ -1,8 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import { Button, Divider, Skeleton, TextField } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import CollectData from "../assistant/CollectData";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import Panel from "../panel/Panel";
 import Icon_home from "src/assets/icon_home.png";
 import { StepTipItem, StyledTooltip } from "../dataCollection";
@@ -12,6 +11,21 @@ import BeeAssistant from "../assistant/BeeAssistant";
 import CountDown from "../assistant/components/Countdown";
 import StyledSkeleton from "./components/StyledSkeleton";
 import { CurrentModeItem } from "../assistant/BatchClicks";
+import Icon_book1 from "src/assets/batchSearch/icon_book1.png";
+import Icon_book2 from "src/assets/batchSearch/icon_book2.png";
+import Icon_book3 from "src/assets/batchSearch/icon_book3.png";
+import Icon_book4 from "src/assets/batchSearch/icon_book4.png";
+import Icon_book5 from "src/assets/batchSearch/icon_book5.png";
+import BatchDataTable from "./components/BatchDataTable";
+
+export interface BooklistItem {
+  id: number;
+  img: string;
+  name: string;
+  author: string;
+  type: string;
+  description: string;
+}
 
 export default function BatchSearch() {
   const [startChanllenge, setStartChanllenge] = useState(false);
@@ -21,6 +35,8 @@ export default function BatchSearch() {
   const [showPanel, setShowPanel] = useState(true);
 
   const [currentMode, setCurrentMode] = useState<CurrentModeItem>("start");
+
+  const [isShow, setIsShow] = useState(false);
 
   const [isMonitorCtrl, setIsMonitorCtrl] = useState(false);
   const [isMouseOver, setIsMouseOver] = useState(false);
@@ -38,6 +54,9 @@ export default function BatchSearch() {
   const [isHighlight, setIsHighlight] = useState(false);
 
   const [isBatch, setIsBatch] = useState(false);
+  const [batchlist, setBatchlist] = useState<any[]>([]);
+
+  const [isShowTip, setIsShowTip] = useState(false);
 
   const stepTips: StepTipItem[] = useMemo(
     () => [
@@ -85,6 +104,56 @@ export default function BatchSearch() {
     []
   );
 
+  const booklist: BooklistItem[] = useMemo(
+    () => [
+      {
+        id: 1,
+        img: Icon_book1,
+        name: "万古神帝",
+        author: "飞天鱼",
+        type: "玄幻",
+        description:
+          "八百年前，明帝之子张若尘，被他的未婚妻池瑶公主杀死，一代天骄，就此陨落。 八百年后，张若尘重新活了过来，却发现曾经杀死他的未婚…",
+      },
+      {
+        id: 2,
+        img: Icon_book2,
+        name: "我有一剑",
+        author: "青鸾峰上",
+        type: "玄幻",
+        description: "我有一剑，出鞘即无敌！",
+      },
+      {
+        id: 3,
+        img: Icon_book3,
+        name: "万相之王",
+        author: "天蚕土豆",
+        type: "玄幻",
+        description:
+          "天地间，有万相。而我李洛，终将成为这万相之王。继《斗破苍穹》《武动乾坤》《大主宰》《元尊》之后，天蚕土豆又一部玄幻力作。",
+      },
+      {
+        id: 4,
+        img: Icon_book4,
+        name: "剑来",
+        author: "烽火戏诸侯",
+        type: "玄幻",
+        description:
+          "大千世界，无奇不有。我陈平安，唯有一剑，可搬山，倒海，降妖，镇魔，敕神，摘星，断…",
+      },
+      {
+        id: 5,
+        img: Icon_book5,
+        name: "深空彼岸",
+        author: "辰东",
+        type: "玄幻",
+        description:
+          "浩瀚的宇宙中，一片星系的生灭，也不过是刹那的斑驳流光。仰望星空，总有种结局已注定的伤感，千百年后你我在哪里？家国，文明火光…",
+      },
+    ],
+    []
+  );
+
   const onToNextStepTip = useCallback(() => {
     setCurrentStep(currentStep + 1);
   }, [currentStep]);
@@ -121,6 +190,7 @@ export default function BatchSearch() {
     if (isMonitorCtrl) {
       setIsMouseDown(true);
       setIsMouseOver(false);
+      setIsShowTip(false);
       onToNextStepTip();
     } else {
       return;
@@ -167,6 +237,7 @@ export default function BatchSearch() {
     (value: string, batch: boolean, list: string[]) => {
       setTextValue(value);
       setIsBatch(batch);
+      setBatchlist(list);
     },
     []
   );
@@ -336,6 +407,11 @@ export default function BatchSearch() {
                         background: #00b578;
                       }
                     `}
+                    onClick={() => {
+                      setIsShow(true);
+                      setIsShowTip(true);
+                      onToNextStepTip();
+                    }}
                   >
                     搜索一下
                   </Button>
@@ -366,27 +442,364 @@ export default function BatchSearch() {
                 position: absolute;
                 bottom: 0;
                 background: #ffffff;
-                display: flex;
-                flex-direction: column;
-                padding-left: 24px;
-                padding-top: 24px;
               `}
             >
-              <Skeleton
-                variant="rectangular"
-                animation={false}
-                width={300}
-                height={22}
-                css={css`
-                  border-radius: 4px;
-                `}
-              />
-              <StyledSkeleton />
-              <StyledSkeleton />
-              <StyledSkeleton />
-              <StyledSkeleton />
+              <div
+                css={[
+                  css`
+                    display: flex;
+                    flex-direction: column;
+                    padding-left: 24px;
+                    padding-top: 24px;
+                    width: 1000px;
+                    height: 580px;
+                  `,
+                  currentStep === 8 &&
+                    isMouseOver &&
+                    css`
+                      background: rgba(255, 195, 0, 0.1);
+                      border: 1px solid #ffc300;
+                    `,
+
+                  isMouseDown &&
+                    css`
+                      background: rgba(255, 195, 0, 0.1);
+                      border: 1px solid #ffc300;
+                    `,
+                ]}
+                onMouseOver={onIsMouseOver}
+                onMouseOut={() => setIsMouseOver(false)}
+                onMouseDown={onIsMouseDown}
+              >
+                {isShow ? (
+                  currentStep === 8 ? (
+                    <StyledTooltip
+                      open={true}
+                      arrow
+                      placement="top"
+                      title={
+                        stepTips?.filter(
+                          (tip: StepTipItem) => tip.index === currentStep
+                        )[0]?.tip
+                      }
+                    >
+                      <div>
+                        {booklist?.map((item: BooklistItem) => (
+                          <div
+                            css={css`
+                              display: flex;
+                              flex-direction: row;
+                              margin-bottom: 16px;
+                            `}
+                          >
+                            <img
+                              src={item.img}
+                              css={css`
+                                width: 80px;
+                                height: 96px;
+                                margin-right: 16px;
+                              `}
+                            />
+                            <div
+                              css={css`
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: space-evenly;
+                              `}
+                            >
+                              <span
+                                css={css`
+                                  font-size: 18px;
+                                  font-weight: bold;
+                                  line-height: 24px;
+                                  color: #3d3d3d;
+                                `}
+                              >
+                                {item.name}
+                              </span>
+                              <span
+                                css={css`
+                                  font-size: 14px;
+                                  line-height: 22px;
+                                  color: #333333;
+                                `}
+                              >
+                                {item.author}
+                              </span>
+                              <span
+                                css={css`
+                                  font-size: 14px;
+                                  line-height: 22px;
+                                  color: #333333;
+                                `}
+                              >
+                                {item.type}
+                              </span>
+                              <span
+                                css={css`
+                                  font-size: 12px;
+                                  font-weight: 350;
+                                  line-height: 12px;
+                                  color: #666666;
+                                `}
+                              >
+                                {item.description}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </StyledTooltip>
+                  ) : (
+                    <div>
+                      {booklist?.map((item: BooklistItem) => (
+                        <div
+                          css={css`
+                            display: flex;
+                            flex-direction: row;
+                            margin-bottom: 16px;
+                          `}
+                        >
+                          <img
+                            src={item.img}
+                            css={css`
+                              width: 80px;
+                              height: 96px;
+                              margin-right: 16px;
+                            `}
+                          />
+                          <div
+                            css={css`
+                              display: flex;
+                              flex-direction: column;
+                              justify-content: space-evenly;
+                            `}
+                          >
+                            <span
+                              css={css`
+                                font-size: 18px;
+                                font-weight: bold;
+                                line-height: 24px;
+                                color: #3d3d3d;
+                              `}
+                            >
+                              {item.name}
+                            </span>
+                            <span
+                              css={css`
+                                font-size: 14px;
+                                line-height: 22px;
+                                color: #333333;
+                              `}
+                            >
+                              {item.author}
+                            </span>
+                            <span
+                              css={css`
+                                font-size: 14px;
+                                line-height: 22px;
+                                color: #333333;
+                              `}
+                            >
+                              {item.type}
+                            </span>
+                            <span
+                              css={css`
+                                font-size: 12px;
+                                font-weight: 350;
+                                line-height: 12px;
+                                color: #666666;
+                              `}
+                            >
+                              {item.description}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  <Fragment>
+                    <Skeleton
+                      variant="rectangular"
+                      animation={false}
+                      width={300}
+                      height={22}
+                      css={css`
+                        border-radius: 4px;
+                      `}
+                    />
+                    <StyledSkeleton />
+                    <StyledSkeleton />
+                    <StyledSkeleton />
+                    <StyledSkeleton />
+                  </Fragment>
+                )}
+              </div>
             </div>
           </div>
+
+          {isShowTip && !isMouseOver && (
+            <div
+              css={css`
+                width: 640px;
+                height: 120px;
+                border-radius: 8px;
+                background: rgba(255, 195, 0, 0.62);
+                position: absolute;
+                bottom: 302px;
+                left: 328px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+              `}
+            >
+              <span
+                css={css`
+                  font-size: 34px;
+                  font-weight: 900;
+                  line-height: 34px;
+                  color: #8a38f5;
+                `}
+              >
+                请按下
+              </span>
+              <div
+                css={css`
+                  width: 95px;
+                  height: 60px;
+                  border-radius: 10px;
+                  background: #ffffff;
+                  box-sizing: border-box;
+                  border: 1px solid rgba(0, 0, 0, 0.08);
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                `}
+              >
+                <span
+                  css={css`
+                    font-size: 34px;
+                    font-weight: 900;
+                    line-height: 34px;
+                    color: #3d3d3d;
+                  `}
+                >
+                  Ctrl
+                </span>
+              </div>
+              <span
+                css={css`
+                  font-size: 34px;
+                  font-weight: 900;
+                  line-height: 34px;
+                  color: #8a38f5;
+                `}
+              >
+                同时
+              </span>
+              <div
+                css={css`
+                  width: 229px;
+                  height: 60px;
+                  border-radius: 10px;
+                  background: #ffffff;
+                  box-sizing: border-box;
+                  border: 1px solid rgba(0, 0, 0, 0.08);
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                `}
+              >
+                <span
+                  css={css`
+                    font-size: 34px;
+                    font-weight: 900;
+                    line-height: 34px;
+                    color: #3d3d3d;
+                  `}
+                >
+                  单击鼠标左键
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div
+            css={css`
+              display: ${currentStep === 8 && isMouseOver ? "flex" : "none"};
+              position: absolute;
+              bottom: 580px;
+              left: 60px;
+              z-index: 10;
+              width: 271px;
+              height: 32px;
+              border-radius: 2px;
+              background: #1e293e;
+              color: #ffffff;
+              font-size: 14px;
+            `}
+          >
+            <div
+              css={css`
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+              `}
+            >
+              <span>表格</span>
+              <Divider
+                orientation="vertical"
+                variant="middle"
+                flexItem
+                css={css`
+                  border-radius: 4px;
+                  background: rgba(255, 255, 255, 0.6);
+                  margin: 8px 8px;
+                `}
+              />
+              <span>按住“Ctrl+单击”获取数据</span>
+            </div>
+          </div>
+
+          {currentStep === 9 ? (
+            <StyledTooltip
+              open={true}
+              arrow
+              placement="top"
+              title={
+                stepTips?.filter(
+                  (tip: StepTipItem) => tip.index === currentStep
+                )[0]?.tip
+              }
+            >
+              <div
+                css={css`
+                  position: absolute;
+                  bottom: 0px;
+                  left: 40px;
+                  z-index: 10;
+                `}
+              >
+                <BatchDataTable datalist={booklist} show={isMouseDown} />
+              </div>
+            </StyledTooltip>
+          ) : (
+            <div
+              css={css`
+                position: absolute;
+                bottom: 0px;
+                left: 40px;
+                z-index: 10;
+              `}
+            >
+              <BatchDataTable datalist={booklist} show={isMouseDown} />
+            </div>
+          )}
 
           <Panel
             type="batchSearch"
@@ -404,6 +817,9 @@ export default function BatchSearch() {
             mode={currentMode}
             isDesignate={isDesignate}
             value={textValue}
+            isShow={isShow}
+            isMouseOver={isMouseOver}
+            isMouseDown={isMouseDown}
             handleShowAssistant={onShowOrCloseAssistant}
             handleStart={onhandleStart}
             handleToNextStepTip={onToNextStepTip}
