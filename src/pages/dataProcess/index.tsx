@@ -158,12 +158,10 @@ export default function DataProcess() {
 
   const onToNextStepTip = useCallback(() => {
     setCurrentStep(currentStep + 1);
-    console.log(currentStep);
   }, [currentStep]);
 
   const onToPreStepTip = useCallback((value: number) => {
     setCurrentStep(value);
-    console.log(currentStep);
   }, []);
 
   const onOpenTable = useCallback(() => {

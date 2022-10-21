@@ -4,6 +4,7 @@ const UserTest = React.lazy(() => import("./pages/userTest"));
 const DataCollection = React.lazy(() => import("./pages/dataCollection"));
 const DataProcess = React.lazy(() => import("./pages/dataProcess"));
 const Panel = React.lazy(() => import("./pages/panel/Panel"));
+const BatchSearch = React.lazy(() => import("./pages/batchSearch"));
 
 export function App() {
   return (
@@ -30,6 +31,14 @@ export function App() {
           element={
             <Suspense fallback={<></>}>
               <DataProcess />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/batchSearch"
+          element={
+            <Suspense fallback={<></>}>
+              <BatchSearch />
             </Suspense>
           }
         />

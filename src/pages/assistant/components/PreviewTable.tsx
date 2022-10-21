@@ -92,7 +92,7 @@ export default function PreviewTable(props: {
       timer = setTimeout(() => setShowCircle(true), 500);
     }
     if (currentStep === 5) {
-      timer = setTimeout(() => handleToNextStepTip?.(), 500);
+      timer = setTimeout(() => handleToNextStepTip?.(), 800);
     }
     return () => {
       clearTimeout(timer);
@@ -196,7 +196,6 @@ export default function PreviewTable(props: {
                 age--;
               }
               ageList.push(age);
-              console.log("age", age);
             });
             list.push(["年龄"].concat(ageList));
           } else {
@@ -205,7 +204,6 @@ export default function PreviewTable(props: {
         });
       }
       setRows(list);
-      console.log("list", list);
       handleToNextStepTip?.();
     },
     [rows, selectValue, file, handleToNextStepTip]
@@ -253,7 +251,6 @@ export default function PreviewTable(props: {
       const rearlist = rows.slice(confirmedColumnIndex - 1, length);
       const row = list.concat(rearlist);
       setRows(row);
-      console.log("rowlist", row);
     }
   }, [checked, originalRows, file]);
 

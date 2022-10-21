@@ -21,6 +21,8 @@ export default function Panel(props: {
   stepTips?: StepTipItem[];
   currentStep?: number;
 
+  type?: string;
+
   handleBatch?: (event: any, value: boolean) => void;
   handleClose?: () => void;
   handleGainExistingData?: (data: DataItem[]) => void;
@@ -39,6 +41,8 @@ export default function Panel(props: {
 
     stepTips,
     currentStep,
+
+    type = "dataCollection",
 
     handleBatch,
     handleGainExistingData,
@@ -230,6 +234,7 @@ export default function Panel(props: {
 
           {activeItem === "flow" && (
             <FlowPanel
+              type={type}
               flowSource={flowlist}
               handleBatch={handleBatch}
               stepTips={stepTips}

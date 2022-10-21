@@ -20,6 +20,8 @@ export default function FlowPanel(props: {
   stepTips?: StepTipItem[];
   currentStep?: number;
 
+  type?: string;
+
   handleBatch?: (event: any, value: boolean) => void;
 
   handleClose?: () => void;
@@ -31,6 +33,7 @@ export default function FlowPanel(props: {
     flowSource,
     stepTips,
     currentStep,
+    type,
     handleBatch,
     handleClose,
     handleToNextStepTip,
@@ -63,16 +66,27 @@ export default function FlowPanel(props: {
     }
   `;
 
-  const onBatch = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    handleBatch?.(event.currentTarget, false);
-  }, []);
+  const onBatch = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      handleBatch?.(event.currentTarget, false);
+      handleClose?.();
+      handleToNextStepTip?.();
+      handleShowOrCloseAssistant?.();
+    },
+    [handleClose, handleBatch, handleToNextStepTip, handleShowOrCloseAssistant]
+  );
 
   const onCollectData = useCallback(() => {
     handleToNextStepTip?.();
     handleClose?.();
     handleShowOrCloseAssistant?.();
     handleShowTooltip?.();
-  }, [handleToNextStepTip, handleShowOrCloseAssistant, handleClose]);
+  }, [
+    handleToNextStepTip,
+    handleShowOrCloseAssistant,
+    handleClose,
+    handleShowTooltip,
+  ]);
 
   return (
     <div
@@ -247,11 +261,28 @@ export default function FlowPanel(props: {
               margin-top: 60px;
             `}
           >
-            <Button css={autoButtonCss} onClick={onBatch}>
-              批量点击
-            </Button>
+            {type === "batchSearch" && currentStep === 1 ? (
+              <StyledTooltip
+                arrow
+                placement="top"
+                open={true}
+                title={
+                  stepTips?.filter(
+                    (tip: StepTipItem) => tip.index === currentStep
+                  )[0]?.tip
+                }
+              >
+                <Button css={autoButtonCss} onClick={onBatch}>
+                  批量点击
+                </Button>
+              </StyledTooltip>
+            ) : (
+              <Button css={autoButtonCss} onClick={onBatch}>
+                批量点击
+              </Button>
+            )}
             <Button css={autoButtonCss}>循环操作</Button>
-            {currentStep === 1 ? (
+            {type === "dataCollection" && currentStep === 1 ? (
               <StyledTooltip
                 arrow
                 placement="top"

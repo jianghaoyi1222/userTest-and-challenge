@@ -82,10 +82,6 @@ export default function FormDataPopover(props: {
     handleConfirm?.();
   }, [handleToNextStepTip, handleConfirm]);
 
-  useEffect(() => {
-    console.log("feature", type, featureValue);
-  }, [featureValue]);
-
   return (
     <div
       css={css`
