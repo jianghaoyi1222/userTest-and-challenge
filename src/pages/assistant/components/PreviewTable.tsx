@@ -25,6 +25,7 @@ import { dataConversionUtil } from "src/utils/excel";
 import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
 import FormDataPopover from "src/pages/dataProcess/FormDataPopover";
 import { pinyin } from "pinyin-pro";
+import StyledAnimation from "src/components/StyledAnimation";
 
 export type EnterType = "import" | "preview";
 
@@ -76,8 +77,6 @@ export default function PreviewTable(props: {
   const [originalRows, setOriginalRows] = useState<any[]>([]);
   const [headlist, setHeadList] = useState<any[]>([]);
 
-  const [showCircle, setShowCircle] = useState(false);
-
   const [styled, setStyled] = useState<{
     right: string;
     bottom: string;
@@ -86,12 +85,11 @@ export default function PreviewTable(props: {
 
   const [checked, setChecked] = useState(false);
 
+  const [isFocused, setIsFocused] = useState(false);
+
   useEffect(() => {
     let timer: any = null;
-    if (currentStep === 2) {
-      timer = setTimeout(() => setShowCircle(true), 500);
-    }
-    if (currentStep === 5) {
+    if (currentStep === 4) {
       timer = setTimeout(() => handleToNextStepTip?.(), 800);
     }
     return () => {
@@ -132,14 +130,46 @@ export default function PreviewTable(props: {
   const onLoadExcel = useCallback(() => {
     const tableHeader = headlist;
     const dataList: any[] = [];
-    file?.map((item: any) => {
-      dataList.push(Object.values(item));
+    rows?.map((row: any) => {
+      console.log("rows", rows, file);
+      const title = row.slice(0, 1);
+      row
+        .slice(1, row.length)
+        .map((item: any) => dataList.push({ [title]: item }));
     });
-    dataConversionUtil["dataToExcel"](name, tableHeader, dataList);
-  }, [name, dataConversionUtil, file, headlist]);
+
+    const length = file?.length as number;
+
+    const data: any[] = [];
+
+    for (let i = 0; i < length; i++) {
+      for (let t = i; t < dataList.length; t = t + length) {
+        data.push(dataList[t]);
+      }
+    }
+    let start = 0;
+    let end = rows.length as number;
+    const list = [];
+    const row = Math.ceil(data.length / rows.length) as number;
+    for (let i = 0; i < row; i++) {
+      const rowList = data.slice(start, end);
+      const source = {};
+      rowList.map((row: any) => {
+        Object.assign(source, row);
+      });
+      list.push(source);
+      start = start + rows.length;
+      end = end + rows.length;
+    }
+    const dataSource: any[] = [];
+    list.map((item: any) => {
+      dataSource.push(Object.values(item));
+    });
+    dataConversionUtil["dataToExcel"](name, tableHeader, dataSource);
+  }, [name, dataConversionUtil, rows, headlist]);
 
   const onTranscription = useCallback(() => {
-    if (currentStep === 2) {
+    if (currentStep === 1) {
       setOpenPopover(true);
       handleToNextStepTip?.();
     }
@@ -198,11 +228,13 @@ export default function PreviewTable(props: {
               ageList.push(age);
             });
             list.push(["年龄"].concat(ageList));
+            headlist.splice(3, 0, "年龄");
           } else {
             list.push(selected);
           }
         });
       }
+
       setRows(list);
       handleToNextStepTip?.();
     },
@@ -211,8 +243,8 @@ export default function PreviewTable(props: {
 
   const onPopoverCancel = useCallback(() => {
     setRows(originalRows);
-    functionType === "pinyin" && handleToPreStepTip?.(3);
-    functionType === "cardID" && handleToPreStepTip?.(8);
+    functionType === "pinyin" && handleToPreStepTip?.(2);
+    functionType === "cardID" && handleToPreStepTip?.(7);
     setSelectValue(undefined);
     setFeature(undefined);
     setConfirmedColumnIndex(undefined);
@@ -220,8 +252,8 @@ export default function PreviewTable(props: {
 
   const onPopoverConfirm = useCallback(() => {
     setOpenPopover(false);
-    setShowCircle(false);
-    if (currentStep !== 11 && currentStep !== 12) {
+    setIsFocused(false);
+    if (currentStep !== 10 && currentStep !== 11) {
       setConfirmedColumnIndex(undefined);
     }
     setSelectValue(undefined);
@@ -238,10 +270,14 @@ export default function PreviewTable(props: {
   const onChecked = useCallback(() => {
     setChecked(!checked);
     handleToNextStepTip?.();
-    if (currentStep === 10) {
+    if (currentStep === 9) {
       confirmedColumnIndex && setConfirmedColumnIndex(confirmedColumnIndex + 1);
     }
   }, [handleToNextStepTip, checked, confirmedColumnIndex]);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(!isFocused);
+  }, [isFocused]);
 
   useEffect(() => {
     const length = file && file.length + 1;
@@ -330,7 +366,7 @@ export default function PreviewTable(props: {
             />
           </IconButton>
         </div>
-        {currentStep === 2 ? (
+        {currentStep === 1 ? (
           <StyledTooltip
             open={true}
             arrow
@@ -391,14 +427,7 @@ export default function PreviewTable(props: {
                 <img src={Icon_moreoperation} />
               </IconButton>
               <Divider orientation="vertical" variant="middle" flexItem />
-              <IconButton
-                onClick={onTranscription}
-                css={css`
-                  border: 1px solid ${showCircle ? "#486ee5" : "transparent"};
-                  border-radius: 100%;
-                  box-sizing: border-box;
-                `}
-              >
+              <IconButton onClick={onTranscription}>
                 <img src={Icon_transcription} />
               </IconButton>
               <IconButton>
@@ -457,7 +486,7 @@ export default function PreviewTable(props: {
               <img src={Icon_deleterows} />
             </IconButton>
             <Divider orientation="vertical" variant="middle" flexItem />
-            {currentStep === 7 ? (
+            {currentStep === 6 ? (
               <StyledTooltip
                 open={true}
                 arrow
@@ -482,12 +511,7 @@ export default function PreviewTable(props: {
             </IconButton>
             <Divider orientation="vertical" variant="middle" flexItem />
             <IconButton
-              onClick={onTranscription}
-              css={css`
-                border: 1px solid ${showCircle ? "#486ee5" : "transparent"};
-                border-radius: 100%;
-                box-sizing: border-box;
-              `}
+            // onClick={onTranscription}
             >
               <img src={Icon_transcription} />
             </IconButton>
@@ -550,6 +574,7 @@ export default function PreviewTable(props: {
                   />
                   {file?.map((_openfile: any, index: number) => (
                     <div
+                      key={index}
                       css={css`
                         height: 40px;
                         border-bottom: 1px solid #f0f0f0;
@@ -572,7 +597,7 @@ export default function PreviewTable(props: {
                   ))}
                 </div>
               </div>
-              {currentStep === 5 ? (
+              {currentStep === 4 ? (
                 <StyledTooltip
                   open={true}
                   arrow
@@ -592,6 +617,7 @@ export default function PreviewTable(props: {
                     {rows?.map((result: any, resultIndex: number) => {
                       return (
                         <div
+                          key={resultIndex}
                           css={css`
                             display: flex;
                             flex-direction: column;
@@ -708,7 +734,7 @@ export default function PreviewTable(props: {
                     })}
                   </div>
                 </StyledTooltip>
-              ) : currentStep === 12 ? (
+              ) : currentStep === 11 ? (
                 <StyledTooltip
                   open={true}
                   arrow
@@ -1104,6 +1130,7 @@ export default function PreviewTable(props: {
           styled={styled}
           type={functionType}
           checked={checked}
+          handleFocus={handleFocus}
           handleChecked={onChecked}
           onChange={handleChangeColumns}
           onChangeFunction={handleChangeFunction}
@@ -1111,6 +1138,97 @@ export default function PreviewTable(props: {
           handleClose={onPopoverCancel}
           handleConfirm={onPopoverConfirm}
         />
+      )}
+      {currentStep === 1 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 610px;
+            right: 368px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 5 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 330px;
+            right: 178px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 6 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 610px;
+            right: 510px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 9 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 380px;
+            right: 503px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 10 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 330px;
+            right: 310px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 2 && openPopover && isFocused && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 475px;
+            right: 350px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 7 && openPopover && isFocused && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 365px;
+            right: 480px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
       )}
     </div>
   );

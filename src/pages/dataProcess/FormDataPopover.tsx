@@ -26,6 +26,7 @@ export default function FormDataPopover(props: {
   handleConfirm?: () => void;
   handleClose?: () => void;
   handleChecked?: () => void;
+  handleFocus?: () => void;
 }) {
   const {
     value,
@@ -41,6 +42,7 @@ export default function FormDataPopover(props: {
     handleConfirm,
     handleClose,
     handleChecked,
+    handleFocus,
   } = props;
 
   const columns = useMemo(
@@ -103,7 +105,7 @@ export default function FormDataPopover(props: {
       `}
     >
       {type === "pinyin" &&
-        (currentStep === 3 ? (
+        (currentStep === 2 ? (
           <StyledTooltip
             open={true}
             arrow
@@ -121,6 +123,8 @@ export default function FormDataPopover(props: {
               value={value}
               placeholder="请选择"
               onChange={onhandleChange}
+              onFocus={handleFocus}
+              onBlur={handleFocus}
               css={css`
                 width: 240px;
                 .MuiOutlinedInput-root {
@@ -176,7 +180,7 @@ export default function FormDataPopover(props: {
           </TextField>
         ))}
       {type === "pinyin" &&
-        (currentStep === 4 ? (
+        (currentStep === 3 ? (
           <StyledTooltip
             open={true}
             arrow
@@ -242,7 +246,7 @@ export default function FormDataPopover(props: {
         ))}
 
       {type === "cardID" &&
-        (currentStep === 8 ? (
+        (currentStep === 7 ? (
           <StyledTooltip
             open={true}
             arrow
@@ -259,6 +263,8 @@ export default function FormDataPopover(props: {
               select
               value={value}
               placeholder="请选择"
+              onFocus={handleFocus}
+              onBlur={handleFocus}
               onChange={onhandleChange}
               css={css`
                 width: 240px;
@@ -315,7 +321,7 @@ export default function FormDataPopover(props: {
           </TextField>
         ))}
       {type === "cardID" &&
-        (currentStep === 9 ? (
+        (currentStep === 8 ? (
           <StyledTooltip
             open={true}
             arrow
@@ -386,7 +392,7 @@ export default function FormDataPopover(props: {
           width: 240px;
         `}
       >
-        {currentStep === 10 ? (
+        {currentStep === 9 ? (
           <StyledTooltip
             open={true}
             arrow
@@ -486,7 +492,7 @@ export default function FormDataPopover(props: {
         >
           取消
         </Button>
-        {currentStep === 6 ? (
+        {currentStep === 5 ? (
           <StyledTooltip
             open={true}
             arrow
@@ -512,7 +518,7 @@ export default function FormDataPopover(props: {
               确定
             </Button>
           </StyledTooltip>
-        ) : currentStep === 11 ? (
+        ) : currentStep === 10 ? (
           <StyledTooltip
             open={true}
             arrow

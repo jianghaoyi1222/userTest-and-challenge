@@ -2,14 +2,14 @@
 import { jsx, css } from "@emotion/react";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
-import Icon_excel from "src/assets/icon_excel.png";
-import { StepTipItem, StyledTooltip } from "..";
+import Icon_excel from "src/assets/dataCollection/icon_excel.png";
+import Done from "@mui/icons-material/Done";
 
 export default function DownLoadBar(props: {
-  stepTips?: StepTipItem[];
   currentStep?: number;
+  handleToNextStepTip?: () => void;
 }) {
-  const { stepTips, currentStep } = props;
+  const { currentStep, handleToNextStepTip } = props;
   const [percent, setPercent] = useState(0);
 
   useEffect(() => {
@@ -18,45 +18,40 @@ export default function DownLoadBar(props: {
         prevProgress < 100 ? prevProgress + 10 : 100
       );
     }, 100);
+    if (percent === 100) {
+      handleToNextStepTip?.();
+    }
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [percent]);
 
   return (
-    <StyledTooltip
-      open={true}
-      arrow
-      placement="top-start"
-      title={
-        stepTips?.filter((tip: StepTipItem) => tip.index === currentStep)[0]
-          ?.tip
-      }
+    <div
+      css={css`
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        height: 48px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-left: 20px;
+        background: #ffffff;
+        box-shadow: inset 0px 1px 0px 0px #dbdcdd;
+        z-index: 20;
+      `}
     >
-      <div
+      <img src={Icon_excel} />
+      <span
         css={css`
-          position: absolute;
-          bottom: 0px;
-          width: 100%;
-          height: 48px;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          padding-left: 20px;
-          background: #ffffff;
-          box-shadow: inset 0px 1px 0px 0px #dbdcdd;
-          z-index: 20;
+          font-size: 12px;
+          margin-left: 11px;
         `}
       >
-        <img src={Icon_excel} />
-        <span
-          css={css`
-            font-size: 12px;
-            margin-left: 11px;
-          `}
-        >
-          表格1.xlsx
-        </span>
+        小蜜蜂获取页面数据.xlsx
+      </span>
+      {currentStep === 6 ? (
         <div
           css={css`
             margin-left: 16px;
@@ -84,7 +79,22 @@ export default function DownLoadBar(props: {
             `}
           />
         </div>
-      </div>
-    </StyledTooltip>
+      ) : (
+        <div
+          css={css`
+            margin-left: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          `}
+        >
+          <Done
+            css={css`
+              color: #3d65e4;
+            `}
+          />
+        </div>
+      )}
+    </div>
   );
 }

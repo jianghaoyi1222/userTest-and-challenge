@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   base: "/embed_pages",
   build: {
+    chunkSizeWarningLimit: 1500,
     target: ["es2015"],
     emptyOutDir: true,
     outDir: resolve("../../dist/web-extension/embed_pages"),

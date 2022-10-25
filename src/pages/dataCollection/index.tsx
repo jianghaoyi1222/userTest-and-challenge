@@ -17,12 +17,13 @@ import Icon_phone5 from "src/assets/dataCollection/icon_phone5.png";
 import Icon_phone6 from "src/assets/dataCollection/icon_phone6.png";
 import Icon_phone7 from "src/assets/dataCollection/icon_phone7.png";
 import Icon_phone8 from "src/assets/dataCollection/icon_phone8.png";
-import CollectData from "../assistant/CollectData";
+import CollectDataAssistant from "../assistant/CollectDataAssistant";
 import Panel from "../panel/Panel";
 import CardList from "./components/CardList";
 import DataTable from "./components/DataTable";
 import Icon_home from "src/assets/icon_home.png";
 import DownLoadBar from "./components/DownLoadBar";
+import EndPage from "src/components/EndPage";
 
 export interface DataListItem {
   id: number;
@@ -143,24 +144,28 @@ export default function DataCollection() {
     () => [
       {
         index: 1,
-        tip: "请点这里开始采集数据~",
+        tip: "点击【获取数据】",
       },
       {
         index: 2,
-        tip: "请把鼠标悬浮在页面，智能推断页面数据，待高亮时，按住Ctrl并单击一下就可获得~",
+        tip: "操作：【Ctrl+鼠标左键】，获取当前页面的数据",
       },
       {
         index: 3,
-        tip: "实时查看采集的数据，点击【...】可以修改列名、处理数据、提取隐藏链接等更多操作数据的功能 ",
+        tip: "获取完成！点击【...】继续更多操作 ",
       },
-      { index: 4, tip: "点击这里可提取隐藏链接为新的一列" },
+      { index: 4, tip: "点击【提取列链接】获取隐藏链接" },
       {
         index: 5,
-        tip: "点击这里可直接下载数据到本地~ ",
+        tip: "点击下载数据",
       },
       {
         index: 6,
-        tip: "正在下载数据到本地 ",
+        tip: "正在下载数据...",
+      },
+      {
+        index: 7,
+        tip: "下载完成",
       },
     ],
     []
@@ -297,7 +302,7 @@ export default function DataCollection() {
             handleClose={onShowOrClosePanel}
             handleShowOrCloseAssistant={onShowOrCloseAssistant}
           />
-          <CollectData
+          <CollectDataAssistant
             open={showAssistant}
             isMouseOver={isMouseOver}
             isMouseDown={isMouseDown}
@@ -359,7 +364,56 @@ export default function DataCollection() {
             </div>
           </div>
           {currentStep === 6 && (
-            <DownLoadBar stepTips={stepTips} currentStep={currentStep} />
+            <StyledTooltip
+              open={true}
+              arrow
+              placement="top-start"
+              title={
+                stepTips?.filter(
+                  (tip: StepTipItem) => tip.index === currentStep
+                )[0]?.tip
+              }
+            >
+              <div
+                css={css`
+                  position: absolute;
+                  bottom: 0px;
+                  width: 100%;
+                  height: 48px;
+                `}
+              >
+                <DownLoadBar
+                  currentStep={currentStep}
+                  handleToNextStepTip={onToNextStepTip}
+                />
+              </div>
+            </StyledTooltip>
+          )}
+          {currentStep >= 7 && (
+            <StyledTooltip
+              open={true}
+              arrow
+              placement="top-start"
+              title={
+                stepTips?.filter(
+                  (tip: StepTipItem) => tip.index === currentStep
+                )[0]?.tip
+              }
+            >
+              <div
+                css={css`
+                  position: absolute;
+                  bottom: 0px;
+                  width: 100%;
+                  height: 48px;
+                `}
+              >
+                <DownLoadBar
+                  currentStep={currentStep}
+                  handleToNextStepTip={onToNextStepTip}
+                />
+              </div>
+            </StyledTooltip>
           )}
         </div>
       ) : (
@@ -397,7 +451,7 @@ export default function DataCollection() {
                   color: #242424;
                 `}
               >
-                采集数据
+                获取页面数据
               </span>
               <span
                 css={css`
@@ -406,7 +460,7 @@ export default function DataCollection() {
                   margin-top: 28px;
                 `}
               >
-                15秒内采集页面数据并保存到本地Excel
+                一键获取页面数据并保存到Excel
               </span>
               <Button
                 variant="contained"
@@ -436,6 +490,18 @@ export default function DataCollection() {
               `}
             />
           </div>
+        </div>
+      )}
+      {currentStep > 7 && (
+        <div
+          css={css`
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 1500;
+          `}
+        >
+          <EndPage />
         </div>
       )}
     </div>

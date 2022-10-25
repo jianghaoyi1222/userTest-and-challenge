@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import { useCallback } from "react";
 import Icon_assistant from "src/assets/icon_assistant.png";
 
-export default function CollectData(props: {
+export default function CollectDataAssistant(props: {
   open?: boolean;
   isMouseOver?: boolean;
   isMouseDown?: boolean;
@@ -38,7 +38,7 @@ export default function CollectData(props: {
             display: flex;
             flex-direction: column;
             width: 340px;
-            height: ${isMouseDown ? 260 : 220}px;
+            height: ${isMouseDown ? 260 : isMouseOver ? 180 : 220}px;
             border-radius: 4px;
             background: #151515;
             box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
@@ -236,35 +236,37 @@ export default function CollectData(props: {
             </div>
           )}
         </div>
-        <div
-          css={css`
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 16px;
-          `}
-        >
-          <Button
-            variant="outlined"
+        {!isMouseOver && (
+          <div
             css={css`
-              color: #ff3c31;
-              border-radius: 4px;
-              background: rgba(255, 60, 49, 0.28);
-              padding: 6px 16px;
-              border: 1px solid #ff3c31;
-              width: 88px;
-              height: 32px;
-              :hover {
-                color: #ff3c31;
-                background: rgba(255, 60, 49, 0.28);
-                border: 1px solid #ff3c31;
-              }
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-top: 16px;
             `}
-            onClick={onClose}
           >
-            结束
-          </Button>
-        </div>
+            <Button
+              variant="outlined"
+              css={css`
+                color: #ff3c31;
+                border-radius: 4px;
+                background: rgba(255, 60, 49, 0.28);
+                padding: 6px 16px;
+                border: 1px solid #ff3c31;
+                width: 88px;
+                height: 32px;
+                :hover {
+                  color: #ff3c31;
+                  background: rgba(255, 60, 49, 0.28);
+                  border: 1px solid #ff3c31;
+                }
+              `}
+              onClick={onClose}
+            >
+              结束
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

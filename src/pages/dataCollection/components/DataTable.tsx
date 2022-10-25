@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import Icon_homebee from "src/assets/icon_homebee.png";
-import Icon_closetable from "src/assets/icon_closetable.png";
+import Icon_closetable from "src/assets/dataCollection/icon_closetable.png";
 import {
   Button,
   Chip,
@@ -25,6 +25,7 @@ import Icon_more from "src/assets/icon_more.png";
 import { StepTipItem, StyledTooltip } from "..";
 import { ChevronRight } from "@mui/icons-material";
 import { dataConversionUtil } from "src/utils/excel";
+import StyledAnimation from "src/components/StyledAnimation";
 
 export interface TabPanelProps {
   children?: React.ReactNode;
@@ -236,7 +237,11 @@ export default function DataTable(props: {
         item?.store,
       ]);
     });
-    dataConversionUtil["dataToExcel"]("表格", tableHeader, dataList);
+    dataConversionUtil["dataToExcel"](
+      "小蜜蜂获取页面数据",
+      tableHeader,
+      dataList
+    );
   }, [dataConversionUtil, list, handleToNextStepTip]);
 
   return (
@@ -515,6 +520,8 @@ export default function DataTable(props: {
                           tableCellCss,
                           css`
                             width: ${addList ? "235.6px" : "294.5px"};
+                            background: ${addList && "rgba(255, 195, 0, 0.1)"};
+                            border: ${addList && "1px solid #ffc300"};
                           `,
                         ]}
                       >
@@ -670,6 +677,8 @@ export default function DataTable(props: {
                                 css`
                                   width: ${addList ? "235.6px" : "294.5px"};
                                   padding-left: 20px;
+                                  background: rgba(255, 195, 0, 0.1);
+                                  border: 1px solid #ffc300;
                                 `,
                               ]}
                             >
@@ -771,7 +780,7 @@ export default function DataTable(props: {
             <StyledTooltip
               open={true}
               arrow
-              placement="top-end"
+              placement="right"
               title={
                 stepTips?.filter(
                   (tip: StepTipItem) => tip.index === currentStep
@@ -791,7 +800,7 @@ export default function DataTable(props: {
                   `}
                 >
                   <ListItemText
-                    primary="提取列链接为列"
+                    primary="提取列链接"
                     css={css`
                       .MuiTypography-root {
                         font-size: 14px;
@@ -816,7 +825,7 @@ export default function DataTable(props: {
                 `}
               >
                 <ListItemText
-                  primary="提取列链接为列"
+                  primary="提取列链接"
                   css={css`
                     .MuiTypography-root {
                       font-size: 14px;
@@ -855,6 +864,42 @@ export default function DataTable(props: {
           </ListItem>
         </List>
       </div>
+      {openPopover && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 155px;
+            right: 320px;
+            pointer-events: none;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 3 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 225px;
+            right: 359px;
+            pointer-events: none;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 5 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 275px;
+            right: 30px;
+            pointer-events: none;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
     </div>
   );
 }

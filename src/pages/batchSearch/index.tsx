@@ -7,10 +7,10 @@ import Icon_home from "src/assets/icon_home.png";
 import { StepTipItem, StyledTooltip } from "../dataCollection";
 import Icon_batch from "src/assets/icon_batch.png";
 import Icon_search from "src/assets/icon_search.png";
-import BeeAssistant from "../assistant/BeeAssistant";
+import BatchSearchAssistant from "../assistant/BatchSearchAssistant";
 import CountDown from "../assistant/components/Countdown";
 import StyledSkeleton from "./components/StyledSkeleton";
-import { CurrentModeItem } from "../assistant/BatchClicks";
+import { CurrentModeItem } from "../assistant/BatchCreateAssistant";
 import Icon_book1 from "src/assets/batchSearch/icon_book1.png";
 import Icon_book2 from "src/assets/batchSearch/icon_book2.png";
 import Icon_book3 from "src/assets/batchSearch/icon_book3.png";
@@ -19,12 +19,11 @@ import Icon_book5 from "src/assets/batchSearch/icon_book5.png";
 import BatchDataTable from "./components/BatchDataTable";
 
 export interface BooklistItem {
-  id: number;
-  img: string;
-  name: string;
-  author: string;
-  type: string;
-  description: string;
+  图片链接: string;
+  小说名: string;
+  作者: string;
+  类型: string;
+  简介: string;
 }
 
 export default function BatchSearch() {
@@ -58,47 +57,49 @@ export default function BatchSearch() {
 
   const [isShowTip, setIsShowTip] = useState(false);
 
+  const [isShowData, setIsShowData] = useState(false);
+
   const stepTips: StepTipItem[] = useMemo(
     () => [
       {
         index: 1,
-        tip: "点这里开始批量操作体验~",
+        tip: "点击【批量查询】",
       },
       {
         index: 2,
-        tip: "倒计时结束后将自动记录您的整个操作过程",
+        tip: "倒计时结束后将开始记录您的操作",
       },
       {
         index: 3,
-        tip: "请在这里输入关键词：玄幻",
+        tip: "点击输入框",
       },
       {
         index: 4,
-        tip: "点这里可以批量输入多个关键词",
+        tip: "点击【批量输入文本】",
       },
       {
         index: 5,
-        tip: "按回车换行输入第二个关键词“都市”",
+        tip: "输入“玄幻”“都市”“历史”关键词间使用【回车】换行",
       },
       {
         index: 6,
-        tip: "点击【确定】绑定多个关键词到输入框，流程执行时将自动循环在输入框中搜索；",
+        tip: "点击【确定】",
       },
       {
         index: 7,
-        tip: "请点击【搜索一下】按钮",
+        tip: "点击【搜索一下】",
       },
       {
         index: 8,
-        tip: "请把鼠标悬浮在页面，智能推断页面数据，待高亮时，按住Ctrl并单击一下就可获得",
+        tip: "操作：【Ctrl+鼠标左键】，获取当前页面的数据",
       },
       {
         index: 9,
-        tip: "在这里可以实时查看采集的搜索结果",
+        tip: "？实时展示查询结果",
       },
       {
         index: 10,
-        tip: "点击【执行】开始批量使用关键词搜索并采集搜索结果",
+        tip: "点击【执行】开始批量关键词查询",
       },
     ],
     []
@@ -107,48 +108,39 @@ export default function BatchSearch() {
   const booklist: BooklistItem[] = useMemo(
     () => [
       {
-        id: 1,
-        img: Icon_book1,
-        name: "万古神帝",
-        author: "飞天鱼",
-        type: "玄幻",
-        description:
-          "八百年前，明帝之子张若尘，被他的未婚妻池瑶公主杀死，一代天骄，就此陨落。 八百年后，张若尘重新活了过来，却发现曾经杀死他的未婚…",
+        图片链接: Icon_book1,
+        小说名: "万古神帝",
+        作者: "飞天鱼",
+        类型: "玄幻",
+        简介: "八百年前，明帝之子张若尘，被他的未婚妻池瑶公主杀死，一代天骄，就此陨落。 八百年后，张若尘重新活了过来，却发现曾经杀死他的未婚…",
       },
       {
-        id: 2,
-        img: Icon_book2,
-        name: "我有一剑",
-        author: "青鸾峰上",
-        type: "玄幻",
-        description: "我有一剑，出鞘即无敌！",
+        图片链接: Icon_book2,
+        小说名: "我有一剑",
+        作者: "青鸾峰上",
+        类型: "玄幻",
+        简介: "我有一剑，出鞘即无敌！",
       },
       {
-        id: 3,
-        img: Icon_book3,
-        name: "万相之王",
-        author: "天蚕土豆",
-        type: "玄幻",
-        description:
-          "天地间，有万相。而我李洛，终将成为这万相之王。继《斗破苍穹》《武动乾坤》《大主宰》《元尊》之后，天蚕土豆又一部玄幻力作。",
+        图片链接: Icon_book3,
+        小说名: "万相之王",
+        作者: "天蚕土豆",
+        类型: "玄幻",
+        简介: "天地间，有万相。而我李洛，终将成为这万相之王。继《斗破苍穹》《武动乾坤》《大主宰》《元尊》之后，天蚕土豆又一部玄幻力作。",
       },
       {
-        id: 4,
-        img: Icon_book4,
-        name: "剑来",
-        author: "烽火戏诸侯",
-        type: "玄幻",
-        description:
-          "大千世界，无奇不有。我陈平安，唯有一剑，可搬山，倒海，降妖，镇魔，敕神，摘星，断…",
+        图片链接: Icon_book4,
+        小说名: "剑来",
+        作者: "烽火戏诸侯",
+        类型: "玄幻",
+        简介: "大千世界，无奇不有。我陈平安，唯有一剑，可搬山，倒海，降妖，镇魔，敕神，摘星，断…",
       },
       {
-        id: 5,
-        img: Icon_book5,
-        name: "深空彼岸",
-        author: "辰东",
-        type: "玄幻",
-        description:
-          "浩瀚的宇宙中，一片星系的生灭，也不过是刹那的斑驳流光。仰望星空，总有种结局已注定的伤感，千百年后你我在哪里？家国，文明火光…",
+        图片链接: Icon_book5,
+        小说名: "深空彼岸",
+        作者: "辰东",
+        类型: "玄幻",
+        简介: "浩瀚的宇宙中，一片星系的生灭，也不过是刹那的斑驳流光。仰望星空，总有种结局已注定的伤感，千百年后你我在哪里？家国，文明火光…",
       },
     ],
     []
@@ -192,6 +184,7 @@ export default function BatchSearch() {
       setIsMouseOver(false);
       setIsShowTip(false);
       onToNextStepTip();
+      setIsShowData(true);
     } else {
       return;
     }
@@ -241,6 +234,17 @@ export default function BatchSearch() {
     },
     []
   );
+
+  useEffect(() => {
+    if (currentStep === 9) {
+      setTimeout(() => onToNextStepTip(), 800);
+    }
+  }, [currentStep, onToNextStepTip]);
+
+  const handleShowData = useCallback((show: boolean) => {
+    setIsShowData(show);
+    setIsMouseDown(false);
+  }, []);
 
   return (
     <div
@@ -435,6 +439,7 @@ export default function BatchSearch() {
                 </Button>
               )}
             </div>
+
             <div
               css={css`
                 width: 1000px;
@@ -493,7 +498,7 @@ export default function BatchSearch() {
                             `}
                           >
                             <img
-                              src={item.img}
+                              src={item["图片链接"]}
                               css={css`
                                 width: 80px;
                                 height: 96px;
@@ -515,7 +520,7 @@ export default function BatchSearch() {
                                   color: #3d3d3d;
                                 `}
                               >
-                                {item.name}
+                                {item["小说名"]}
                               </span>
                               <span
                                 css={css`
@@ -524,7 +529,7 @@ export default function BatchSearch() {
                                   color: #333333;
                                 `}
                               >
-                                {item.author}
+                                {item["作者"]}
                               </span>
                               <span
                                 css={css`
@@ -533,7 +538,7 @@ export default function BatchSearch() {
                                   color: #333333;
                                 `}
                               >
-                                {item.type}
+                                {item["类型"]}
                               </span>
                               <span
                                 css={css`
@@ -543,7 +548,7 @@ export default function BatchSearch() {
                                   color: #666666;
                                 `}
                               >
-                                {item.description}
+                                {item["简介"]}
                               </span>
                             </div>
                           </div>
@@ -561,7 +566,7 @@ export default function BatchSearch() {
                           `}
                         >
                           <img
-                            src={item.img}
+                            src={item["图片链接"]}
                             css={css`
                               width: 80px;
                               height: 96px;
@@ -583,7 +588,7 @@ export default function BatchSearch() {
                                 color: #3d3d3d;
                               `}
                             >
-                              {item.name}
+                              {item["小说名"]}
                             </span>
                             <span
                               css={css`
@@ -592,7 +597,7 @@ export default function BatchSearch() {
                                 color: #333333;
                               `}
                             >
-                              {item.author}
+                              {item["作者"]}
                             </span>
                             <span
                               css={css`
@@ -601,7 +606,7 @@ export default function BatchSearch() {
                                 color: #333333;
                               `}
                             >
-                              {item.type}
+                              {item["类型"]}
                             </span>
                             <span
                               css={css`
@@ -611,7 +616,7 @@ export default function BatchSearch() {
                                 color: #666666;
                               `}
                             >
-                              {item.description}
+                              {item["简介"]}
                             </span>
                           </div>
                         </div>
@@ -766,17 +771,30 @@ export default function BatchSearch() {
             </div>
           </div>
 
-          {currentStep === 9 ? (
-            <StyledTooltip
-              open={true}
-              arrow
-              placement="top"
-              title={
-                stepTips?.filter(
-                  (tip: StepTipItem) => tip.index === currentStep
-                )[0]?.tip
-              }
-            >
+          {isShowData &&
+            (currentStep === 9 ? (
+              <StyledTooltip
+                open={true}
+                arrow
+                placement="top"
+                title={
+                  stepTips?.filter(
+                    (tip: StepTipItem) => tip.index === currentStep
+                  )[0]?.tip
+                }
+              >
+                <div
+                  css={css`
+                    position: absolute;
+                    bottom: 0px;
+                    left: 40px;
+                    z-index: 10;
+                  `}
+                >
+                  <BatchDataTable datalist={booklist} show={isMouseDown} />
+                </div>
+              </StyledTooltip>
+            ) : (
               <div
                 css={css`
                   position: absolute;
@@ -787,19 +805,7 @@ export default function BatchSearch() {
               >
                 <BatchDataTable datalist={booklist} show={isMouseDown} />
               </div>
-            </StyledTooltip>
-          ) : (
-            <div
-              css={css`
-                position: absolute;
-                bottom: 0px;
-                left: 40px;
-                z-index: 10;
-              `}
-            >
-              <BatchDataTable datalist={booklist} show={isMouseDown} />
-            </div>
-          )}
+            ))}
 
           <Panel
             type="batchSearch"
@@ -810,7 +816,7 @@ export default function BatchSearch() {
             handleClose={onShowOrClosePanel}
             handleShowOrCloseAssistant={onShowOrCloseAssistant}
           />
-          <BeeAssistant
+          <BatchSearchAssistant
             open={showAssistant}
             currentStep={currentStep}
             stepTips={stepTips}
@@ -820,6 +826,9 @@ export default function BatchSearch() {
             isShow={isShow}
             isMouseOver={isMouseOver}
             isMouseDown={isMouseDown}
+            rowlist={booklist}
+            batchlist={batchlist}
+            handleShowData={handleShowData}
             handleShowAssistant={onShowOrCloseAssistant}
             handleStart={onhandleStart}
             handleToNextStepTip={onToNextStepTip}
@@ -882,7 +891,7 @@ export default function BatchSearch() {
                   margin-top: 28px;
                 `}
               >
-                在页面自动搜索多个关键词并将搜索结果抓取到表格。
+                在页面自动搜索多个关键词并将搜索结果抓取到表格
               </span>
               <Button
                 variant="contained"

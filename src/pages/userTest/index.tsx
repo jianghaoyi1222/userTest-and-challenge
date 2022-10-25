@@ -10,7 +10,9 @@ import DemonstrationTable from "./components/DemonstrationTable";
 import Icon_xlsx from "src/assets/icon_xlsx.png";
 import { FlowItem } from "../panel/components/FlowPanel";
 import Icon_bee from "src/assets/icon_bee.png";
-import BatchClicks, { CurrentModeItem } from "../assistant/BatchClicks";
+import BatchCreateAssistant, {
+  CurrentModeItem,
+} from "../assistant/BatchCreateAssistant";
 
 export interface ListItem {
   id: number;
@@ -140,16 +142,16 @@ export default function UserTest() {
     (data: any[]) => {
       const list: DataItem = {
         id: String(existingData?.length + 1),
-        name: "批量添加列表",
+        name: "小蜜蜂批量新增列",
         createTime: moment().format(),
         icon: Icon_xlsx,
-        description: `来自于本地上传文件：批量添加列表.xlsx`,
+        description: `来自于本地`,
         type: "xlsx",
         result: data,
       };
       const flow: FlowItem = {
         id: "1",
-        name: "批量添加列表",
+        name: "小蜜蜂批量新增列",
         createTime: moment().format(),
         icon: Icon_bee,
       };
@@ -251,7 +253,7 @@ export default function UserTest() {
         handleClose={handlePanelClose}
         handleBatch={onhandleBatch}
       />
-      <BatchClicks
+      <BatchCreateAssistant
         open={showAssistant}
         anchorEl={assistantAnchorEl}
         openCountDown={showCountDown}
@@ -268,6 +270,7 @@ export default function UserTest() {
         handleTransmitBackContent={onTransmitBackContent}
         handleExecute={handleExecute}
         handleBackPanel={onBackPanel}
+        handleConfirm={handleConfirm}
       />
     </div>
   );

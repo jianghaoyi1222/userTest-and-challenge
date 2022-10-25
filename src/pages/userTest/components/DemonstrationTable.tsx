@@ -14,7 +14,7 @@ import {
 import Icon_homebee from "src/assets/icon_homebee.png";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import AddContent from "./AddContent";
-import { CurrentModeItem } from "src/pages/assistant/BatchClicks";
+import { CurrentModeItem } from "src/pages/assistant/BatchCreateAssistant";
 
 export interface ListItem {
   id: number;
@@ -63,6 +63,7 @@ export default function DemonstrationTable(props: {
   const [isButtonHighlight, setIsButtonHighlight] = useState(false);
   const [rows, _setRows] = useState<ListItem[]>([]);
   const [rowList, setRowList] = useState<ListItem[][]>([]);
+  const [list, setList] = useState<any>({});
 
   const tableRowRef = useRef(null);
 
@@ -93,6 +94,10 @@ export default function DemonstrationTable(props: {
     setIsButtonHighlight(true);
   }, []);
 
+  const handleConfirmed = useCallback((title: string, description: string) => {
+    Object.assign(list, { title: title, description: description });
+  }, []);
+
   useEffect(() => {
     if (isConfirmed && isExecuted) {
       rows.splice(0, rows.length);
@@ -104,22 +109,30 @@ export default function DemonstrationTable(props: {
         });
       });
     } else if (isConfirmed) {
-      rows.push({ id: 0, title: titleList[0], description: contentList[0] });
+      if (titleList[0] && contentList[0]) {
+        rows.push({ id: 0, title: titleList[0], description: contentList[0] });
+      } else {
+        rows.push({
+          id: 0,
+          title: list?.title,
+          description: list?.description,
+        });
+      }
     }
 
     let start = 0;
     let end = 10;
-    const list: any[] = [];
+    const lists: any[] = [];
     const row = Math.ceil(rows.length / 10);
     for (let i = 0; i < row; i++) {
       const rowList = rows?.slice(start, end);
-      list.push(rowList);
+      lists.push(rowList);
       start = start + 10;
       end = end + 10;
     }
 
-    setRowList(list);
-  }, [isConfirmed, titleList, contentList, rows, isExecuted]);
+    setRowList(lists);
+  }, [isConfirmed, titleList, contentList, rows, isExecuted, list]);
 
   return (
     <div
@@ -466,6 +479,7 @@ export default function DemonstrationTable(props: {
         isBatchTitle={isBatchTitle}
         transmitBackContent={transmitBackContent}
         isBatchContent={isBatchContent}
+        handleConfirmed={handleConfirmed}
         handleIdentifyComponent={handleIdentifyComponent}
         handleChangeTitle={handleChangeTitle}
         handleChangeContent={handleChangeContent}

@@ -4,7 +4,7 @@ import { Button, IconButton, TextField, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useCallback, useEffect, useState } from "react";
 import Icon_batch from "src/assets/icon_batch.png";
-import { CurrentModeItem } from "src/pages/assistant/BatchClicks";
+import { CurrentModeItem } from "src/pages/assistant/BatchCreateAssistant";
 
 export interface ListItem {
   id: number;
@@ -30,6 +30,7 @@ export default function AddContent(props: {
   handleChangeContent?: (event?: any) => void;
   handleConfirm?: (isConfirm: boolean) => void;
   handleAddStep?: (component: any, text: string) => void;
+  handleConfirmed?: (title: string, description: string) => void;
 }) {
   const {
     open,
@@ -44,6 +45,7 @@ export default function AddContent(props: {
     handleChangeContent,
     handleConfirm,
     handleAddStep,
+    handleConfirmed,
   } = props;
   const [isTitleHighlight, setIsTitleHighlight] = useState<boolean>(false);
   const [isContentHighlight, setIsContentHighlight] = useState<boolean>(false);
@@ -79,7 +81,8 @@ export default function AddContent(props: {
     setIsButtonHighlight(true);
     handleClose?.();
     handleConfirm?.(true);
-  }, [mode, handleIdentifyComponent, handleClose]);
+    handleConfirmed?.(title, content);
+  }, [mode, handleIdentifyComponent, handleClose, title, content]);
 
   const onChangeTitle = useCallback((event: any) => {
     handleChangeTitle?.(event.target.value);

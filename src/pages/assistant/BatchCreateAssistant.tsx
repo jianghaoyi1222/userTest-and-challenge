@@ -12,6 +12,7 @@ import Icon_preview from "src/assets/icon_preview.png";
 import ExecuteCompleted from "./components/ExecuteCompleted";
 import PreviewTable, { EnterType } from "./components/PreviewTable";
 import { StepListItem } from "../userTest";
+import ExecuteProcess from "./components/ExecuteProcess";
 
 export type CurrentModeItem = "start" | "record";
 
@@ -26,6 +27,7 @@ export interface InputTextProps {
   value?: string;
   onClick?: () => void;
   onChange?: (event: any) => void;
+  onKeyDown?: (event: any) => void;
 }
 
 export interface ButtonProps {
@@ -33,7 +35,7 @@ export interface ButtonProps {
   onClick?: () => void;
 }
 
-export default function BatchClicks(props: {
+export default function BatchCreateAssistant(props: {
   open?: boolean;
   anchorEl?: any;
   openCountDown?: boolean;
@@ -58,6 +60,7 @@ export default function BatchClicks(props: {
   ) => void;
   handleExecute?: (isExecuted: boolean) => void;
   handleBackPanel?: (data: any[]) => void;
+  handleConfirm?: (isConfirm: boolean) => void;
 }) {
   const {
     open,
@@ -75,6 +78,7 @@ export default function BatchClicks(props: {
     handleTransmitBackContent,
     handleExecute,
     handleBackPanel,
+    handleConfirm,
   } = props;
 
   const [currentMode, setCurrentMode] = useState<CurrentModeItem>();
@@ -116,7 +120,7 @@ export default function BatchClicks(props: {
   const [enter, setEnter] = useState<EnterType>();
   const [rowlist, setRowlist] = useState<any[]>([]);
 
-  const [delayTimes, setDelayTimes] = useState(0);
+  const [delayTimes, setDelayTimes] = useState(1);
 
   const [isContinuous, setIsContinuous] = useState(false);
 
@@ -227,6 +231,12 @@ export default function BatchClicks(props: {
     setTimeout(() => setIsContinuous(true), 1000);
   }, [handleExecute, handleClose, delayTimes, rowlist?.length]);
 
+  useEffect(() => {
+    if (isContinuous) {
+      handleClose?.();
+    }
+  }, [isContinuous, handleClose]);
+
   const onViewData = useCallback(() => {
     setIsView(true);
   }, []);
@@ -267,6 +277,24 @@ export default function BatchClicks(props: {
   const onConfirmedBackPanel = useCallback(() => {
     handleBackPanel?.(rowlist);
   }, [handleBackPanel]);
+
+  const onTitleKeyDown = useCallback(
+    (event: any) => {
+      if (event.key === "Enter") {
+        setBatchInputTitle(batchInputTitle + "\n");
+      }
+    },
+    [batchInputTitle]
+  );
+
+  const onContentKeyDown = useCallback(
+    (event: any) => {
+      if (event.key === "Enter") {
+        setBatchInputContent(batchInputContent + "\n");
+      }
+    },
+    [batchInputContent]
+  );
 
   // 操作步骤
   const StepContext = (props: StepProps) => {
@@ -404,94 +432,6 @@ export default function BatchClicks(props: {
         >
           执行
         </Button>
-      </div>
-    );
-  };
-
-  // 批量输入
-  const BatchInputText = (props: InputTextProps) => {
-    const { value, isImport, onClick, onChange } = props;
-    return (
-      <div
-        css={css`
-          width: 308px;
-          height: 268px;
-          background: #2c2c2c;
-          display: flex;
-          flex-direction: column;
-          padding-left: 12px;
-        `}
-      >
-        <div
-          css={css`
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-          `}
-        >
-          <span
-            css={css`
-              font-size: 16px;
-              line-height: 24px;
-              color: #ffffff;
-            `}
-          >
-            批量输入文本：
-          </span>
-          <Button
-            css={css`
-              font-size: 12px;
-              line-height: 14px;
-              text-decoration: underline;
-              color: #0ef4f4;
-              margin-right: 6px;
-              :hover {
-                text-decoration: underline;
-              }
-            `}
-            onClick={onClick}
-          >
-            {isImport ? "重新导入" : "导入已有数据"}
-          </Button>
-        </div>
-
-        <TextField
-          variant="outlined"
-          multiline
-          rows={9}
-          value={value}
-          placeholder={"多个文本请用回车换行\n例如\n文本1\n文本2\n文本3\n..."}
-          css={css`
-            width: 284px;
-            margin-top: 8px;
-            .MuiInputBase-root {
-              padding: 0px;
-            }
-            .MuiInputBase-input {
-              padding: 8px 8px !important;
-              font-size: 12px;
-              line-height: 22px;
-              height: 192px !important;
-              box-sizing: border-box;
-              background: #3d3d3d;
-              color: #ffffff;
-              border-radius: 4px;
-            }
-          `}
-          onChange={onChange}
-        />
-        <span
-          css={css`
-            font-size: 12px;
-            line-height: 12px;
-            color: rgba(255, 255, 255, 0.56);
-            margin-top: 12px;
-          `}
-        >
-          预览最多显示N条
-        </span>
       </div>
     );
   };
@@ -715,6 +655,7 @@ export default function BatchClicks(props: {
               flex-grow: 1;
               flex-direction: row;
               margin-top: 16px;
+              max-height: 32px;
             `}
           >
             {steps?.map((step: StepListItem, index: number) => (
@@ -956,36 +897,6 @@ export default function BatchClicks(props: {
     );
   };
 
-  // 正在执行中
-  const ExecuteProcess = (props: {
-    allNumber?: number;
-    completedNumber?: number;
-  }) => {
-    const { allNumber, completedNumber } = props;
-    return (
-      <div
-        css={css`
-          width: 308px;
-          height: 126px;
-          border-radius: 4px;
-          background: #2c2c2c;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        `}
-      >
-        <span
-          css={css`
-            font-size: 18px;
-            color: #00b578;
-          `}
-        >
-          正在执行中...({completedNumber}/{allNumber})
-        </span>
-      </div>
-    );
-  };
-
   return (
     <div
       css={css`
@@ -994,11 +905,13 @@ export default function BatchClicks(props: {
     >
       {isExecuted && isContinuous ? (
         <ExecuteCompleted
+          step={4}
           rowlist={rowlist}
           onhandleExecute={handleExecute}
           onOpenPreviewTable={onOpenPreviewTable}
           onConfirmedBackPanel={onConfirmedBackPanel}
           onClose={handleClose}
+          handleConfirm={handleConfirm}
         />
       ) : (
         <div
@@ -1170,23 +1083,180 @@ export default function BatchClicks(props: {
                       onClick={onViewData}
                     />
                   ) : isConfirmedImportTitle ? (
-                    <BatchInputText
-                      isImport={isConfirmedImportTitle}
-                      value={batchInputTitle}
-                      onClick={onImportExistingData}
-                      onChange={onMultilineTitle}
-                    />
+                    <div
+                      css={css`
+                        width: 308px;
+                        height: 268px;
+                        background: #2c2c2c;
+                        display: flex;
+                        flex-direction: column;
+                        padding-left: 12px;
+                      `}
+                    >
+                      <div
+                        css={css`
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                          align-items: center;
+                          margin-top: 8px;
+                        `}
+                      >
+                        <span
+                          css={css`
+                            font-size: 16px;
+                            line-height: 24px;
+                            color: #ffffff;
+                          `}
+                        >
+                          批量输入文本：
+                        </span>
+                        <Button
+                          css={css`
+                            font-size: 12px;
+                            line-height: 14px;
+                            text-decoration: underline;
+                            color: #0ef4f4;
+                            margin-right: 6px;
+                            :hover {
+                              text-decoration: underline;
+                            }
+                          `}
+                          onClick={onImportExistingData}
+                        >
+                          {isConfirmedImportTitle ? "重新导入" : "导入已有数据"}
+                        </Button>
+                      </div>
+
+                      <TextField
+                        variant="outlined"
+                        multiline
+                        rows={9}
+                        value={batchInputTitle}
+                        placeholder={
+                          "多个文本请用回车换行\n例如\n文本1\n文本2\n文本3\n..."
+                        }
+                        css={css`
+                          width: 284px;
+                          margin-top: 8px;
+                          .MuiInputBase-root {
+                            padding: 0px;
+                          }
+                          .MuiInputBase-input {
+                            padding: 8px 8px !important;
+                            font-size: 12px;
+                            line-height: 22px;
+                            height: 192px !important;
+                            box-sizing: border-box;
+                            background: #3d3d3d;
+                            color: #ffffff;
+                            border-radius: 4px;
+                          }
+                        `}
+                        onChange={onMultilineTitle}
+                        onKeyDown={onTitleKeyDown}
+                      />
+                      <span
+                        css={css`
+                          font-size: 12px;
+                          line-height: 12px;
+                          color: rgba(255, 255, 255, 0.56);
+                          margin-top: 12px;
+                        `}
+                      >
+                        预览最多显示N条
+                      </span>
+                    </div>
                   ) : isImportData ? (
                     <ImportData
                       data={existingData}
                       onClick={onOpenImportFile}
                     />
                   ) : (
-                    <BatchInputText
-                      value={batchInputTitle}
-                      onClick={onImportExistingData}
-                      onChange={onMultilineTitle}
-                    />
+                    <div
+                      css={css`
+                        width: 308px;
+                        height: 268px;
+                        background: #2c2c2c;
+                        display: flex;
+                        flex-direction: column;
+                        padding-left: 12px;
+                      `}
+                    >
+                      <div
+                        css={css`
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                          align-items: center;
+                          margin-top: 8px;
+                        `}
+                      >
+                        <span
+                          css={css`
+                            font-size: 16px;
+                            line-height: 24px;
+                            color: #ffffff;
+                          `}
+                        >
+                          批量输入文本：
+                        </span>
+                        <Button
+                          css={css`
+                            font-size: 12px;
+                            line-height: 14px;
+                            text-decoration: underline;
+                            color: #0ef4f4;
+                            margin-right: 6px;
+                            :hover {
+                              text-decoration: underline;
+                            }
+                          `}
+                          onClick={onImportExistingData}
+                        >
+                          {isConfirmedImportTitle ? "重新导入" : "导入已有数据"}
+                        </Button>
+                      </div>
+
+                      <TextField
+                        variant="outlined"
+                        multiline
+                        rows={9}
+                        value={batchInputTitle}
+                        placeholder={
+                          "多个文本请用回车换行\n例如\n文本1\n文本2\n文本3\n..."
+                        }
+                        css={css`
+                          width: 284px;
+                          margin-top: 8px;
+                          .MuiInputBase-root {
+                            padding: 0px;
+                          }
+                          .MuiInputBase-input {
+                            padding: 8px 8px !important;
+                            font-size: 12px;
+                            line-height: 22px;
+                            height: 192px !important;
+                            box-sizing: border-box;
+                            background: #3d3d3d;
+                            color: #ffffff;
+                            border-radius: 4px;
+                          }
+                        `}
+                        onChange={onMultilineTitle}
+                        onKeyDown={onTitleKeyDown}
+                      />
+                      <span
+                        css={css`
+                          font-size: 12px;
+                          line-height: 12px;
+                          color: rgba(255, 255, 255, 0.56);
+                          margin-top: 12px;
+                        `}
+                      >
+                        预览最多显示N条
+                      </span>
+                    </div>
                   )
                 ) : (
                   <div
@@ -1277,24 +1347,184 @@ export default function BatchClicks(props: {
                       onClick={onViewData}
                     />
                   ) : isConfirmedImportContent ? (
-                    <BatchInputText
-                      isImport={isConfirmedImportContent}
-                      value={batchInputContent}
-                      onClick={onImportExistingData}
-                      onChange={onMultilineContent}
-                    />
+                    <div
+                      css={css`
+                        width: 308px;
+                        height: 268px;
+                        background: #2c2c2c;
+                        display: flex;
+                        flex-direction: column;
+                        padding-left: 12px;
+                      `}
+                    >
+                      <div
+                        css={css`
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                          align-items: center;
+                          margin-top: 8px;
+                        `}
+                      >
+                        <span
+                          css={css`
+                            font-size: 16px;
+                            line-height: 24px;
+                            color: #ffffff;
+                          `}
+                        >
+                          批量输入文本：
+                        </span>
+                        <Button
+                          css={css`
+                            font-size: 12px;
+                            line-height: 14px;
+                            text-decoration: underline;
+                            color: #0ef4f4;
+                            margin-right: 6px;
+                            :hover {
+                              text-decoration: underline;
+                            }
+                          `}
+                          onClick={onImportExistingData}
+                        >
+                          {isConfirmedImportContent
+                            ? "重新导入"
+                            : "导入已有数据"}
+                        </Button>
+                      </div>
+
+                      <TextField
+                        variant="outlined"
+                        multiline
+                        rows={9}
+                        value={batchInputContent}
+                        placeholder={
+                          "多个文本请用回车换行\n例如\n文本1\n文本2\n文本3\n..."
+                        }
+                        css={css`
+                          width: 284px;
+                          margin-top: 8px;
+                          .MuiInputBase-root {
+                            padding: 0px;
+                          }
+                          .MuiInputBase-input {
+                            padding: 8px 8px !important;
+                            font-size: 12px;
+                            line-height: 22px;
+                            height: 192px !important;
+                            box-sizing: border-box;
+                            background: #3d3d3d;
+                            color: #ffffff;
+                            border-radius: 4px;
+                          }
+                        `}
+                        onChange={onMultilineContent}
+                        onKeyDown={onContentKeyDown}
+                      />
+                      <span
+                        css={css`
+                          font-size: 12px;
+                          line-height: 12px;
+                          color: rgba(255, 255, 255, 0.56);
+                          margin-top: 12px;
+                        `}
+                      >
+                        预览最多显示N条
+                      </span>
+                    </div>
                   ) : isImportData ? (
                     <ImportData
                       data={existingData}
                       onClick={onOpenImportFile}
                     />
                   ) : (
-                    <BatchInputText
-                      isImport={isConfirmedImportContent}
-                      value={batchInputContent}
-                      onClick={onImportExistingData}
-                      onChange={onMultilineContent}
-                    />
+                    <div
+                      css={css`
+                        width: 308px;
+                        height: 268px;
+                        background: #2c2c2c;
+                        display: flex;
+                        flex-direction: column;
+                        padding-left: 12px;
+                      `}
+                    >
+                      <div
+                        css={css`
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                          align-items: center;
+                          margin-top: 8px;
+                        `}
+                      >
+                        <span
+                          css={css`
+                            font-size: 16px;
+                            line-height: 24px;
+                            color: #ffffff;
+                          `}
+                        >
+                          批量输入文本：
+                        </span>
+                        <Button
+                          css={css`
+                            font-size: 12px;
+                            line-height: 14px;
+                            text-decoration: underline;
+                            color: #0ef4f4;
+                            margin-right: 6px;
+                            :hover {
+                              text-decoration: underline;
+                            }
+                          `}
+                          onClick={onImportExistingData}
+                        >
+                          {isConfirmedImportContent
+                            ? "重新导入"
+                            : "导入已有数据"}
+                        </Button>
+                      </div>
+
+                      <TextField
+                        variant="outlined"
+                        multiline
+                        rows={9}
+                        value={batchInputContent}
+                        placeholder={
+                          "多个文本请用回车换行\n例如\n文本1\n文本2\n文本3\n..."
+                        }
+                        css={css`
+                          width: 284px;
+                          margin-top: 8px;
+                          .MuiInputBase-root {
+                            padding: 0px;
+                          }
+                          .MuiInputBase-input {
+                            padding: 8px 8px !important;
+                            font-size: 12px;
+                            line-height: 22px;
+                            height: 192px !important;
+                            box-sizing: border-box;
+                            background: #3d3d3d;
+                            color: #ffffff;
+                            border-radius: 4px;
+                          }
+                        `}
+                        onChange={onMultilineContent}
+                        onKeyDown={onContentKeyDown}
+                      />
+                      <span
+                        css={css`
+                          font-size: 12px;
+                          line-height: 12px;
+                          color: rgba(255, 255, 255, 0.56);
+                          margin-top: 12px;
+                        `}
+                      >
+                        预览最多显示N条
+                      </span>
+                    </div>
                   )
                 ) : (
                   <div
@@ -1430,14 +1660,20 @@ export default function BatchClicks(props: {
             {currentMode === "record" &&
               !isExecuted &&
               (isView ? (
-                <ConfirmAndCancel onCancel={() => setIsView(false)} />
+                <ConfirmAndCancel
+                  onCancel={() => setIsView(false)}
+                  onClick={() => setIsView(false)}
+                />
               ) : identifyComponent === "input-title" && isBatchTitleInput ? (
                 batchTitleCompleted ? (
                   <ExecuteButton onClick={onImplement} />
                 ) : (
                   <ConfirmAndCancel
                     onClick={onConfirmBatchTitle}
-                    onCancel={() => setIsBatchTitleInput(false)}
+                    onCancel={() => {
+                      setIsBatchTitleInput(false);
+                      setIsImportData(false);
+                    }}
                   />
                 )
               ) : identifyComponent === "input-content" &&
@@ -1447,7 +1683,10 @@ export default function BatchClicks(props: {
                 ) : (
                   <ConfirmAndCancel
                     onClick={onConfirmBatchContent}
-                    onCancel={() => setIsBatchContentInput(false)}
+                    onCancel={() => {
+                      setIsBatchContentInput(false);
+                      setIsImportData(false);
+                    }}
                   />
                 )
               ) : (
@@ -1466,7 +1705,7 @@ export default function BatchClicks(props: {
       <PreviewTable
         open={isOpenPreviewTable}
         file={rowlist}
-        name="批量添加列表"
+        name="小蜜蜂批量新增列"
         confirmedColumn={confirmedColumn}
         enter={enter}
         onConfirmImport={onConfirmImport}

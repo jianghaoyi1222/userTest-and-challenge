@@ -5,14 +5,14 @@ export default function StyledAnimation() {
   return (
     <div
       css={css`
-        width: 10px;
-        height: 10px;
-        background: #ffffff;
+        width: 50px;
+        height: 50px;
+        background: #3d65e4;
         position: relative;
-        border: 1px solid #ffffff;
+        border: 1px solid #3d65e4;
         border-radius: 100%;
-        -webkit-animation: ping 0.8s ease-in-out infinite both;
-        animation: ping 0.8s ease-in-out infinite both;
+        -webkit-animation: ping 1.5s ease-in-out infinite both;
+        animation: ping 1.5s ease-in-out infinite both;
         @-webkit-keyframes ping {
           0% {
             -webkit-transform: scale(0.2);

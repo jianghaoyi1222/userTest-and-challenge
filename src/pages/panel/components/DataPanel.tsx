@@ -126,7 +126,8 @@ export default function DataPanel(props: {
         name: fileName,
         createTime: moment().format(),
         icon: Icon_xlsx,
-        description: `来自于本地上传文件：${filelist[filelist.length - 1]}`,
+        // description: `来自于本地上传文件：${filelist[filelist.length - 1]}`,
+        description: "来自于本地",
         type: fileType,
         result: resultJson,
       });

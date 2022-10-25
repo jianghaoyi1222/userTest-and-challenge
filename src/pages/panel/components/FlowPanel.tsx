@@ -6,6 +6,7 @@ import { howLongBefore } from "src/utils/string";
 import Icon_more from "src/assets/icon_more.png";
 import Icon_start from "src/assets/icon_start.png";
 import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
+import StyledAnimation from "src/components/StyledAnimation";
 
 export interface FlowItem {
   id: string;
@@ -95,6 +96,7 @@ export default function FlowPanel(props: {
         flex-direction: column;
         align-items: center;
         width: 344px;
+        position: relative;
       `}
     >
       {flow && flow?.length > 0 ? (
@@ -273,12 +275,12 @@ export default function FlowPanel(props: {
                 }
               >
                 <Button css={autoButtonCss} onClick={onBatch}>
-                  批量点击
+                  批量查询
                 </Button>
               </StyledTooltip>
             ) : (
               <Button css={autoButtonCss} onClick={onBatch}>
-                批量点击
+                批量查询
               </Button>
             )}
             <Button css={autoButtonCss}>循环操作</Button>
@@ -294,14 +296,36 @@ export default function FlowPanel(props: {
                 }
               >
                 <Button css={autoButtonCss} onClick={onCollectData}>
-                  采集数据
+                  获取数据
                 </Button>
               </StyledTooltip>
             ) : (
-              <Button css={autoButtonCss}>采集数据</Button>
+              <Button css={autoButtonCss}>获取数据</Button>
             )}
           </div>
         </Fragment>
+      )}
+      {type === "batchSearch" && currentStep === 1 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 150px;
+            pointer-events: none;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {type === "dataCollection" && currentStep === 1 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 20px;
+            pointer-events: none;
+          `}
+        >
+          <StyledAnimation />
+        </div>
       )}
     </div>
   );

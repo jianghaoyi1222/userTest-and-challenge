@@ -1,31 +1,51 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import { Button, Divider, IconButton } from "@mui/material";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import Icon_help from "src/assets/icon_help.png";
 import { EnterType } from "./PreviewTable";
 
 export default function ExecuteCompleted(props: {
+  step?: number;
   rowlist?: any;
   onOpenPreviewTable?: (enterType?: EnterType) => void;
   onConfirmedBackPanel?: () => void;
   onhandleExecute?: (value: boolean) => void;
   onClose?: () => void;
+  handleConfirm?: (isConfirm: boolean) => void;
 }) {
   const {
+    step,
     rowlist,
     onOpenPreviewTable,
     onConfirmedBackPanel,
     onhandleExecute,
     onClose,
+    handleConfirm,
   } = props;
+  const [head, setHead] = useState<any[]>([]);
+  const [length, setLength] = useState(0);
+
+  useEffect(() => {
+    if (rowlist) {
+      const list = Object.keys(rowlist[0]);
+      setHead(list);
+      setLength(508 / list.length);
+    }
+  }, [rowlist]);
 
   const list = useMemo(() => {
-    if (rowlist.length > 3) {
-      return rowlist.slice(0, 3);
+    const body: any[] = [];
+
+    rowlist?.map((row: any) => {
+      body.push(Object.values(row));
+    });
+
+    if (body.length > 3) {
+      return body.slice(0, 3);
     } else {
-      return rowlist;
+      return body;
     }
   }, [rowlist]);
 
@@ -93,7 +113,7 @@ export default function ExecuteCompleted(props: {
           css={css`
             margin-left: 8px;
             background: rgba(0, 0, 0, 0.04);
-            width: 100px;
+            width: 140px;
             height: 30px;
             display: flex;
             align-items: center;
@@ -108,7 +128,7 @@ export default function ExecuteCompleted(props: {
               color: #303030;
             `}
           >
-            批量添加列表
+            小蜜蜂批量新增列
           </span>
         </div>
         <div
@@ -143,7 +163,7 @@ export default function ExecuteCompleted(props: {
             color: #507afc;
           `}
         >
-          1秒
+          2秒
         </span>
         <Divider
           orientation="vertical"
@@ -158,7 +178,7 @@ export default function ExecuteCompleted(props: {
             color: #507afc;
           `}
         >
-          4步
+          {step}步
         </span>
         <Divider
           orientation="vertical"
@@ -173,7 +193,7 @@ export default function ExecuteCompleted(props: {
             color: #507afc;
           `}
         >
-          批量执行了<span>{list?.length}</span>次
+          批量执行了<span>{rowlist?.length}</span>次
         </span>
       </div>
       <div
@@ -192,7 +212,7 @@ export default function ExecuteCompleted(props: {
             flex-grow: 1;
           `}
         >
-          {["标题列表", "列表内容"].map((item: string) => (
+          {head?.map((item: string) => (
             <div
               css={css`
                 height: 32px;
@@ -201,6 +221,7 @@ export default function ExecuteCompleted(props: {
                 display: flex;
                 flex-grow: 1;
                 align-items: center;
+                width: ${length}px;
               `}
             >
               <span
@@ -233,7 +254,7 @@ export default function ExecuteCompleted(props: {
             flex-grow: 1;
           `}
         >
-          {list.map((listItem: any, _index: number) => (
+          {/* {list.map((listItem: any, _index: number) => (
             <div
               css={css`
                 display: flex;
@@ -281,6 +302,42 @@ export default function ExecuteCompleted(props: {
                 </span>
               </div>
             </div>
+          ))} */}
+          {list?.map((listItem: any) => (
+            <div
+              css={css`
+                display: flex;
+                flex-direction: row;
+                flex-grow: 1;
+                height: 32px;
+              `}
+            >
+              {listItem?.map((item: any) => (
+                <div
+                  css={css`
+                    box-sizing: border-box;
+                    border: 1px solid #e5e6eb;
+                    display: flex;
+                    align-items: center;
+                    flex-grow: 1;
+                    width: ${length}px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                  `}
+                >
+                  <span
+                    css={css`
+                      margin-left: 30px;
+                      font-size: 14px;
+                      line-height: 14px;
+                    `}
+                  >
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
           ))}
         </div>
       </div>
@@ -294,7 +351,7 @@ export default function ExecuteCompleted(props: {
         `}
       >
         <span>
-          共计<span>{list?.length}</span>条数据，
+          共计<span>{rowlist?.length}</span>条数据，
         </span>
         <Button onClick={() => onOpenPreviewTable?.("preview")}>
           点击预览
@@ -322,6 +379,7 @@ export default function ExecuteCompleted(props: {
             onClose?.();
             onConfirmedBackPanel?.();
             onhandleExecute?.(false);
+            handleConfirm?.(false);
           }}
         >
           确认

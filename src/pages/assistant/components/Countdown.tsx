@@ -3,7 +3,7 @@ import { jsx, css } from "@emotion/react";
 import { Dialog } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
-import { CurrentModeItem } from "../BatchClicks";
+import { CurrentModeItem } from "../BatchCreateAssistant";
 
 export default function CountDown(props: {
   open?: boolean;

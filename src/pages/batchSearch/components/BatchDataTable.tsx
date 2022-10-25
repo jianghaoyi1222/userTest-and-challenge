@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import Icon_homebee from "src/assets/icon_homebee.png";
-import Icon_closetable from "src/assets/icon_closetable.png";
+import Icon_closetable from "src/assets/dataCollection/icon_closetable.png";
 import {
   Button,
   Chip,
@@ -14,15 +14,10 @@ import {
   TableHead,
   TableRow,
   Tabs,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
 } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import Icon_add from "src/assets/icon_add.png";
 import Icon_more from "src/assets/icon_more.png";
-import { ChevronRight } from "@mui/icons-material";
 import { dataConversionUtil } from "src/utils/excel";
 import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
 import { BooklistItem } from "..";
@@ -112,7 +107,16 @@ export default function BatchDataTable(props: {
   const StyledTableCell = (props: { name: string }) => {
     const { name } = props;
     return (
-      <TableCell css={tableCellCss}>
+      <TableCell
+        css={[
+          tableCellCss,
+          css`
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          `,
+        ]}
+      >
         <div
           css={css`
             display: flex;
@@ -355,6 +359,30 @@ export default function BatchDataTable(props: {
                       <StyledTableCell name="作者" />
                       <StyledTableCell name="类型" />
                       <StyledTableCell name="简介" />
+                      <TableCell
+                        css={[
+                          tableCellCss,
+                          css`
+                            width: 56px;
+                          `,
+                        ]}
+                      >
+                        <div
+                          css={css`
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                          `}
+                        >
+                          <img
+                            src={Icon_add}
+                            css={css`
+                              width: 16px;
+                              height: 16px;
+                            `}
+                          />
+                        </div>
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -380,70 +408,72 @@ export default function BatchDataTable(props: {
                           >
                             <span>{index + 1}</span>
                           </TableCell>
-                          <TableCell
-                            css={[
-                              tableCellCss,
-                              ,
-                              css`
-                                padding-left: 20px;
-                              `,
-                            ]}
-                          >
-                            {item?.img}
-                          </TableCell>
-                          <TableCell
-                            css={[
-                              tableCellCss,
-                              ,
-                              css`
-                                padding-left: 20px;
-                              `,
-                            ]}
-                          >
-                            {item?.name}
-                          </TableCell>
-                          <TableCell
-                            css={[
-                              tableCellCss,
-                              ,
-                              css`
-                                padding-left: 20px;
-                              `,
-                            ]}
-                          >
+                          <TableCell css={tableCellCss}>
                             <div
                               css={css`
+                                width: 235.6px;
+                                padding-left: 20px;
                                 overflow: hidden;
-                                white-space: nowrap;
                                 text-overflow: ellipsis;
+                                white-space: nowrap;
                               `}
                             >
-                              {item?.author}
+                              {item?.["图片链接"]}
+                            </div>
+                          </TableCell>
+                          <TableCell css={tableCellCss}>
+                            <div
+                              css={css`
+                                width: 235.6px;
+                                padding-left: 20px;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                              `}
+                            >
+                              {item?.["小说名"]}
+                            </div>
+                          </TableCell>
+                          <TableCell css={tableCellCss}>
+                            <div
+                              css={css`
+                                width: 235.6px;
+                                padding-left: 20px;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                              `}
+                            >
+                              {item?.["作者"]}
                             </div>
                           </TableCell>
 
-                          <TableCell
-                            css={[
-                              tableCellCss,
-                              ,
-                              css`
+                          <TableCell css={tableCellCss}>
+                            <div
+                              css={css`
+                                width: 235.6px;
                                 padding-left: 20px;
-                              `,
-                            ]}
-                          >
-                            {item?.type}
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                              `}
+                            >
+                              {item?.["类型"]}
+                            </div>
                           </TableCell>
 
-                          <TableCell
-                            css={[
-                              tableCellCss,
-                              ,
-                              css`
+                          <TableCell css={tableCellCss}>
+                            <div
+                              css={css`
+                                width: 235.6px;
                                 padding-left: 20px;
-                              `,
-                            ]}
-                          >
-                            {item?.description}
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                              `}
+                            >
+                              {item?.["简介"]}
+                            </div>
                           </TableCell>
                           <TableCell
                             css={css`
@@ -477,140 +507,9 @@ export default function BatchDataTable(props: {
               margin-top: 14px;
             `}
           >
-            已采集8条数据
+            已采集50条数据
           </span>
         </div>
-      </div>
-
-      <div
-        css={css`
-          display: ${openPopover ? "flex" : "none"};
-          position: absolute;
-          bottom: 130px;
-          right: 230px;
-          background: #ffffff;
-          width: 160px;
-          height: 100px;
-          box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
-        `}
-      >
-        <List
-          css={css`
-            padding: 0px;
-            flex-grow: 1;
-          `}
-        >
-          <ListItem
-            disablePadding
-            css={css`
-              height: 32px;
-            `}
-          >
-            <ListItemButton
-              css={css`
-                padding: 0px 10px;
-              `}
-            >
-              <ListItemText
-                primary="删除列"
-                css={css`
-                  .MuiTypography-root {
-                    font-size: 14px;
-                    line-height: 24px;
-                    color: #3d3d3d;
-                  }
-                `}
-              />
-            </ListItemButton>
-          </ListItem>
-
-          {currentStep === 4 ? (
-            <StyledTooltip
-              open={true}
-              arrow
-              placement="top-end"
-              title={
-                stepTips?.filter(
-                  (tip: StepTipItem) => tip.index === currentStep
-                )[0]?.tip
-              }
-            >
-              <ListItem
-                disablePadding
-                css={css`
-                  height: 32px;
-                `}
-              >
-                <ListItemButton
-                  onClick={onListItemClick}
-                  css={css`
-                    padding: 0px 10px;
-                  `}
-                >
-                  <ListItemText
-                    primary="提取列链接为列"
-                    css={css`
-                      .MuiTypography-root {
-                        font-size: 14px;
-                        line-height: 24px;
-                        color: #3d3d3d;
-                      }
-                    `}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </StyledTooltip>
-          ) : (
-            <ListItem
-              disablePadding
-              css={css`
-                height: 32px;
-              `}
-            >
-              <ListItemButton
-                css={css`
-                  padding: 0px 10px;
-                `}
-              >
-                <ListItemText
-                  primary="提取列链接为列"
-                  css={css`
-                    .MuiTypography-root {
-                      font-size: 14px;
-                      line-height: 24px;
-                      color: #3d3d3d;
-                    }
-                  `}
-                />
-              </ListItemButton>
-            </ListItem>
-          )}
-
-          <ListItem
-            disablePadding
-            css={css`
-              height: 32px;
-            `}
-          >
-            <ListItemButton
-              css={css`
-                padding: 0px 10px;
-              `}
-            >
-              <ListItemText
-                primary="数据处理"
-                css={css`
-                  .MuiTypography-root {
-                    font-size: 14px;
-                    line-height: 24px;
-                    color: #3d3d3d;
-                  }
-                `}
-              />
-              <ChevronRight />
-            </ListItemButton>
-          </ListItem>
-        </List>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import { TextField } from "@mui/material";
-import { StepProps } from "../BatchClicks";
+import { StepProps } from "../BatchCreateAssistant";
 
 export default function StyledStepContent(props: StepProps) {
   const { step, preStep } = props;
