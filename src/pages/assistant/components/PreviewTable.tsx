@@ -895,6 +895,7 @@ export default function PreviewTable(props: {
                   {rows?.map((result: any, resultIndex: number) => {
                     return (
                       <div
+                        key={resultIndex}
                         css={css`
                           display: flex;
                           flex-direction: column;

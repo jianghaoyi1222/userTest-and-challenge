@@ -18,7 +18,6 @@ import {
 import { useCallback, useState } from "react";
 import Icon_add from "src/assets/icon_add.png";
 import Icon_more from "src/assets/icon_more.png";
-import { dataConversionUtil } from "src/utils/excel";
 import { StepTipItem, StyledTooltip } from "src/pages/dataCollection";
 import { BooklistItem } from "..";
 
@@ -35,10 +34,9 @@ export default function BatchDataTable(props: {
   datalist?: BooklistItem[];
   handleToNextStepTip?: () => void;
 }) {
-  const { show, currentStep, stepTips, datalist, handleToNextStepTip } = props;
+  const { show, currentStep, stepTips, datalist } = props;
 
   const [tab, setTab] = useState(1);
-  const [openPopover, setOpenPopover] = useState(false);
 
   const buttonCss = css`
     min-width: 80px;
@@ -166,20 +164,10 @@ export default function BatchDataTable(props: {
     );
   };
 
-  const onhandleMoreClick = useCallback(() => {
-    setOpenPopover(true);
-    handleToNextStepTip?.();
-  }, [handleToNextStepTip]);
-
-  const onListItemClick = useCallback(() => {
-    setOpenPopover(false);
-    handleToNextStepTip?.();
-  }, [handleToNextStepTip]);
-
   const onLoadExcel = useCallback(() => {
-    handleToNextStepTip?.();
-    const tableHeader = ["列1", "列2", "列3", "列4", "列5"];
-    const dataList: any[] = [];
+    // handleToNextStepTip?.();
+    // const tableHeader = ["列1", "列2", "列3", "列4", "列5"];
+    // const dataList: any[] = [];
     // list?.map((item: BooklistItem) => {
     //   dataList.push([
     //     item?.image,
@@ -189,8 +177,8 @@ export default function BatchDataTable(props: {
     //     item?.store,
     //   ]);
     // });
-    dataConversionUtil["dataToExcel"]("表格", tableHeader, dataList);
-  }, [dataConversionUtil, , handleToNextStepTip]);
+    // dataConversionUtil["dataToExcel"]("表格", tableHeader, dataList);
+  }, []);
 
   return (
     <div

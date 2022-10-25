@@ -199,9 +199,10 @@ export default function DataPanel(props: {
                 />
               </Button>
             </div>
-            {data?.map((data) => {
+            {data?.map((data, index) => {
               return (
                 <div
+                  key={index}
                   css={css`
                     position: relative;
                     width: 296px;

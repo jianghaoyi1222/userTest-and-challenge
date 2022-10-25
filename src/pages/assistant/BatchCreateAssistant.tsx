@@ -13,6 +13,7 @@ import ExecuteCompleted from "./components/ExecuteCompleted";
 import PreviewTable, { EnterType } from "./components/PreviewTable";
 import { StepListItem } from "../userTest";
 import ExecuteProcess from "./components/ExecuteProcess";
+import OperationList from "./components/OperationList";
 
 export type CurrentModeItem = "start" | "record";
 
@@ -114,7 +115,7 @@ export default function BatchCreateAssistant(props: {
   const [isView, setIsView] = useState(false);
 
   const [isOpenOperation, setIsOpenOperation] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
   const [isOpenPreviewTable, setIsOpenPreviewTable] = useState(false);
   const [enter, setEnter] = useState<EnterType>();
@@ -195,7 +196,8 @@ export default function BatchCreateAssistant(props: {
 
   const onImportExistingData = useCallback(() => {
     setIsImportData(true);
-  }, []);
+    console.log("///", isImportData);
+  }, [isImportData]);
 
   const onOpenImportFile = useCallback((openfile: DataItem) => {
     setIsOpenPreviewTable(true);
@@ -207,6 +209,7 @@ export default function BatchCreateAssistant(props: {
   const onConfirmImport = useCallback((index: number, list: any) => {
     setConfirmedColumn(index);
     setReaderColumnedList(list.slice(1, list.length));
+    setIsImportData(false);
   }, []);
 
   const onImportConfirmedData = useCallback(() => {
@@ -526,8 +529,9 @@ export default function BatchCreateAssistant(props: {
             margin-top: 8px;
           `}
         >
-          {data?.map((item) => (
+          {data?.map((item, index) => (
             <div
+              key={index}
               css={css`
                 display: flex;
                 flex-direction: row;
@@ -802,100 +806,100 @@ export default function BatchCreateAssistant(props: {
   };
 
   // 操作列
-  const OperationList = (props: { open: boolean; onExist?: () => void }) => {
-    const { open } = props;
-    return (
-      <Popover
-        open={open}
-        onClose={() => {
-          setAnchorEl(null);
-          setIsOpenOperation(false);
-        }}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        css={css`
-          z-index: 50;
-          .MuiPaper-root {
-            background-color: #151515;
-            width: 108px;
-            height: 72px;
-            border-radius: 2px;
-            box-sizing: border-box;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
-          }
-        `}
-      >
-        <div
-          css={css`
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            margin-left: 8px;
-          `}
-        >
-          <div
-            css={css`
-              display: flex;
-              flex-direction: column;
-            `}
-          >
-            <div
-              css={css`
-                display: flex;
-                flex-direction: row;
-              `}
-            >
-              <span
-                css={css`
-                  font-size: 14px;
-                  line-height: 20px;
-                  color: #ffffff;
-                `}
-              >
-                数据面板
-              </span>
-              <Switch
-                size="small"
-                css={css`
-                  .MuiSwitch-switchBase {
-                    padding: 6px;
-                  }
-                  .MuiSwitch-thumb {
-                    width: 12px;
-                    height: 12px;
-                  }
-                  .MuiSwitch-track {
-                    background-color: #383838;
-                  }
-                `}
-              />
-            </div>
-            <Button
-              css={css`
-                font-size: 14px;
-                line-height: 20px;
-                color: #fa5151;
-                justify-content: start;
-                padding: 0px;
-              `}
-            >
-              退出流程
-            </Button>
-          </div>
-        </div>
-      </Popover>
-    );
-  };
+  // const OperationList = (props: { open: boolean; onExist?: () => void }) => {
+  //   const { open } = props;
+  //   return (
+  //     <Popover
+  //       open={open}
+  //       onClose={() => {
+  //         setAnchorEl(null);
+  //         setIsOpenOperation(false);
+  //       }}
+  //       anchorEl={anchorEl}
+  //       anchorOrigin={{
+  //         vertical: "bottom",
+  //         horizontal: "right",
+  //       }}
+  //       transformOrigin={{
+  //         vertical: "top",
+  //         horizontal: "right",
+  //       }}
+  //       css={css`
+  //         z-index: 50;
+  //         .MuiPaper-root {
+  //           background-color: #151515;
+  //           width: 108px;
+  //           height: 72px;
+  //           border-radius: 2px;
+  //           box-sizing: border-box;
+  //           border: 1px solid rgba(255, 255, 255, 0.16);
+  //           box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+  //         }
+  //       `}
+  //     >
+  //       <div
+  //         css={css`
+  //           display: flex;
+  //           flex-direction: column;
+  //           align-items: center;
+  //           justify-content: center;
+  //           height: 100%;
+  //           margin-left: 8px;
+  //         `}
+  //       >
+  //         <div
+  //           css={css`
+  //             display: flex;
+  //             flex-direction: column;
+  //           `}
+  //         >
+  //           <div
+  //             css={css`
+  //               display: flex;
+  //               flex-direction: row;
+  //             `}
+  //           >
+  //             <span
+  //               css={css`
+  //                 font-size: 14px;
+  //                 line-height: 20px;
+  //                 color: #ffffff;
+  //               `}
+  //             >
+  //               数据面板
+  //             </span>
+  //             <Switch
+  //               size="small"
+  //               css={css`
+  //                 .MuiSwitch-switchBase {
+  //                   padding: 6px;
+  //                 }
+  //                 .MuiSwitch-thumb {
+  //                   width: 12px;
+  //                   height: 12px;
+  //                 }
+  //                 .MuiSwitch-track {
+  //                   background-color: #383838;
+  //                 }
+  //               `}
+  //             />
+  //           </div>
+  //           <Button
+  //             css={css`
+  //               font-size: 14px;
+  //               line-height: 20px;
+  //               color: #fa5151;
+  //               justify-content: start;
+  //               padding: 0px;
+  //             `}
+  //           >
+  //             退出流程
+  //           </Button>
+  //         </div>
+  //       </div>
+  //     </Popover>
+  //   );
+  // };
 
   return (
     <div
@@ -1082,6 +1086,11 @@ export default function BatchCreateAssistant(props: {
                       }
                       onClick={onViewData}
                     />
+                  ) : isImportData ? (
+                    <ImportData
+                      data={existingData}
+                      onClick={onOpenImportFile}
+                    />
                   ) : isConfirmedImportTitle ? (
                     <div
                       css={css`
@@ -1167,11 +1176,6 @@ export default function BatchCreateAssistant(props: {
                         预览最多显示N条
                       </span>
                     </div>
-                  ) : isImportData ? (
-                    <ImportData
-                      data={existingData}
-                      onClick={onOpenImportFile}
-                    />
                   ) : (
                     <div
                       css={css`
@@ -1346,6 +1350,11 @@ export default function BatchCreateAssistant(props: {
                       }
                       onClick={onViewData}
                     />
+                  ) : isImportData ? (
+                    <ImportData
+                      data={existingData}
+                      onClick={onOpenImportFile}
+                    />
                   ) : isConfirmedImportContent ? (
                     <div
                       css={css`
@@ -1433,11 +1442,6 @@ export default function BatchCreateAssistant(props: {
                         预览最多显示N条
                       </span>
                     </div>
-                  ) : isImportData ? (
-                    <ImportData
-                      data={existingData}
-                      onClick={onOpenImportFile}
-                    />
                   ) : (
                     <div
                       css={css`
@@ -1701,7 +1705,14 @@ export default function BatchCreateAssistant(props: {
         handleClose={handleCountDown}
         handleCurrentMode={onhandleCurrentMode}
       />
-      <OperationList open={isOpenOperation} onExist={() => handleClose?.()} />
+      <OperationList
+        open={isOpenOperation}
+        anchorEl={anchorEl}
+        onClose={() => {
+          setAnchorEl(null);
+          setIsOpenOperation(false);
+        }}
+      />
       <PreviewTable
         open={isOpenPreviewTable}
         file={rowlist}

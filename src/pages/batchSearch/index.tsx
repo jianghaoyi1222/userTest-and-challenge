@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import Panel from "../panel/Panel";
-import Icon_home from "src/assets/icon_home.png";
+import Icon_batchsearch from "src/assets/icon_batchsearch.png";
 import { StepTipItem, StyledTooltip } from "../dataCollection";
 import Icon_batch from "src/assets/icon_batch.png";
 import Icon_search from "src/assets/icon_search.png";
@@ -65,7 +65,7 @@ export default function BatchSearch() {
   const [isBatch, setIsBatch] = useState(false);
   const [batchlist, setBatchlist] = useState<any[]>([]);
 
-  const [isShowTip, setIsShowTip] = useState(false);
+  // const [isShowTip, setIsShowTip] = useState(false);
 
   const [isShowData, setIsShowData] = useState(false);
 
@@ -196,7 +196,7 @@ export default function BatchSearch() {
     if (isMonitorCtrl) {
       setIsMouseDown(true);
       setIsMouseOver(false);
-      setIsShowTip(false);
+      // setIsShowTip(false);
       onToNextStepTip();
       setIsShowData(true);
     } else {
@@ -441,7 +441,7 @@ export default function BatchSearch() {
                     `}
                     onClick={() => {
                       setIsShow(true);
-                      setIsShowTip(true);
+                      // setIsShowTip(true);
                       onToNextStepTip();
                     }}
                   >
@@ -943,10 +943,10 @@ export default function BatchSearch() {
               </Button>
             </div>
             <img
-              src={Icon_home}
+              src={Icon_batchsearch}
               css={css`
-                width: 839px;
-                height: 516px;
+                width: 750px;
+                height: 750px;
               `}
             />
           </div>
