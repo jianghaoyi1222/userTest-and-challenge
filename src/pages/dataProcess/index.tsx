@@ -11,7 +11,6 @@ import PreviewTable from "../assistant/components/PreviewTable";
 import EndPage from "src/components/EndPage";
 
 export default function DataProcess() {
-  const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [startChanllenge, setStartChanllenge] = useState(false);
 
@@ -162,10 +161,6 @@ export default function DataProcess() {
 
   const onToPreStepTip = useCallback((value: number) => {
     setCurrentStep(value);
-  }, []);
-
-  const onOpenTable = useCallback(() => {
-    setOpen(true);
   }, []);
 
   useEffect(() => {

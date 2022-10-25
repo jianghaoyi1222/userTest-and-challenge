@@ -1,6 +1,12 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import { Button, Divider, Skeleton, TextField } from "@mui/material";
+import {
+  Button,
+  Divider,
+  IconButton,
+  Skeleton,
+  TextField,
+} from "@mui/material";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import Panel from "../panel/Panel";
 import Icon_home from "src/assets/icon_home.png";
@@ -17,6 +23,10 @@ import Icon_book3 from "src/assets/batchSearch/icon_book3.png";
 import Icon_book4 from "src/assets/batchSearch/icon_book4.png";
 import Icon_book5 from "src/assets/batchSearch/icon_book5.png";
 import BatchDataTable from "./components/BatchDataTable";
+import Icon_mark from "src/assets/icon_mark.png";
+import StyledAnimation from "src/components/StyledAnimation";
+import PreviewTable from "../assistant/components/PreviewTable";
+import EndPage from "src/components/EndPage";
 
 export interface BooklistItem {
   图片链接: string;
@@ -59,6 +69,10 @@ export default function BatchSearch() {
 
   const [isShowData, setIsShowData] = useState(false);
 
+  const [isOpenPreview, setIsOpenPreview] = useState(false);
+
+  const [isEnd, setIsEnd] = useState(false);
+
   const stepTips: StepTipItem[] = useMemo(
     () => [
       {
@@ -79,7 +93,7 @@ export default function BatchSearch() {
       },
       {
         index: 5,
-        tip: "输入“玄幻”“都市”“历史”关键词间使用【回车】换行",
+        tip: "输入'玄幻''都市''历史'关键词间使用【回车】换行",
       },
       {
         index: 6,
@@ -150,9 +164,9 @@ export default function BatchSearch() {
     setCurrentStep(currentStep + 1);
   }, [currentStep]);
 
-  const onShowOrCloseAssistant = useCallback(() => {
-    setShowAssistant(!showAssistant);
-  }, [showAssistant]);
+  const onShowOrCloseAssistant = useCallback((show: boolean) => {
+    setShowAssistant(show);
+  }, []);
 
   const onShowOrClosePanel = useCallback(() => {
     setShowPanel(!showPanel);
@@ -245,6 +259,20 @@ export default function BatchSearch() {
     setIsShowData(show);
     setIsMouseDown(false);
   }, []);
+
+  const handleOpenPreviewTable = useCallback(() => {
+    setIsOpenPreview(true);
+  }, []);
+
+  useEffect(() => {
+    let timer: any = null;
+    if (isOpenPreview) {
+      timer = setTimeout(() => setIsEnd(true), 1000);
+    }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isOpenPreview]);
 
   return (
     <div
@@ -644,7 +672,7 @@ export default function BatchSearch() {
             </div>
           </div>
 
-          {isShowTip && !isMouseOver && (
+          {/* {isShowTip && !isMouseOver && (
             <div
               css={css`
                 width: 640px;
@@ -729,7 +757,7 @@ export default function BatchSearch() {
                 </span>
               </div>
             </div>
-          )}
+          )} */}
 
           <div
             css={css`
@@ -828,6 +856,7 @@ export default function BatchSearch() {
             isMouseDown={isMouseDown}
             rowlist={booklist}
             batchlist={batchlist}
+            handleOpenPreviewTable={handleOpenPreviewTable}
             handleShowData={handleShowData}
             handleShowAssistant={onShowOrCloseAssistant}
             handleStart={onhandleStart}
@@ -921,6 +950,140 @@ export default function BatchSearch() {
               `}
             />
           </div>
+        </div>
+      )}
+      {showAssistant && currentMode === "start" && (
+        <div
+          css={css`
+            position: absolute;
+            right: 170px;
+            top: 115px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {startChanllenge && !showPanel && !showAssistant && (
+        <div
+          css={css`
+            position: absolute;
+            top: 26px;
+            right: 32px;
+          `}
+        >
+          <IconButton
+            css={css`
+              :hover {
+                background: transparent;
+              }
+            `}
+            // onClick={onShowPanel}
+          >
+            <img
+              src={Icon_mark}
+              css={css`
+                width: 60px;
+                height: 75px;
+              `}
+            />
+          </IconButton>
+        </div>
+      )}
+
+      {isOpenPreview && (
+        <div
+          css={css`
+            width: 100%;
+            height: 100%;
+            position: relative;
+          `}
+        >
+          <PreviewTable
+            open={isOpenPreview}
+            enter="preview"
+            type="batchSearch"
+            file={booklist}
+            name="小蜜蜂批量新增列"
+          />
+        </div>
+      )}
+      {isEnd && (
+        <div
+          css={css`
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 1500;
+          `}
+        >
+          <EndPage />
+        </div>
+      )}
+      {currentStep === 3 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 650px;
+            right: 900px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 4 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 540px;
+            right: 65px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 6 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 375px;
+            right: 125px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 7 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 650px;
+            right: 680px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 10 && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 555px;
+            right: 170px;
+            pointer-events: none;
+            z-index: 1500;
+          `}
+        >
+          <StyledAnimation />
         </div>
       )}
     </div>

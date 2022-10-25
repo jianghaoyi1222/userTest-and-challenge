@@ -11,6 +11,7 @@ import { CurrentModeItem } from "./BatchCreateAssistant";
 import StyledStepContent from "./components/StyledStepContext";
 import ExecuteProcess from "./components/ExecuteProcess";
 import ExecuteCompleted from "./components/ExecuteCompleted";
+import { EnterType } from "./components/PreviewTable";
 
 export default function BatchSearchAssistant(props: {
   //显示
@@ -34,7 +35,7 @@ export default function BatchSearchAssistant(props: {
   batchlist?: any[];
 
   //显示或关闭助手
-  handleShowAssistant?: () => void;
+  handleShowAssistant?: (show: boolean) => void;
   //下一步
   handleToNextStepTip?: () => void;
   //开始
@@ -46,6 +47,7 @@ export default function BatchSearchAssistant(props: {
     list: string[]
   ) => void;
   handleShowData?: (show: boolean) => void;
+  handleOpenPreviewTable?: (enterType?: EnterType) => void;
 }) {
   const {
     open,
@@ -65,6 +67,7 @@ export default function BatchSearchAssistant(props: {
     handleBackValueChange,
     handleTransmitBackInput,
     handleShowData,
+    handleOpenPreviewTable,
   } = props;
 
   const [textValue, setTextValue] = useState("");
@@ -80,10 +83,8 @@ export default function BatchSearchAssistant(props: {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
   const [isExcuted, setIsExcuted] = useState(false);
-  const [delayTimes, setDelayTimes] = useState(0);
+  const [delayTimes, setDelayTimes] = useState(1);
   const [isContinuous, setIsContinuous] = useState(false);
-
-  const list = useCallback(() => {}, []);
 
   //打开操作列
   const onOpenOperation = useCallback(
@@ -102,7 +103,7 @@ export default function BatchSearchAssistant(props: {
   //开始
   const onStart = useCallback(() => {
     handleStart?.();
-    handleShowAssistant?.();
+    handleShowAssistant?.(true);
   }, [handleStart, handleShowAssistant]);
 
   //文本输入
@@ -118,10 +119,22 @@ export default function BatchSearchAssistant(props: {
   const onExcute = useCallback(() => {
     setIsExcuted(true);
     batchlist && setTimeout(() => setDelayTimes(batchlist?.length), 800);
-    setTimeout(() => setIsContinuous(true), 800);
     handleToNextStepTip?.();
     handleShowData?.(false);
   }, [batchlist, handleToNextStepTip, handleShowData]);
+
+  useEffect(() => {
+    let timer: any = null;
+    if (delayTimes === batchlist?.length) {
+      timer = setTimeout(() => setIsContinuous(true), 500);
+    }
+    if (isContinuous) {
+      handleShowAssistant?.(false);
+    }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isContinuous, handleShowAssistant, delayTimes, batchlist]);
 
   //批量输入文本
   const onBatchInput = useCallback(() => {
@@ -130,20 +143,40 @@ export default function BatchSearchAssistant(props: {
   }, [handleToNextStepTip]);
 
   const onMultilineChange = useCallback((event: any) => {
-    const value = event.target.value
-      .split(/[(\r\n)\r\n]+/)
-      .filter((item: any) => item && item.trim());
-    setBatchInput(event.target.value);
-    setInputlist(value);
-    setFirstBatchInput(value[0]);
+    if (event.target.value.indexOf("'") >= 0) {
+      const inputValue = event.target.value
+        .split(/[(\"\')\"\']+/)
+        .filter((item: any) => item && item.trim());
+      setBatchInput(inputValue.join("\n"));
+      setInputlist(inputValue);
+      setFirstBatchInput(inputValue[0]);
+    } else {
+      const value = event.target.value
+        .split(/[(\r\n)\r\n]+/)
+        .filter((item: any) => item && item.trim());
+      setBatchInput(event.target.value);
+      setInputlist(value);
+      setFirstBatchInput(value[0]);
+    }
   }, []);
 
   const onConfirmBatch = useCallback(() => {
-    handleTransmitBackInput?.(firstBatchInput, true, inputlist);
-    handleToNextStepTip?.();
-    setBatchCompleted(true);
-    setIsBatch(false);
-  }, [firstBatchInput, inputlist, handleToNextStepTip]);
+    if (batchInput) {
+      handleTransmitBackInput?.(firstBatchInput, true, inputlist);
+      handleToNextStepTip?.();
+      setBatchCompleted(true);
+      setIsBatch(false);
+    }
+  }, [batchInput, firstBatchInput, inputlist, handleToNextStepTip]);
+
+  const onKeyDown = useCallback(
+    (event: any) => {
+      if (event.key === "Enter") {
+        setBatchInput(batchInput + "\n");
+      }
+    },
+    [batchInput]
+  );
 
   useEffect(() => {
     if (value) {
@@ -154,7 +187,11 @@ export default function BatchSearchAssistant(props: {
   return (
     <div>
       {isContinuous ? (
-        <ExecuteCompleted step={3} rowlist={rowlist} />
+        <ExecuteCompleted
+          step={3}
+          rowlist={rowlist}
+          onOpenPreviewTable={handleOpenPreviewTable}
+        />
       ) : (
         <div
           css={css`
@@ -194,7 +231,7 @@ export default function BatchSearchAssistant(props: {
                           `
                         : isMouseOver
                         ? css`
-                            height: 224px;
+                            height: 180px;
                           `
                         : css`
                             height: 220px;
@@ -366,6 +403,7 @@ export default function BatchSearchAssistant(props: {
                       ) : (
                         <TextField
                           variant="outlined"
+                          autoFocus
                           multiline
                           rows={9}
                           value={batchInput}
@@ -390,6 +428,7 @@ export default function BatchSearchAssistant(props: {
                             }
                           `}
                           onChange={onMultilineChange}
+                          onKeyDown={onKeyDown}
                         />
                       )}
                       <span
@@ -724,6 +763,10 @@ export default function BatchSearchAssistant(props: {
                       执行
                     </Button>
                   </StyledTooltip>
+                ) : isMouseOver ? (
+                  ""
+                ) : isExcuted ? (
+                  ""
                 ) : (
                   <Button
                     variant="outlined"

@@ -27,7 +27,7 @@ export default function FlowPanel(props: {
 
   handleClose?: () => void;
   handleToNextStepTip?: () => void;
-  handleShowOrCloseAssistant?: () => void;
+  handleShowOrCloseAssistant?: (show: boolean) => void;
   handleShowTooltip?: () => void;
 }) {
   const {
@@ -72,7 +72,7 @@ export default function FlowPanel(props: {
       handleBatch?.(event.currentTarget, false);
       handleClose?.();
       handleToNextStepTip?.();
-      handleShowOrCloseAssistant?.();
+      handleShowOrCloseAssistant?.(true);
     },
     [handleClose, handleBatch, handleToNextStepTip, handleShowOrCloseAssistant]
   );
@@ -80,7 +80,7 @@ export default function FlowPanel(props: {
   const onCollectData = useCallback(() => {
     handleToNextStepTip?.();
     handleClose?.();
-    handleShowOrCloseAssistant?.();
+    handleShowOrCloseAssistant?.(true);
     handleShowTooltip?.();
   }, [
     handleToNextStepTip,

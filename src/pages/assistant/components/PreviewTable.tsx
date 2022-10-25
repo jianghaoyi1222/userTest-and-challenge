@@ -87,6 +87,15 @@ export default function PreviewTable(props: {
 
   const [isFocused, setIsFocused] = useState(false);
 
+  const [length, setLength] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (type === "batchSearch" && file) {
+      const list = Object.keys(file[0]);
+      setLength(856 / list.length);
+    }
+  }, [file, type]);
+
   useEffect(() => {
     let timer: any = null;
     if (currentStep === 4) {
@@ -315,7 +324,7 @@ export default function PreviewTable(props: {
               border-radius: 8px 8px 0px 0px;
             }
           `,
-          type === "dataProcess" &&
+          (type === "dataProcess" || type === "batchSearch") &&
             css`
               .MuiDialog-container {
                 width: 1400px;
@@ -973,33 +982,45 @@ export default function PreviewTable(props: {
                             </div>
                           ) : (
                             <div
-                              css={css`
-                                height: 40px;
-                                padding-top: 9px;
-                                padding-left: 12px;
-                                padding-bottom: 9px;
-                                font-size: 12px;
-                                line-height: 12px;
-                                flex-grow: 1;
-                                border-bottom: 1px solid #f0f0f0;
-                                box-sizing: border-box;
-                                display: flex;
-                                align-items: center;
-                                padding-left: 26px;
-                              `}
+                              css={[
+                                css`
+                                  height: 40px;
+                                  padding-top: 9px;
+                                  padding-left: 12px;
+                                  padding-bottom: 9px;
+                                  font-size: 12px;
+                                  line-height: 12px;
+                                  flex-grow: 1;
+                                  border-bottom: 1px solid #f0f0f0;
+                                  box-sizing: border-box;
+                                  display: flex;
+                                  align-items: center;
+                                  padding-left: 26px;
+                                `,
+                                length &&
+                                  css`
+                                    width: ${length}px;
+                                  `,
+                              ]}
                             >
-                              <span
-                                css={css`
-                                  font-size: 14px;
-                                  line-height: 20px;
-                                  color: rgba(0, 0, 0, 0.6);
-                                  overflow: hidden;
-                                  text-overflow: ellipsis;
-                                  white-space: nowrap;
-                                `}
+                              <div
+                                css={[
+                                  css`
+                                    font-size: 14px;
+                                    line-height: 20px;
+                                    color: rgba(0, 0, 0, 0.6);
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                  `,
+                                  length &&
+                                    css`
+                                      width: ${length}px;
+                                    `,
+                                ]}
                               >
                                 {resultItem}
-                              </span>
+                              </div>
                             </div>
                           )
                         )}

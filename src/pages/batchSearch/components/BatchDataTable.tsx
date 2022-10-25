@@ -330,6 +330,7 @@ export default function BatchDataTable(props: {
               width: 1290px;
               height: 216px;
               border: 1px solid #f0f0f0;
+              overflow-y: auto;
             `}
           >
             <TabPanel value={1} index={1} key="1">

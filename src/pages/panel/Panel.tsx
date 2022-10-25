@@ -28,7 +28,7 @@ export default function Panel(props: {
   handleGainExistingData?: (data: DataItem[]) => void;
 
   handleToNextStepTip?: () => void;
-  handleShowOrCloseAssistant?: () => void;
+  handleShowOrCloseAssistant?: (show: boolean) => void;
 
   handleOpenTable?: () => void;
 }) {

@@ -326,15 +326,19 @@ export default function ExecuteCompleted(props: {
                     white-space: nowrap;
                   `}
                 >
-                  <span
+                  <div
                     css={css`
                       margin-left: 30px;
                       font-size: 14px;
                       line-height: 14px;
+                      width: ${length}px;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      white-space: nowrap;
                     `}
                   >
                     {item}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -15,7 +15,7 @@ export default function CountDown(props: {
 
   handleClose?: (value: boolean) => void;
   handleCurrentMode?: (value: CurrentModeItem) => void;
-  handleOpenAssistant?: () => void;
+  handleOpenAssistant?: (show: boolean) => void;
 
   handleToNextStepTip?: () => void;
 }) {
@@ -57,7 +57,7 @@ export default function CountDown(props: {
           clearInterval(times);
           handleClose?.(false);
           handleCurrentMode?.("record");
-          handleOpenAssistant?.();
+          handleOpenAssistant?.(true);
           handleToNextStepTip?.();
         });
       }
