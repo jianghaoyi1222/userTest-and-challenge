@@ -517,8 +517,9 @@ export default function BatchSearch() {
                       }
                     >
                       <div>
-                        {booklist?.map((item: BooklistItem) => (
+                        {booklist?.map((item: BooklistItem, index: number) => (
                           <div
+                            key={index}
                             css={css`
                               display: flex;
                               flex-direction: row;
@@ -585,8 +586,9 @@ export default function BatchSearch() {
                     </StyledTooltip>
                   ) : (
                     <div>
-                      {booklist?.map((item: BooklistItem) => (
+                      {booklist?.map((item: BooklistItem, index: number) => (
                         <div
+                          key={index}
                           css={css`
                             display: flex;
                             flex-direction: row;

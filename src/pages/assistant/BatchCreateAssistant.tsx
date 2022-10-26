@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import { Button, IconButton, Popover, Switch, TextField } from "@mui/material";
+import { Button, IconButton, TextField } from "@mui/material";
 import Icon_assistant from "src/assets/icon_assistant.png";
 import Icon_batchstart from "src/assets/icon_batchstart.png";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -11,7 +11,7 @@ import Icon_operation from "src/assets/icon_operation.png";
 import Icon_preview from "src/assets/icon_preview.png";
 import ExecuteCompleted from "./components/ExecuteCompleted";
 import PreviewTable, { EnterType } from "./components/PreviewTable";
-import { StepListItem } from "../userTest";
+import { ListItem, StepListItem } from "../userTest";
 import ExecuteProcess from "./components/ExecuteProcess";
 import OperationList from "./components/OperationList";
 
@@ -46,6 +46,7 @@ export default function BatchCreateAssistant(props: {
   existingData?: DataItem[];
   isExecuted?: boolean;
   stepList?: StepListItem[];
+  backToCompletedList?: any[];
   handleClose?: () => void;
   handleCountDown?: (value: boolean) => void;
   handleCurrentMode?: (mode: CurrentModeItem) => void;
@@ -80,6 +81,7 @@ export default function BatchCreateAssistant(props: {
     handleExecute,
     handleBackPanel,
     handleConfirm,
+    backToCompletedList,
   } = props;
 
   const [currentMode, setCurrentMode] = useState<CurrentModeItem>();
@@ -196,8 +198,7 @@ export default function BatchCreateAssistant(props: {
 
   const onImportExistingData = useCallback(() => {
     setIsImportData(true);
-    console.log("///", isImportData);
-  }, [isImportData]);
+  }, []);
 
   const onOpenImportFile = useCallback((openfile: DataItem) => {
     setIsOpenPreviewTable(true);
@@ -263,6 +264,9 @@ export default function BatchCreateAssistant(props: {
 
   const list = useCallback(() => {
     const rows: any[] = [];
+    backToCompletedList?.map((list: ListItem) => {
+      rows.push({ 标题列表: list.title, 列表内容: list.description });
+    });
     divideTitle?.map((title: any, titleIndex: number) => {
       divideContent?.map((content: any, contentIndex: number) => {
         if (titleIndex === contentIndex) {
@@ -279,7 +283,7 @@ export default function BatchCreateAssistant(props: {
 
   const onConfirmedBackPanel = useCallback(() => {
     handleBackPanel?.(rowlist);
-  }, [handleBackPanel]);
+  }, [handleBackPanel, rowlist]);
 
   const onTitleKeyDown = useCallback(
     (event: any) => {
@@ -664,6 +668,7 @@ export default function BatchCreateAssistant(props: {
           >
             {steps?.map((step: StepListItem, index: number) => (
               <div
+                key={index}
                 css={css`
                   display: flex;
                   align-items: center;
@@ -700,6 +705,7 @@ export default function BatchCreateAssistant(props: {
           >
             {list.map((item: any, index: number) => (
               <div
+                key={index}
                 css={css`
                   display: flex;
                   flex-direction: row;

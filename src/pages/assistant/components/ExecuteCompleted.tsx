@@ -212,8 +212,9 @@ export default function ExecuteCompleted(props: {
             flex-grow: 1;
           `}
         >
-          {head?.map((item: string) => (
+          {head?.map((item: string, index: number) => (
             <div
+              key={index}
               css={css`
                 height: 32px;
                 box-sizing: border-box;
@@ -303,8 +304,9 @@ export default function ExecuteCompleted(props: {
               </div>
             </div>
           ))} */}
-          {list?.map((listItem: any) => (
+          {list?.map((listItem: any, listIndex: number) => (
             <div
+              key={listIndex}
               css={css`
                 display: flex;
                 flex-direction: row;
@@ -312,8 +314,9 @@ export default function ExecuteCompleted(props: {
                 height: 32px;
               `}
             >
-              {listItem?.map((item: any) => (
+              {listItem?.map((item: any, index: number) => (
                 <div
+                  key={index}
                   css={css`
                     box-sizing: border-box;
                     border: 1px solid #e5e6eb;

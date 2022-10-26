@@ -69,9 +69,9 @@ export default function PreviewTable(props: {
   } = props;
 
   const [openPopover, setOpenPopover] = useState(false);
-  const [selectValue, setSelectValue] = useState<string | undefined>(undefined);
+  const [selectValue, setSelectValue] = useState<string | undefined>("");
   const [confirmedColumnIndex, setConfirmedColumnIndex] = useState<number>();
-  const [feature, setFeature] = useState<string | undefined>();
+  const [feature, setFeature] = useState<string | undefined>("");
 
   const [rows, setRows] = useState<any[]>([]);
   const [originalRows, setOriginalRows] = useState<any[]>([]);
@@ -140,7 +140,6 @@ export default function PreviewTable(props: {
     const tableHeader = headlist;
     const dataList: any[] = [];
     rows?.map((row: any) => {
-      console.log("rows", rows, file);
       const title = row.slice(0, 1);
       row
         .slice(1, row.length)
@@ -647,6 +646,7 @@ export default function PreviewTable(props: {
                           {result?.map((resultItem: any, index: number) =>
                             index === 0 ? (
                               <div
+                                key={index}
                                 css={css`
                                   height: 40px;
                                   display: flex;
@@ -711,6 +711,7 @@ export default function PreviewTable(props: {
                               </div>
                             ) : (
                               <div
+                                key={index}
                                 css={css`
                                   height: 40px;
                                   padding-top: 9px;
@@ -763,6 +764,7 @@ export default function PreviewTable(props: {
                     {rows?.map((result: any, resultIndex: number) => {
                       return (
                         <div
+                          key={resultIndex}
                           css={css`
                             display: flex;
                             flex-direction: column;
@@ -783,6 +785,7 @@ export default function PreviewTable(props: {
                           {result?.map((resultItem: any, index: number) =>
                             index === 0 ? (
                               <div
+                                key={index}
                                 css={css`
                                   height: 40px;
                                   display: flex;
@@ -850,6 +853,7 @@ export default function PreviewTable(props: {
                               </div>
                             ) : (
                               <div
+                                key={index}
                                 css={css`
                                   height: 40px;
                                   padding-top: 9px;
@@ -916,6 +920,7 @@ export default function PreviewTable(props: {
                         {result?.map((resultItem: any, index: number) =>
                           index === 0 ? (
                             <div
+                              key={index}
                               css={css`
                                 height: 40px;
                                 display: flex;
@@ -983,6 +988,7 @@ export default function PreviewTable(props: {
                             </div>
                           ) : (
                             <div
+                              key={index}
                               css={[
                                 css`
                                   height: 40px;

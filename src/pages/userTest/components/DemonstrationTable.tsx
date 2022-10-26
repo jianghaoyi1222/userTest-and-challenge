@@ -41,6 +41,7 @@ export default function DemonstrationTable(props: {
   handleChangeContent?: (event?: any) => void;
   handleConfirm?: (isConfirm: boolean) => void;
   handleAddStep?: (component: any, text: string) => void;
+  handleBackToCompletedList?: (list: any[]) => void;
 }) {
   const {
     mode,
@@ -57,13 +58,13 @@ export default function DemonstrationTable(props: {
     handleChangeContent,
     handleConfirm,
     handleAddStep,
+    handleBackToCompletedList,
   } = props;
   const [page, setPage] = useState<number>(1);
   const [openAdd, setOpenAdd] = useState(false);
   const [isButtonHighlight, setIsButtonHighlight] = useState(false);
   const [rows, _setRows] = useState<ListItem[]>([]);
   const [rowList, setRowList] = useState<ListItem[][]>([]);
-  const [list, setList] = useState<any>({});
 
   const tableRowRef = useRef(null);
 
@@ -94,45 +95,53 @@ export default function DemonstrationTable(props: {
     setIsButtonHighlight(true);
   }, []);
 
-  const handleConfirmed = useCallback((title: string, description: string) => {
-    Object.assign(list, { title: title, description: description });
-  }, []);
+  const handleConfirmed = useCallback(
+    (title: string, description: string) => {
+      rows.push({ id: rows.length, title: title, description: description });
+    },
+    [rows]
+  );
 
   useEffect(() => {
+    handleBackToCompletedList?.(rows);
     if (isConfirmed && isExecuted) {
-      rows.splice(0, rows.length);
+      rows.splice(rows.length - 1, rows.length);
       titleList.map((title: any, titleIndex: number) => {
         contentList.map((content: any, contentIndex: number) => {
           if (titleIndex === contentIndex) {
-            rows.push({ id: titleIndex, title: title, description: content });
+            rows.push({
+              id: rows.length + 1,
+              title: title,
+              description: content,
+            });
           }
         });
       });
-    } else if (isConfirmed) {
-      if (titleList[0] && contentList[0]) {
-        rows.push({ id: 0, title: titleList[0], description: contentList[0] });
-      } else {
-        rows.push({
-          id: 0,
-          title: list?.title,
-          description: list?.description,
-        });
-      }
     }
 
     let start = 0;
     let end = 10;
     const lists: any[] = [];
     const row = Math.ceil(rows.length / 10);
-    for (let i = 0; i < row; i++) {
-      const rowList = rows?.slice(start, end);
-      lists.push(rowList);
-      start = start + 10;
-      end = end + 10;
+    if (rows.length > 10) {
+      for (let i = 0; i < row; i++) {
+        const rowList = rows?.slice(start, end);
+        lists.push(rowList);
+        start = start + 10;
+        end = end + 10;
+      }
+    } else {
+      lists.push(rows);
     }
-
     setRowList(lists);
-  }, [isConfirmed, titleList, contentList, rows, isExecuted, list]);
+  }, [
+    isConfirmed,
+    titleList,
+    contentList,
+    rows,
+    isExecuted,
+    handleBackToCompletedList,
+  ]);
 
   return (
     <div

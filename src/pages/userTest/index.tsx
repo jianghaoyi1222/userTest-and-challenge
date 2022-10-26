@@ -13,6 +13,7 @@ import Icon_bee from "src/assets/icon_bee.png";
 import BatchCreateAssistant, {
   CurrentModeItem,
 } from "../assistant/BatchCreateAssistant";
+import PreviewTable from "../assistant/components/PreviewTable";
 
 export interface ListItem {
   id: number;
@@ -60,6 +61,12 @@ export default function UserTest() {
   const [flowList, setFlowList] = useState<FlowItem>();
 
   const [stepList, _setStepList] = useState<StepListItem[]>([]);
+
+  const [backToCompletedList, setBackToCompletedList] = useState<any[]>([]);
+
+  //从Panel打开PreviewTable
+  const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState<DataItem>();
 
   const onShowPanel = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -173,6 +180,18 @@ export default function UserTest() {
     [stepList]
   );
 
+  const onBackToCompletedList = useCallback((list: any[]) => {
+    setBackToCompletedList(list);
+  }, []);
+
+  const onOpenTable = useCallback(() => {
+    setIsOpen(!isOpen);
+  }, [isOpen]);
+
+  const onPreviewTablelist = useCallback((list: DataItem) => {
+    setData(list);
+  }, []);
+
   return (
     <div
       css={css`
@@ -230,9 +249,6 @@ export default function UserTest() {
       <DemonstrationTable
         mode={currentMode}
         isExecuted={isExecuted}
-        handleIdentifyComponent={onIdentifyComponent}
-        handleChangeTitle={onHandleChangeTitle}
-        handleChangeContent={onHandleChangeContent}
         transmitBackTitle={transmitBackTitle}
         isBatchTitle={isBatchTitle}
         transmitBackContent={transmitBackContent}
@@ -242,6 +258,10 @@ export default function UserTest() {
         isConfirmed={isConfirmed}
         handleConfirm={handleConfirm}
         handleAddStep={AddStep}
+        handleIdentifyComponent={onIdentifyComponent}
+        handleChangeTitle={onHandleChangeTitle}
+        handleChangeContent={onHandleChangeContent}
+        handleBackToCompletedList={onBackToCompletedList}
       />
       <Panel
         open={showPanel}
@@ -252,6 +272,8 @@ export default function UserTest() {
         handleGainExistingData={onGainExistingData}
         handleClose={handlePanelClose}
         handleBatch={onhandleBatch}
+        handleOpenTable={onOpenTable}
+        handlePreviewTablelist={onPreviewTablelist}
       />
       <BatchCreateAssistant
         open={showAssistant}
@@ -263,6 +285,7 @@ export default function UserTest() {
         existingData={existingData}
         isExecuted={isExecuted}
         stepList={stepList}
+        backToCompletedList={backToCompletedList}
         handleCountDown={onhandleCountDown}
         handleCurrentMode={onhandleCurrentMode}
         handleClose={handleAssistantClose}
@@ -272,6 +295,15 @@ export default function UserTest() {
         handleBackPanel={onBackPanel}
         handleConfirm={handleConfirm}
       />
+      {isOpen && (
+        <PreviewTable
+          open={isOpen}
+          file={data?.result}
+          name={data?.name}
+          enter={"preview"}
+          onClose={onOpenTable}
+        />
+      )}
     </div>
   );
 }

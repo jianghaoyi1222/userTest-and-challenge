@@ -82,7 +82,36 @@ export default function AddContent(props: {
     handleClose?.();
     handleConfirm?.(true);
     handleConfirmed?.(title, content);
-  }, [mode, handleIdentifyComponent, handleClose, title, content]);
+    setTitle("");
+    setContent("");
+    setFouseTitle(false);
+    setFoustContent(false);
+    setIsTitleHighlight(false);
+    setIsContentHighlight(false);
+    handleChangeTitle?.("");
+    handleChangeContent?.("");
+  }, [
+    mode,
+    handleIdentifyComponent,
+    handleClose,
+    title,
+    content,
+    handleChangeTitle,
+    handleChangeContent,
+  ]);
+
+  const onClose = useCallback(() => {
+    handleClose?.();
+    setTitle("");
+    setContent("");
+    setIsButtonHighlight(true);
+    setFouseTitle(false);
+    setFoustContent(false);
+    setIsTitleHighlight(false);
+    setIsContentHighlight(false);
+    handleChangeTitle?.("");
+    handleChangeContent?.("");
+  }, [handleClose, handleChangeTitle, handleChangeContent]);
 
   const onChangeTitle = useCallback((event: any) => {
     handleChangeTitle?.(event.target.value);
@@ -313,7 +342,7 @@ export default function AddContent(props: {
           `}
         >
           <Button
-            onClick={handleClose}
+            onClick={onClose}
             variant="contained"
             css={css`
               width: 88px;

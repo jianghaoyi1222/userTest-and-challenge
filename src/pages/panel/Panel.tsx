@@ -31,6 +31,7 @@ export default function Panel(props: {
   handleShowOrCloseAssistant?: (show: boolean) => void;
 
   handleOpenTable?: () => void;
+  handlePreviewTablelist?: (list: DataItem) => void;
 }) {
   const {
     activeTab = "flow",
@@ -52,6 +53,7 @@ export default function Panel(props: {
     handleShowOrCloseAssistant,
 
     handleOpenTable,
+    handlePreviewTablelist,
   } = props;
   const [activeItem, setActiveItem] = useState<string>("");
   const [datalist, setDatalist] = useState<DataItem>();
@@ -254,6 +256,7 @@ export default function Panel(props: {
               handleChangeDataSourceSituation={handleChangeDataSourceSituation}
               handleOpenTable={handleOpenTable}
               handleToNextStepTip={handleToNextStepTip}
+              handlePreviewTablelist={handlePreviewTablelist}
             />
           )}
         </div>

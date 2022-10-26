@@ -32,6 +32,7 @@ export default function DataPanel(props: {
   handleChangeDataSourceSituation?: () => void;
   handleOpenTable?: () => void;
   handleToNextStepTip?: () => void;
+  handlePreviewTablelist?: (list: DataItem) => void;
 }) {
   const {
     dataSource,
@@ -44,6 +45,7 @@ export default function DataPanel(props: {
     handleChangeDataSourceSituation,
     handleOpenTable,
     handleToNextStepTip,
+    handlePreviewTablelist,
   } = props;
 
   const [data, setData] = useState<DataItem[]>([]);
@@ -138,10 +140,15 @@ export default function DataPanel(props: {
     [data]
   );
 
-  const onView = useCallback(() => {
-    handleOpenTable?.();
-    handleToNextStepTip?.();
-  }, [handleOpenTable, handleToNextStepTip]);
+  const onView = useCallback(
+    (id: string) => {
+      const list: any = data.filter((item: any) => item.id === id)[0];
+      handlePreviewTablelist?.(list);
+      handleOpenTable?.();
+      handleToNextStepTip?.();
+    },
+    [handleOpenTable, handleToNextStepTip, handlePreviewTablelist, data]
+  );
 
   return (
     <div
@@ -199,10 +206,10 @@ export default function DataPanel(props: {
                 />
               </Button>
             </div>
-            {data?.map((data, index) => {
+            {data?.map((data) => {
               return (
                 <div
-                  key={index}
+                  key={data.id}
                   css={css`
                     position: relative;
                     width: 296px;
@@ -282,10 +289,10 @@ export default function DataPanel(props: {
                             }
                           >
                             <IconButton
-                              onClick={onView}
+                              onClick={() => onView(data.id)}
                               css={css`
                                 padding: 1px;
-                                margin-right: 16px;
+                                margin-right: 8px;
                               `}
                             >
                               <img src={Icon_update} />
@@ -293,10 +300,10 @@ export default function DataPanel(props: {
                           </StyledTooltip>
                         ) : (
                           <IconButton
-                            onClick={onView}
+                            onClick={() => onView(data.id)}
                             css={css`
                               padding: 1px;
-                              margin-right: 16px;
+                              margin-right: 8px;
                             `}
                           >
                             <img src={Icon_update} />
