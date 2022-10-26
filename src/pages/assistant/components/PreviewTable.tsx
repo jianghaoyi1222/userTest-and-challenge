@@ -277,11 +277,11 @@ export default function PreviewTable(props: {
 
   const onChecked = useCallback(() => {
     setChecked(!checked);
-    handleToNextStepTip?.();
     if (currentStep === 9) {
       confirmedColumnIndex && setConfirmedColumnIndex(confirmedColumnIndex + 1);
+      handleToNextStepTip?.();
     }
-  }, [handleToNextStepTip, checked, confirmedColumnIndex]);
+  }, [handleToNextStepTip, checked, confirmedColumnIndex, currentStep]);
 
   const handleFocus = useCallback(() => {
     setIsFocused(!isFocused);
@@ -361,6 +361,7 @@ export default function PreviewTable(props: {
               font-size: 14px;
               line-height: 16px;
               color: #ffffff;
+              margin-left: 16px;
             `}
           >
             {name}
@@ -498,7 +499,7 @@ export default function PreviewTable(props: {
               <StyledTooltip
                 open={true}
                 arrow
-                placement="bottom"
+                placement="top"
                 title={
                   stepTips?.filter(
                     (tip: StepTipItem) => tip.index === currentStep

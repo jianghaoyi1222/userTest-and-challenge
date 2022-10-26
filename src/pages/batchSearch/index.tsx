@@ -109,7 +109,7 @@ export default function BatchSearch() {
       },
       {
         index: 9,
-        tip: "？实时展示查询结果",
+        tip: "实时展示查询结果",
       },
       {
         index: 10,

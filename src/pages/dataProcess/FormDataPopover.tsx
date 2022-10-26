@@ -109,7 +109,7 @@ export default function FormDataPopover(props: {
           <StyledTooltip
             open={true}
             arrow
-            placement="top"
+            placement="left"
             title={
               stepTips?.filter(
                 (tip: StepTipItem) => tip.index === currentStep
@@ -184,7 +184,7 @@ export default function FormDataPopover(props: {
           <StyledTooltip
             open={true}
             arrow
-            placement="top"
+            placement="left"
             title={
               stepTips?.filter(
                 (tip: StepTipItem) => tip.index === currentStep
@@ -250,7 +250,7 @@ export default function FormDataPopover(props: {
           <StyledTooltip
             open={true}
             arrow
-            placement="top"
+            placement="left"
             title={
               stepTips?.filter(
                 (tip: StepTipItem) => tip.index === currentStep
@@ -325,7 +325,7 @@ export default function FormDataPopover(props: {
           <StyledTooltip
             open={true}
             arrow
-            placement="top"
+            placement="left"
             title={
               stepTips?.filter(
                 (tip: StepTipItem) => tip.index === currentStep

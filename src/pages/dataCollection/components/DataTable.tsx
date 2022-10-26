@@ -780,7 +780,7 @@ export default function DataTable(props: {
             <StyledTooltip
               open={true}
               arrow
-              placement="right"
+              placement="left"
               title={
                 stepTips?.filter(
                   (tip: StepTipItem) => tip.index === currentStep

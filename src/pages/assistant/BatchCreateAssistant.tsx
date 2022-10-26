@@ -626,6 +626,11 @@ export default function BatchCreateAssistant(props: {
         item.component.includes("input")
       );
     }, [stepList]);
+
+    const length = useMemo(() => {
+      return steps ? (510 - 30) / steps?.length : 480;
+    }, [steps]);
+
     return (
       <div
         css={css`
@@ -677,9 +682,7 @@ export default function BatchCreateAssistant(props: {
                   border: 1px solid rgba(255, 255, 255, 0.1);
                   height: 32px;
                   padding-left: 12px;
-                  width: ${index === 0
-                    ? (510 - 30) / steps.length + 30
-                    : (510 - 30) / steps.length}px;
+                  width: ${index === 0 ? length + 30 : length}px;
                 `}
               >
                 <span
@@ -742,7 +745,7 @@ export default function BatchCreateAssistant(props: {
                       display: flex;
                       align-items: center;
                       flex-grow: 1;
-                      /* width:225px; */
+                      width: ${length}px;
                       height: 30px;
                       box-sizing: border-box;
                       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -767,7 +770,7 @@ export default function BatchCreateAssistant(props: {
                       display: flex;
                       align-items: center;
                       flex-grow: 1;
-                      /* width: 255px; */
+                      width: ${length}px;
                       height: 30px;
                       box-sizing: border-box;
                       border: 1px solid rgba(255, 255, 255, 0.1);
