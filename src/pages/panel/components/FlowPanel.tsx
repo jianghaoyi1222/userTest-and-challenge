@@ -279,11 +279,11 @@ export default function FlowPanel(props: {
                 </Button>
               </StyledTooltip>
             ) : (
-              <Button css={autoButtonCss} onClick={onBatch}>
-                批量查询
-              </Button>
+              <Button css={autoButtonCss}>批量查询</Button>
             )}
-            <Button css={autoButtonCss}>循环操作</Button>
+            <Button css={autoButtonCss} onClick={onBatch}>
+              循环操作
+            </Button>
             {type === "dataCollection" && currentStep === 1 ? (
               <StyledTooltip
                 arrow
