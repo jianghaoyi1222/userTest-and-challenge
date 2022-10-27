@@ -10,7 +10,7 @@ export default function EndPage() {
 
   const onJumpPage = useCallback(() => {
     window.parent.location.href =
-      "https://preview.aipage.com/preview/site/788617d4-77f3-4d1b-84a6-c6b7f7c28f9b/6cc89dae-4eac-48f4-8f84-9b0114b9d982?aipage_preview_token=ab7d9c7693f0ad7014eb8123c95fa33363211ce9451efcddf14d1196e427f453&deviceType=pc&language=zh";
+      "https://www.encoo.com/new-automate.cn-download";
   }, []);
 
   return (
