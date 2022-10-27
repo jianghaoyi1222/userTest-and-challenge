@@ -256,6 +256,8 @@ export default function PreviewTable(props: {
     setSelectValue(undefined);
     setFeature(undefined);
     setConfirmedColumnIndex(undefined);
+    setIsFocused(false);
+    setChecked(false);
   }, [originalRows, handleToPreStepTip, currentStep]);
 
   const onPopoverConfirm = useCallback(() => {
