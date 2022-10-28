@@ -7,6 +7,7 @@ import Icon_help from "src/assets/icon_help.png";
 import { EnterType } from "./PreviewTable";
 
 export default function ExecuteCompleted(props: {
+  name?: string;
   step?: number;
   rowlist?: any;
   onOpenPreviewTable?: (enterType?: EnterType) => void;
@@ -16,6 +17,7 @@ export default function ExecuteCompleted(props: {
   handleConfirm?: (isConfirm: boolean) => void;
 }) {
   const {
+    name,
     step,
     rowlist,
     onOpenPreviewTable,
@@ -128,7 +130,7 @@ export default function ExecuteCompleted(props: {
               color: #303030;
             `}
           >
-            小蜜蜂批量新增列
+            {name}
           </span>
         </div>
         <div
@@ -361,7 +363,7 @@ export default function ExecuteCompleted(props: {
           共计<span>{rowlist?.length}</span>条数据，
         </span>
         <Button onClick={() => onOpenPreviewTable?.("preview")}>
-          点击预览
+          查看全部
         </Button>
       </div>
       <div

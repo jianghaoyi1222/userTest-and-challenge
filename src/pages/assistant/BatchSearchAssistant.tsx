@@ -48,6 +48,7 @@ export default function BatchSearchAssistant(props: {
   ) => void;
   handleShowData?: (show: boolean) => void;
   handleOpenPreviewTable?: (enterType?: EnterType) => void;
+  handleBackPanel?: (data: any[]) => void;
 }) {
   const {
     open,
@@ -68,6 +69,7 @@ export default function BatchSearchAssistant(props: {
     handleTransmitBackInput,
     handleShowData,
     handleOpenPreviewTable,
+    handleBackPanel,
   } = props;
 
   const [textValue, setTextValue] = useState("");
@@ -119,22 +121,26 @@ export default function BatchSearchAssistant(props: {
   const onExcute = useCallback(() => {
     setIsExcuted(true);
     batchlist && setTimeout(() => setDelayTimes(batchlist?.length), 800);
+    setTimeout(() => setIsContinuous(true), 1000);
     handleToNextStepTip?.();
     handleShowData?.(false);
   }, [batchlist, handleToNextStepTip, handleShowData]);
 
   useEffect(() => {
-    let timer: any = null;
-    if (delayTimes === batchlist?.length) {
-      timer = setTimeout(() => setIsContinuous(true), 500);
-    }
+    // let timer: any = null;
+    // if (isExcuted) {
+    //   if (delayTimes === batchlist?.length) {
+    //     timer = setTimeout(() => setIsContinuous(true), 500);
+    //   }
+    // }
+
     if (isContinuous) {
       handleShowAssistant?.(false);
     }
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [isContinuous, handleShowAssistant, delayTimes, batchlist]);
+    // return () => {
+    //   clearTimeout(timer);
+    // };
+  }, [isContinuous, handleShowAssistant]);
 
   //批量输入文本
   const onBatchInput = useCallback(() => {
@@ -143,21 +149,21 @@ export default function BatchSearchAssistant(props: {
   }, [handleToNextStepTip]);
 
   const onMultilineChange = useCallback((event: any) => {
-    if (event.target.value.indexOf("'") >= 0) {
-      const inputValue = event.target.value
-        .split(/[(\"\')\"\']+/)
-        .filter((item: any) => item && item.trim());
-      setBatchInput(inputValue.join("\n"));
-      setInputlist(inputValue);
-      setFirstBatchInput(inputValue[0]);
-    } else {
-      const value = event.target.value
-        .split(/[(\r\n)\r\n]+/)
-        .filter((item: any) => item && item.trim());
-      setBatchInput(event.target.value);
-      setInputlist(value);
-      setFirstBatchInput(value[0]);
-    }
+    // if (event.target.value.indexOf("'") >= 0) {
+    //   const inputValue = event.target.value
+    //     .split(/[(\"\')\"\']+/)
+    //     .filter((item: any) => item && item.trim());
+    //   setBatchInput(inputValue.join("\n"));
+    //   setInputlist(inputValue);
+    //   setFirstBatchInput(inputValue[0]);
+    // } else {
+    const value = event.target.value
+      .split(/[(\r\n)\r\n]+/)
+      .filter((item: any) => item && item.trim());
+    setBatchInput(event.target.value);
+    setInputlist(value);
+    setFirstBatchInput(value[0]);
+    // }
   }, []);
 
   const onConfirmBatch = useCallback(() => {
@@ -184,13 +190,20 @@ export default function BatchSearchAssistant(props: {
     }
   }, [value, currentStep, handleToNextStepTip]);
 
+  const onConfirmedBackPanel = useCallback(() => {
+    rowlist && handleBackPanel?.(rowlist);
+  }, [handleBackPanel, rowlist]);
+
   return (
     <div>
-      {isContinuous ? (
+      {isExcuted && isContinuous ? (
         <ExecuteCompleted
+          name={"批量查询小说排名"}
           step={3}
           rowlist={rowlist}
+          onhandleExecute={() => setIsExcuted(false)}
           onOpenPreviewTable={handleOpenPreviewTable}
+          onConfirmedBackPanel={onConfirmedBackPanel}
         />
       ) : (
         <div
@@ -366,9 +379,17 @@ export default function BatchSearchAssistant(props: {
                           arrow
                           placement="left"
                           title={
-                            stepTips?.filter(
-                              (tip: StepTipItem) => tip.index === currentStep
-                            )[0]?.tip
+                            <span>
+                              请输入：
+                              <br />
+                              玄幻
+                              <br />
+                              都市
+                              <br />
+                              历史
+                              <br />
+                              按“enter”回车键换行
+                            </span>
                           }
                         >
                           <TextField

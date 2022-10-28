@@ -27,6 +27,11 @@ import Icon_mark from "src/assets/icon_mark.png";
 import StyledAnimation from "src/components/StyledAnimation";
 import PreviewTable from "../assistant/components/PreviewTable";
 import EndPage from "src/components/EndPage";
+import { FlowItem } from "../panel/components/FlowPanel";
+import moment from "moment";
+import { DataItem } from "../panel/components/DataPanel";
+import Icon_xlsx from "src/assets/icon_xlsx.png";
+import Icon_bee from "src/assets/icon_bee.png";
 
 export interface BooklistItem {
   图片链接: string;
@@ -73,6 +78,9 @@ export default function BatchSearch() {
 
   const [isEnd, setIsEnd] = useState(false);
 
+  const [dataList, setDataList] = useState<DataItem>();
+  const [flowList, setFlowList] = useState<FlowItem>();
+
   const stepTips: StepTipItem[] = useMemo(
     () => [
       {
@@ -93,11 +101,11 @@ export default function BatchSearch() {
       },
       {
         index: 5,
-        tip: "输入'玄幻''都市''历史'关键词间使用【回车】换行",
+        tip: "输入：'玄幻''都市''历史'关键词间使用【回车】换行",
       },
       {
         index: 6,
-        tip: "点击【确定】",
+        tip: "输入完成后，点击【确定】",
       },
       {
         index: 7,
@@ -273,6 +281,27 @@ export default function BatchSearch() {
       clearTimeout(timer);
     };
   }, [isOpenPreview]);
+
+  const onBackPanel = useCallback((data: any[]) => {
+    const list: DataItem = {
+      id: "1",
+      name: "批量查询小说排名",
+      createTime: moment().format(),
+      icon: Icon_xlsx,
+      description: `来自于本地`,
+      type: "xlsx",
+      result: data,
+    };
+    const flow: FlowItem = {
+      id: "1",
+      name: "批量查询小说排名",
+      createTime: moment().format(),
+      icon: Icon_bee,
+    };
+    setShowPanel(true);
+    setDataList(list);
+    setFlowList(flow);
+  }, []);
 
   return (
     <div
@@ -840,9 +869,11 @@ export default function BatchSearch() {
           <Panel
             type="batchSearch"
             open={showPanel}
-            handleToNextStepTip={onToNextStepTip}
             stepTips={stepTips}
             currentStep={currentStep}
+            dataList={dataList}
+            flowList={flowList}
+            handleToNextStepTip={onToNextStepTip}
             handleClose={onShowOrClosePanel}
             handleShowOrCloseAssistant={onShowOrCloseAssistant}
           />
@@ -865,6 +896,7 @@ export default function BatchSearch() {
             handleToNextStepTip={onToNextStepTip}
             handleBackValueChange={onChangeBackValue}
             handleTransmitBackInput={onTransmitBackInput}
+            handleBackPanel={onBackPanel}
           />
           <CountDown
             open={isStart}
@@ -1007,7 +1039,7 @@ export default function BatchSearch() {
             enter="preview"
             type="batchSearch"
             file={booklist}
-            name="小蜜蜂批量新增列"
+            name="批量查询小说排名"
           />
         </div>
       )}

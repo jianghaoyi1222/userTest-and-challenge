@@ -50,7 +50,7 @@ export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => {
     fontSize: "20px",
     fontWeight: "500px",
     minWidth: "248px",
-    height: "76px",
+    minHeight: "76px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

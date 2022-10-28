@@ -918,6 +918,7 @@ export default function BatchCreateAssistant(props: {
     >
       {isExecuted && isContinuous ? (
         <ExecuteCompleted
+          name={"小蜜蜂批量新增列"}
           step={4}
           rowlist={rowlist}
           onhandleExecute={handleExecute}
