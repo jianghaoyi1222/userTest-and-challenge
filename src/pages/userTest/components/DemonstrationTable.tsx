@@ -63,7 +63,7 @@ export default function DemonstrationTable(props: {
   const [page, setPage] = useState<number>(1);
   const [openAdd, setOpenAdd] = useState(false);
   const [isButtonHighlight, setIsButtonHighlight] = useState(false);
-  const [rows, _setRows] = useState<ListItem[]>([]);
+  const [rows, setRows] = useState<ListItem[]>([]);
   const [rowList, setRowList] = useState<ListItem[][]>([]);
 
   const tableRowRef = useRef(null);
@@ -98,6 +98,14 @@ export default function DemonstrationTable(props: {
   const handleConfirmed = useCallback(
     (title: string, description: string) => {
       rows.push({ id: rows.length, title: title, description: description });
+    },
+    [rows]
+  );
+
+  const onDelete = useCallback(
+    (id: number) => {
+      const restRows = rows.filter((item) => item.id !== id);
+      setRows(restRows);
     },
     [rows]
   );
@@ -430,6 +438,7 @@ export default function DemonstrationTable(props: {
                               min-width: 0px;
                               color: red;
                             `}
+                            onClick={() => onDelete(row.id)}
                           >
                             删除
                           </Button>

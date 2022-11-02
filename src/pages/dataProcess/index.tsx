@@ -3,7 +3,7 @@ import { jsx, css } from "@emotion/react";
 import { Button } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StepTipItem } from "../dataCollection";
-import Icon_home from "src/assets/icon_home.png";
+import Icon_dataprocess from "src/assets/icon_dataprocess.png";
 import moment from "moment";
 import { DataItem } from "../panel/components/DataPanel";
 import Icon_xlsx from "src/assets/icon_xlsx.png";
@@ -305,7 +305,7 @@ export default function DataProcess() {
               `}
             >
               <img
-                src={Icon_home}
+                src={Icon_dataprocess}
                 css={css`
                   width: 839px;
                   height: 516px;

@@ -302,11 +302,11 @@ export default function PreviewTable(props: {
 
   return (
     <div
-      css={css`
-        width: 100%;
-        height: 100%;
-        position: relative;
-      `}
+    // css={css`
+    //   width: 100%;
+    //   height: 100%;
+    //   position: relative;
+    // `}
     >
       <Dialog
         open={open ?? false}

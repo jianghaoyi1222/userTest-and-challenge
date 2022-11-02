@@ -1723,16 +1723,18 @@ export default function BatchCreateAssistant(props: {
           setIsOpenOperation(false);
         }}
       />
-      <PreviewTable
-        open={isOpenPreviewTable}
-        file={rowlist}
-        name="小蜜蜂批量新增列"
-        confirmedColumn={confirmedColumn}
-        enter={enter}
-        onConfirmImport={onConfirmImport}
-        onClose={onClosePreViewTable}
-        onImportConfirmedData={onImportConfirmedData}
-      />
+      {isOpenPreviewTable && (
+        <PreviewTable
+          open={isOpenPreviewTable}
+          file={rowlist}
+          name="小蜜蜂批量新增列"
+          confirmedColumn={confirmedColumn}
+          enter={enter}
+          onConfirmImport={onConfirmImport}
+          onClose={onClosePreViewTable}
+          onImportConfirmedData={onImportConfirmedData}
+        />
+      )}
     </div>
   );
 }
