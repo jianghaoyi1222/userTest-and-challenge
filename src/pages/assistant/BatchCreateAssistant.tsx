@@ -231,8 +231,17 @@ export default function BatchCreateAssistant(props: {
 
   const onImplement = useCallback(() => {
     handleExecute?.(true);
-    setTimeout(() => setDelayTimes(rowlist?.length), 500);
-    setTimeout(() => setIsContinuous(true), 1000);
+    setInterval(
+      () =>
+        setDelayTimes((preValue) =>
+          preValue < rowlist?.length ? preValue + 1 : rowlist?.length
+        ),
+      100
+    );
+    setTimeout(
+      () => setIsContinuous(true),
+      Number(rowlist?.length) * 100 + 100
+    );
   }, [handleExecute, handleClose, delayTimes, rowlist?.length]);
 
   useEffect(() => {

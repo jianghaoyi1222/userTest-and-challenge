@@ -6,6 +6,7 @@ import FlowPanel, { FlowItem } from "./components/FlowPanel";
 import DataPanel, { DataItem } from "./components/DataPanel";
 import Icon_unfold from "src/assets/icon_unfold.png";
 import Icon_add from "src/assets/icon_add.png";
+import Icon_user from "src/assets/icon_user.png";
 import SearchInput from "src/components/SearchInput";
 import { IconButton } from "@mui/material";
 import { StepTipItem } from "../dataCollection";
@@ -219,6 +220,19 @@ export default function Panel(props: {
                 src={Icon_unfold}
                 css={css`
                   width: 24px;
+                `}
+              />
+            </IconButton>
+            <IconButton
+              css={css`
+                width: 40px;
+                height: 40px;
+              `}
+            >
+              <img
+                src={Icon_user}
+                css={css`
+                  width: 18px;
                 `}
               />
             </IconButton>

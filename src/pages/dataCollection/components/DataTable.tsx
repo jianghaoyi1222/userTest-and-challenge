@@ -22,6 +22,9 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import Icon_add from "src/assets/icon_add.png";
 import Icon_more from "src/assets/icon_more.png";
+import Icon_processtable from "src/assets/icon_processtable.png";
+import Icon_downloadtable from "src/assets/icon_downloadtable.png";
+import Icon_resettable from "src/assets/icon_resettable.png";
 import { StepTipItem, StyledTooltip } from "..";
 import { ChevronRight } from "@mui/icons-material";
 import { dataConversionUtil } from "src/utils/excel";
@@ -46,24 +49,26 @@ export default function DataTable(props: {
   currentStep?: number;
   stepTips?: StepTipItem[];
   handleToNextStepTip?: () => void;
+  handleBackPanel?: (data?: any[]) => void;
 }) {
-  const { show, currentStep, stepTips, handleToNextStepTip } = props;
+  const { show, currentStep, stepTips, handleToNextStepTip, handleBackPanel } =
+    props;
 
   const [tab, setTab] = useState(1);
-  const [openPopover, setOpenPopover] = useState(false);
-  const [addList, setAddList] = useState(false);
+  const [openPopover, _setOpenPopover] = useState(false);
+  const [addList, _setAddList] = useState(false);
 
   const buttonCss = css`
-    min-width: 80px;
-    min-height: 28px;
-    border-radius: 4px;
-    background: #ffcc00;
+    min-width: 64px;
+    min-height: 24px;
+    border-radius: 2px;
+    background: #ffffff;
     font-size: 12px;
     line-height: 16px;
-    color: #151515;
-    margin-right: 16px;
+    color: #444444;
+    margin-right: 8px;
     :hover {
-      background: #ffcc00;
+      background: #ffffff;
     }
   `;
 
@@ -213,27 +218,31 @@ export default function DataTable(props: {
     );
   };
 
-  const onhandleMoreClick = useCallback(() => {
-    setOpenPopover(true);
-    handleToNextStepTip?.();
-  }, [handleToNextStepTip]);
+  // const onhandleMoreClick = useCallback(() => {
+  //   setOpenPopover(true);
+  //   handleToNextStepTip?.();
+  // }, [handleToNextStepTip]);
 
-  const onListItemClick = useCallback(() => {
-    setOpenPopover(false);
-    handleToNextStepTip?.();
-    setAddList(true);
-  }, [handleToNextStepTip]);
+  // const onListItemClick = useCallback(() => {
+  //   setOpenPopover(false);
+  //   handleToNextStepTip?.();
+  //   setAddList(true);
+  // }, [handleToNextStepTip]);
+
+  const onEndGrab = useCallback(() => {
+    handleBackPanel?.();
+  }, [handleBackPanel]);
 
   const onLoadExcel = useCallback(() => {
     handleToNextStepTip?.();
-    const tableHeader = ["列1", "列2", "列3", "列4", "列5"];
+    const tableHeader = ["列1", "列2", "列3", "列4"];
     const dataList: any[] = [];
     list?.map((item: TableListItem) => {
       dataList.push([
         item?.image,
         item?.price,
         item?.description,
-        item?.image,
+        // item?.image,
         item?.store,
       ]);
     });
@@ -254,6 +263,12 @@ export default function DataTable(props: {
         border-radius: 8px 8px 0px 0px;
         background: #ffffff;
         box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.5);
+        /* animation: fadenum 0.5s;
+        @keyframes fadenum {
+          0% {
+            transform: translateY(250px);
+          }
+        } */
       `}
     >
       <div
@@ -295,13 +310,40 @@ export default function DataTable(props: {
             BEE
           </span>
         </div>
-        <img
-          src={Icon_closetable}
+        <div
           css={css`
-            width: 24px;
-            height: 24px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
           `}
-        />
+        >
+          <img
+            src={Icon_closetable}
+            css={css`
+              width: 24px;
+              height: 24px;
+            `}
+          />
+          <Button
+            css={css`
+              width: 90px;
+              height: 28px;
+              background: #ffcc00;
+              margin-left: 16px;
+              border-radius: 4px;
+              font-size: 12px;
+              font-weight: 500;
+              line-height: 17px;
+              color: #151515;
+              :hover {
+                background: #ffcc00;
+              }
+            `}
+            onClick={onEndGrab}
+          >
+            结束抓取
+          </Button>
+        </div>
       </div>
       <div
         css={css`
@@ -341,14 +383,18 @@ export default function DataTable(props: {
           css={css`
             display: flex;
             flex-direction: row;
+            margin-right: 15px;
           `}
         >
-          <Button css={buttonCss}>数据处理</Button>
-          {currentStep === 5 ? (
+          <Button css={buttonCss}>
+            <img src={Icon_processtable} />
+            数据处理
+          </Button>
+          {currentStep === 3 ? (
             <StyledTooltip
-              open={true}
+              open={show}
               arrow
-              placement="top-end"
+              placement="bottom"
               title={
                 stepTips?.filter(
                   (tip: StepTipItem) => tip.index === currentStep
@@ -356,12 +402,20 @@ export default function DataTable(props: {
               }
             >
               <Button css={buttonCss} onClick={onLoadExcel}>
+                <img src={Icon_downloadtable} />
                 下载
               </Button>
             </StyledTooltip>
           ) : (
-            <Button css={buttonCss}>下载</Button>
+            <Button css={buttonCss}>
+              <img src={Icon_downloadtable} />
+              下载
+            </Button>
           )}
+          <Button css={buttonCss}>
+            <img src={Icon_resettable} />
+            重置
+          </Button>
         </div>
       </div>
       <div
@@ -480,7 +534,16 @@ export default function DataTable(props: {
                         >
                           <StyledTableCellName name={"列3"} />
 
-                          {currentStep === 3 ? (
+                          <IconButton>
+                            <img
+                              src={Icon_more}
+                              css={css`
+                                width: 24px;
+                                height: 24px;
+                              `}
+                            />
+                          </IconButton>
+                          {/* {currentStep === 3 ? (
                             <StyledTooltip
                               open={true}
                               arrow
@@ -512,7 +575,7 @@ export default function DataTable(props: {
                                 `}
                               />
                             </IconButton>
-                          )}
+                          )} */}
                         </div>
                       </TableCell>
                       <TableCell
@@ -717,20 +780,39 @@ export default function DataTable(props: {
         <div
           css={css`
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 14px;
+            margin-right: 15px;
           `}
         >
           <span
             css={css`
-              font-size: 18px;
-              font-weight: 500;
-              line-height: 26px;
+              font-size: 16px;
+              line-height: 24px;
               color: #25314a;
-              margin-top: 14px;
+              margin-right: 26px;
             `}
           >
-            已采集8条数据
+            共4列 8行
           </span>
+          <Button
+            css={css`
+              width: 104px;
+              height: 28px;
+              border-radius: 4px;
+              background: #ffcc00;
+              font-size: 12px;
+              font-weight: 500;
+              line-height: 17px;
+              color: #151515;
+              :hover {
+                background: #ffcc00;
+              }
+            `}
+          >
+            采集剩余分页
+          </Button>
         </div>
       </div>
 
@@ -776,7 +858,7 @@ export default function DataTable(props: {
             </ListItemButton>
           </ListItem>
 
-          {currentStep === 4 ? (
+          {/* {currentStep === 4 ? (
             <StyledTooltip
               open={true}
               arrow
@@ -836,7 +918,30 @@ export default function DataTable(props: {
                 />
               </ListItemButton>
             </ListItem>
-          )}
+          )} */}
+          <ListItem
+            disablePadding
+            css={css`
+              height: 32px;
+            `}
+          >
+            <ListItemButton
+              css={css`
+                padding: 0px 10px;
+              `}
+            >
+              <ListItemText
+                primary="提取列链接"
+                css={css`
+                  .MuiTypography-root {
+                    font-size: 14px;
+                    line-height: 24px;
+                    color: #3d3d3d;
+                  }
+                `}
+              />
+            </ListItemButton>
+          </ListItem>
 
           <ListItem
             disablePadding
@@ -876,7 +981,7 @@ export default function DataTable(props: {
           <StyledAnimation />
         </div>
       )}
-      {currentStep === 3 && (
+      {/* {currentStep === 3 && (
         <div
           css={css`
             position: absolute;
@@ -887,13 +992,13 @@ export default function DataTable(props: {
         >
           <StyledAnimation />
         </div>
-      )}
-      {currentStep === 5 && (
+      )} */}
+      {currentStep === 3 && (
         <div
           css={css`
             position: absolute;
             bottom: 275px;
-            right: 30px;
+            right: 102px;
             pointer-events: none;
           `}
         >

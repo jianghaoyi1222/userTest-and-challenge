@@ -21,8 +21,9 @@ export default function CardList(props: { dataList?: DataListItem[] }) {
             height: 321px;
             display: flex;
             flex-direction: column;
-            margin-top: 20px;
-            margin-left: 20px;
+            margin: 10px;
+            box-sizing: border-box;
+            border: 1px solid #6ca9ff;
           `}
         >
           <img
@@ -34,6 +35,7 @@ export default function CardList(props: { dataList?: DataListItem[] }) {
           />
           <span
             css={css`
+              margin-left: 20px;
               font-size: 20px;
               font-weight: 500;
               color: #d34844;
@@ -41,17 +43,25 @@ export default function CardList(props: { dataList?: DataListItem[] }) {
           >
             ￥{data?.price}
           </span>
-          <span
+          <div
             css={css`
               font-size: 13px;
               color: #666666;
               margin-top: 5px;
+              width: 190px;
+              height: 40px;
+              margin-left: 20px;
+              margin-right: 10px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             `}
           >
             {data?.description}
-          </span>
+          </div>
           <span
             css={css`
+              margin-left: 20px;
               font-size: 13px;
               color: #999999;
               margin-top: 10px;

@@ -2,24 +2,22 @@
 import { jsx, css } from "@emotion/react";
 import { Button } from "@mui/material";
 import { useCallback } from "react";
-import Icon_assistant from "src/assets/icon_assistant.png";
 
 export default function CollectDataAssistant(props: {
   open?: boolean;
-  isMouseOver?: boolean;
-  isMouseDown?: boolean;
   handleShowOrCloseAssistant?: () => void;
+  handleToNextStepTip?: () => void;
 }) {
   const {
     open = false,
-    isMouseDown,
-    isMouseOver,
     handleShowOrCloseAssistant,
+    handleToNextStepTip,
   } = props;
 
-  const onClose = useCallback(() => {
+  const onNext = useCallback(() => {
     handleShowOrCloseAssistant?.();
-  }, [handleShowOrCloseAssistant]);
+    handleToNextStepTip?.();
+  }, [handleToNextStepTip, handleShowOrCloseAssistant]);
 
   return (
     <div
@@ -28,245 +26,85 @@ export default function CollectDataAssistant(props: {
         border-radius: 4px;
         background: #151515;
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 55px;
+        right: 78px;
+        background: #ffffff;
+        box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+        animation: fadenum 0.5s;
+        @keyframes fadenum {
+          0% {
+            transform: translateX(250px);
+          }
+        }
+        ::before {
+          content: "";
+          display: block;
+          position: absolute;
+          right: -20px;
+          top: 15px;
+          border-width: 10px;
+          border-style: dashed dashed dashed solid;
+          border-color: transparent transparent transparent black;
+        }
       `}
     >
       <div
-        css={[
-          css`
-            display: flex;
-            flex-direction: column;
-            width: 340px;
-            height: ${isMouseDown ? 260 : isMouseOver ? 180 : 220}px;
-            border-radius: 4px;
-            background: #151515;
-            box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
-          `,
-        ]}
+        css={css`
+          width: 400px;
+          height: 300px;
+          display: flex;
+          flex-direction: column;
+          background: #000000;
+        `}
       >
         <div
           css={css`
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: space-between;
-            margin-top: 16px;
-            margin-left: 16px;
           `}
         >
           <div
             css={css`
-              display: flex;
-              flex-direction: row;
+              width: 368px;
+              height: 200px;
+              margin-top: 10px;
+              background: #ffffff;
+            `}
+          ></div>
+
+          <span
+            css={css`
+              font-size: 16px;
+              line-height: 24px;
+              color: #ffffff;
+              margin-top: 17px;
             `}
           >
-            <img
-              src={Icon_assistant}
-              css={css`
-                width: 24px;
-                height: 30px;
-              `}
-            />
-            <span
-              css={css`
-                color: #ffcc00;
-                font-size: 22px;
-                margin-left: 10px;
-              `}
-            >
-              小蜜蜂助手
-            </span>
-          </div>
-          {/* <IconButton
-                css={css`
-                  margin-right: 8px;
-                `}
-                onClick={onOpenOperation}
-              >
-                <img
-                  src={Icon_operation}
-                  css={css`
-                    width: 24px;
-                    height: 24px;
-                    color: #ffffff;
-                  `}
-                />
-              </IconButton> */}
+            一键采集页面数据
+          </span>
         </div>
         <div
           css={css`
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
+            margin-top: 5px;
           `}
         >
-          {isMouseDown ? (
-            <div
-              css={css`
-                width: 308px;
-                height: 128px;
-                display: flex;
-                flex-direction: column;
-                border-radius: 4px;
-                background: #2c2c2c;
-                box-sizing: border-box;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-              `}
-            >
-              <div
-                css={css`
-                  width: 100%;
-                  height: 39px !important;
-                  background: #3d3d3d;
-                  padding-left: 16px;
-                  display: flex;
-                  align-items: center;
-                `}
-              >
-                <span
-                  css={css`
-                    font-size: 16px;
-                    color: #ffffff;
-                  `}
-                >
-                  ✅已采集8条数据
-                </span>
-              </div>
-              <span
-                css={css`
-                  font-size: 14px;
-                  line-height: 20px;
-                  margin-left: 16px;
-                  margin-top: 16px;
-                  color: #ffffff;
-                `}
-              >
-                👉{" "}
-                <Button
-                  css={css`
-                    text-decoration: underline;
-                    color: #0ef4f4;
-                    padding: 0px;
-                  `}
-                >
-                  设置分页
-                </Button>
-                丨采集剩余分页数据
-              </span>
-              <span
-                css={css`
-                  font-size: 14px;
-                  line-height: 20px;
-                  margin-left: 16px;
-                  margin-top: 16px;
-                  color: #ffffff;
-                `}
-              >
-                👉{" "}
-                <Button
-                  css={css`
-                    text-decoration: underline;
-                    color: #0ef4f4;
-                    padding: 0px;
-                  `}
-                >
-                  深度采集
-                </Button>
-                丨采集子页面或隐藏数据
-              </span>
-            </div>
-          ) : (
-            <div
-              css={css`
-                width: 308px;
-                height: 88px;
-                border-radius: 4px;
-                background: #2c2c2c;
-                box-sizing: border-box;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-              `}
-            >
-              {isMouseOver ? (
-                <div
-                  css={css`
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                  `}
-                >
-                  <span
-                    css={css`
-                      font-size: 16px;
-                      font-weight: bold;
-                      line-height: 24px;
-                      color: #ffffff;
-                    `}
-                  >
-                    已进入采集模式
-                  </span>
-                  <span
-                    css={css`
-                      font-size: 14px;
-                      line-height: 20px;
-                      color: #ffffff;
-                      margin-top: 16px;
-                    `}
-                  >
-                    按住“Ctrl”后“点击”要采集的数据
-                  </span>
-                </div>
-              ) : (
-                <span
-                  css={css`
-                    font-size: 16px;
-                    font-weight: bold;
-                    line-height: 24px;
-                    color: #ffffff;
-                  `}
-                >
-                  按住Ctrl，单击采集数据
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-        {!isMouseOver && (
-          <div
+          <Button
+            variant="contained"
             css={css`
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-top: 16px;
+              background: #ffffff;
+              color: #1d7bff;
+              margin-left: 295px;
+              :hover {
+                background: #ffffff;
+              }
             `}
+            onClick={onNext}
           >
-            <Button
-              variant="outlined"
-              css={css`
-                color: #ff3c31;
-                border-radius: 4px;
-                background: rgba(255, 60, 49, 0.28);
-                padding: 6px 16px;
-                border: 1px solid #ff3c31;
-                width: 88px;
-                height: 32px;
-                :hover {
-                  color: #ff3c31;
-                  background: rgba(255, 60, 49, 0.28);
-                  border: 1px solid #ff3c31;
-                }
-              `}
-              onClick={onClose}
-            >
-              结束
-            </Button>
-          </div>
-        )}
+            我知道了
+          </Button>
+        </div>
       </div>
     </div>
   );

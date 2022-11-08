@@ -51,7 +51,7 @@ export default function DownLoadBar(props: {
       >
         小蜜蜂获取页面数据.xlsx
       </span>
-      {currentStep === 6 ? (
+      {currentStep === 4 ? (
         <div
           css={css`
             margin-left: 16px;

@@ -2,8 +2,9 @@
 import { jsx, css } from "@emotion/react";
 import {
   Button,
-  Divider,
+  Pagination,
   styled,
+  TextField,
   Tooltip,
   tooltipClasses,
   TooltipProps,
@@ -17,13 +18,19 @@ import Icon_phone5 from "src/assets/dataCollection/icon_phone5.png";
 import Icon_phone6 from "src/assets/dataCollection/icon_phone6.png";
 import Icon_phone7 from "src/assets/dataCollection/icon_phone7.png";
 import Icon_phone8 from "src/assets/dataCollection/icon_phone8.png";
+import Icon_bee from "src/assets/icon_bee.png";
+import Icon_loading from "src/assets/icon_loading.png";
+import Icon_xlsx from "src/assets/icon_xlsx.png";
 import CollectDataAssistant from "../assistant/CollectDataAssistant";
-import Panel from "../panel/Panel";
 import CardList from "./components/CardList";
 import DataTable from "./components/DataTable";
 import Icon_home from "src/assets/icon_home.png";
 import DownLoadBar from "./components/DownLoadBar";
 import EndPage from "src/components/EndPage";
+import DataCollectionPanel from "../panel/DataCollectionPanel";
+import { DataItem } from "../panel/components/DataPanel";
+import moment from "moment";
+import StyledAnimation from "src/components/StyledAnimation";
 
 export interface DataListItem {
   id: number;
@@ -66,9 +73,17 @@ export default function DataCollection() {
   const [showAssistant, setShowAssistant] = useState(false);
   const [showPanel, setShowPanel] = useState(true);
 
-  const [isMonitorCtrl, setIsMonitorCtrl] = useState(false);
   const [isMouseOver, setIsMouseOver] = useState(false);
-  const [isMouseDown, setIsMouseDown] = useState(false);
+
+  const [isCollectOver, setIsCollectOver] = useState(false);
+  const [isShowCollection, setIsShowCollection] = useState(false);
+  const [count, setCount] = useState(0);
+
+  const [isShowTable, setIsShowTable] = useState(false);
+
+  const [list, setList] = useState<DataItem>();
+
+  let timer: any = null;
 
   const dataList: DataListItem[] = useMemo(
     () => [
@@ -148,23 +163,23 @@ export default function DataCollection() {
       },
       {
         index: 2,
-        tip: "操作：【Ctrl+鼠标左键】，获取当前页面的数据",
+        tip: "获取当前页面的数据",
       },
+      // {
+      //   index: 3,
+      //   tip: "获取完成！点击【...】继续更多操作 ",
+      // },
+      // { index: 4, tip: "点击【提取列链接】获取隐藏链接" },
       {
         index: 3,
-        tip: "获取完成！点击【...】继续更多操作 ",
-      },
-      { index: 4, tip: "点击【提取列链接】获取隐藏链接" },
-      {
-        index: 5,
         tip: "点击下载数据",
       },
       {
-        index: 6,
+        index: 4,
         tip: "正在下载数据...",
       },
       {
-        index: 7,
+        index: 5,
         tip: "下载完成",
       },
     ],
@@ -183,39 +198,72 @@ export default function DataCollection() {
     setShowPanel(!showPanel);
   }, [showPanel]);
 
-  useEffect(() => {
-    const keydown = (event: KeyboardEvent) => {
-      if (event.ctrlKey) {
-        event.preventDefault();
-        setIsMonitorCtrl(true);
-      }
-    };
+  // useEffect(() => {
+  //   const keydown = (event: KeyboardEvent) => {
+  //     if (event.ctrlKey) {
+  //       event.preventDefault();
+  //       setIsMonitorCtrl(true);
+  //     }
+  //   };
 
-    document.addEventListener("keydown", keydown);
+  //   document.addEventListener("keydown", keydown);
 
-    return () => {
-      document.removeEventListener("keydown", keydown);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("keydown", keydown);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const onIsMouseOver = useCallback(() => {
     setIsMouseOver(true);
   }, []);
 
-  const onIsMouseDown = useCallback(() => {
-    if (isMonitorCtrl) {
-      setIsMouseDown(true);
-      setIsMouseOver(false);
-      onToNextStepTip();
-    } else {
-      return;
-    }
-  }, [isMonitorCtrl, onToNextStepTip]);
+  const onIsCollectOver = useCallback(() => {
+    setIsMouseOver(true);
+    setIsCollectOver(true);
+  }, []);
 
   const onStartChanllenge = useCallback(() => {
     setStartChanllenge(true);
   }, []);
+
+  const onStartCollect = useCallback(() => {
+    setIsMouseOver(false);
+    setIsCollectOver(false);
+    setIsShowCollection(true);
+    onToNextStepTip();
+  }, [onToNextStepTip]);
+
+  const onBackPanel = useCallback((data?: any[]) => {
+    setIsShowTable(false);
+    const datalist: DataItem = {
+      id: "1",
+      name: "京东手机列表",
+      createTime: moment().format(),
+      icon: Icon_xlsx,
+      description: `来自于本地`,
+      type: "xlsx",
+      result: data,
+    };
+    setList(datalist);
+  }, []);
+
+  useEffect(() => {
+    if (isShowCollection) {
+      if (count < 8) {
+        timer = setInterval(
+          () => setCount((preValue) => (preValue < 8 ? preValue + 1 : 8)),
+          100
+        );
+      } else {
+        setIsShowCollection(false);
+        setIsShowTable(true);
+      }
+    }
+    return () => {
+      clearInterval(timer);
+    };
+  }, [isShowCollection, timer, count]);
 
   return (
     <div
@@ -223,6 +271,7 @@ export default function DataCollection() {
         width: 1400px;
         height: 800px;
         position: relative;
+        overflow: hidden;
       `}
     >
       {startChanllenge ? (
@@ -232,80 +281,131 @@ export default function DataCollection() {
             height: 100%;
             background: #cde1fd;
             position: relative;
+            display: flex;
+            justify-content: center;
+            /* align-items: center; */
           `}
         >
-          {currentStep === 2 ? (
-            <StyledTooltip
-              open={true}
-              arrow
-              placement="top"
-              title={
-                stepTips?.filter(
-                  (tip: StepTipItem) => tip.index === currentStep
-                )[0]?.tip
-              }
+          <div
+            css={css`
+              width: 991px;
+              height: 100%;
+              /* position: absolute; */
+              /* bottom: 0px;
+              left: 20px; */
+              background: #ffffff;
+            `}
+          >
+            <div
+              css={css`
+                display: flex;
+                flex-direction: row;
+                margin-left: 20px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+              `}
             >
-              <div
+              <TextField
                 css={css`
-                  width: 991px;
-                  height: 704px;
-                  position: absolute;
-                  bottom: 0px;
-                  left: 20px;
-                  z-index: 10;
+                  width: 385px;
+                  height: 48px;
                   background: #ffffff;
+                  border-radius: 4px;
+                  border: 1px solid #1d7bff;
+                  border-radius: 0px;
+
+                  .MuiOutlinedInput-root {
+                    fieldset {
+                      border-color: #f8f8f9;
+                      border-radius: 0px;
+                    }
+                  }
                 `}
+                value={"手机"}
+                size={"small"}
+                placeholder={"请输入热搜领域"}
+                id="margin-none"
+                sx={{
+                  width: "500px",
+                }}
+                InputProps={{
+                  sx: { height: "48px" },
+                }}
+              />
+              <Button
+                variant="contained"
+                css={css`
+                  width: 115px;
+                  height: 48px;
+                  font-size: 20px;
+                  font-weight: bold;
+                  line-height: 28px;
+                  border-radius: 0px;
+                  background: #1d7bff;
+                  :hover {
+                    background: #1d7bff;
+                  }
+                `}
+              >
+                搜索一下
+              </Button>
+            </div>
+            {currentStep === 2 ? (
+              <StyledTooltip
+                open={true}
+                arrow
+                placement="right"
+                title={
+                  stepTips?.filter(
+                    (tip: StepTipItem) => tip.index === currentStep
+                  )[0]?.tip
+                }
               >
                 <div
                   css={[
-                    css`
-                      height: 100%;
-                    `,
                     isMouseOver &&
                       css`
-                        background: rgba(255, 195, 0, 0.1);
-                        border: 1px solid #ffc300;
+                        background: rgba(255, 204, 0, 0.04);
+                        border: 1px solid rgba(255, 204, 0, 0.04);
                       `,
-                    isMouseDown &&
+                    isCollectOver &&
                       css`
-                        background: rgba(255, 195, 0, 0.1);
+                        background: rgba(255, 204, 0, 0.2);
                         border: 1px solid #ffc300;
                       `,
                   ]}
                   onMouseOver={onIsMouseOver}
                   onMouseOut={() => setIsMouseOver(false)}
-                  onMouseDown={onIsMouseDown}
                 >
                   <CardList dataList={dataList} />
                 </div>
-              </div>
-            </StyledTooltip>
-          ) : (
+              </StyledTooltip>
+            ) : (
+              <CardList dataList={dataList} />
+            )}
             <div
               css={css`
-                width: 991px;
-                height: 704px;
+                margin-top: 7px;
                 position: absolute;
-                bottom: 0px;
-                left: 20px;
-                background: #ffffff;
+                right: 210px;
               `}
             >
-              <CardList dataList={dataList} />
+              <Pagination count={10} />
             </div>
-          )}
-          <Panel
+          </div>
+
+          <DataCollectionPanel
             open={showPanel}
-            handleToNextStepTip={onToNextStepTip}
             stepTips={stepTips}
             currentStep={currentStep}
+            dataList={list}
+            handleToNextStepTip={onToNextStepTip}
             handleClose={onShowOrClosePanel}
             handleShowOrCloseAssistant={onShowOrCloseAssistant}
           />
           <CollectDataAssistant
             open={showAssistant}
-            isMouseOver={isMouseOver}
-            isMouseDown={isMouseDown}
+            handleToNextStepTip={onToNextStepTip}
             handleShowOrCloseAssistant={onShowOrCloseAssistant}
           />
           <div
@@ -314,13 +414,16 @@ export default function DataCollection() {
               bottom: 0px;
               left: 40px;
               z-index: 10;
+              height: 360px;
+              overflow: hidden;
             `}
           >
             <DataTable
-              show={isMouseDown}
+              show={isShowTable}
               currentStep={currentStep}
               stepTips={stepTips}
               handleToNextStepTip={onToNextStepTip}
+              handleBackPanel={onBackPanel}
             />
           </div>
 
@@ -328,42 +431,124 @@ export default function DataCollection() {
             css={css`
               display: ${isMouseOver ? "flex" : "none"};
               position: absolute;
-              bottom: 704px;
-              left: 20px;
+              bottom: 720px;
+              right: 204px;
               z-index: 10;
-              width: 271px;
-              height: 32px;
-              border-radius: 2px;
-              background: #1e293e;
-              color: #ffffff;
-              font-size: 14px;
+              width: 30px;
+              height: 30px;
+              border-radius: ${isCollectOver ? "0px 4px 4px 0px" : "4px"};
+              overflow: hidden;
+            `}
+            onMouseOver={onIsCollectOver}
+            onMouseOut={() => {
+              setIsMouseOver(false);
+              setIsCollectOver(false);
+            }}
+            onClick={onStartCollect}
+          >
+            <img
+              src={Icon_bee}
+              css={css`
+                border-radius: ${isCollectOver ? "0px 4px 4px 0px" : "4px"};
+                height: 30px;
+                animation: fadenumY 0.5s;
+                @keyframes fadenumY {
+                  0% {
+                    transform: translateY(250px);
+                  }
+                }
+              `}
+            />
+          </div>
+
+          <div
+            css={css`
+              display: ${isCollectOver ? "flex" : "none"};
+              width: 88px;
+              height: 30px;
+              position: absolute;
+              bottom: 720px;
+              right: 234px;
+              z-index: 10;
+              overflow: hidden;
+              border-radius: 4px 0px 0px 4px;
+            `}
+            onMouseOver={onIsCollectOver}
+            onMouseOut={() => {
+              setIsMouseOver(false);
+              setIsCollectOver(false);
+            }}
+          >
+            <div
+              css={css`
+                width: 88px;
+                background: #151515;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                animation: fadenumX 0.5s;
+                @keyframes fadenumX {
+                  0% {
+                    transform: translateX(250px);
+                  }
+                }
+              `}
+            >
+              <span
+                css={css`
+                  font-size: 16px;
+                  font-weight: 500;
+                  color: #ffffff;
+                `}
+              >
+                点击抓取
+              </span>
+            </div>
+          </div>
+
+          <div
+            css={css`
+              position: absolute;
+              left: 580px;
+              top: 335px;
+              width: 240px;
+              height: 164px;
+              display: ${isShowCollection ? "flex" : "none"};
+              z-index: 20;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              background: rgba(21, 21, 21, 0.8);
+              box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.1);
+              border-radius: 4px;
             `}
           >
             <div
               css={css`
-                width: 100%;
-                height: 100%;
+                width: 54px;
+                height: 54px;
                 display: flex;
-                flex-direction: row;
                 justify-content: center;
                 align-items: center;
+                background: #ffffff;
+                border-radius: 8px;
               `}
             >
-              <span>页面数据</span>
-              <Divider
-                orientation="vertical"
-                variant="middle"
-                flexItem
-                css={css`
-                  border-radius: 4px;
-                  background: rgba(255, 255, 255, 0.6);
-                  margin: 8px 8px;
-                `}
-              />
-              <span>按住“Ctrl+单击”获取数据</span>
+              <img src={Icon_loading} />
             </div>
+            <span
+              css={css`
+                font-size: 16px;
+                font-weight: 500;
+                color: #ffffff;
+                margin-top: 18px;
+              `}
+            >
+              已采集{count}/8条数据
+            </span>
           </div>
-          {currentStep === 6 && (
+
+          {currentStep === 4 && (
             <StyledTooltip
               open={true}
               arrow
@@ -389,7 +574,7 @@ export default function DataCollection() {
               </div>
             </StyledTooltip>
           )}
-          {currentStep >= 7 && (
+          {currentStep >= 5 && (
             <StyledTooltip
               open={true}
               arrow
@@ -492,7 +677,31 @@ export default function DataCollection() {
           </div>
         </div>
       )}
-      {currentStep > 7 && (
+      {currentStep === 1 && showAssistant && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 445px;
+            right: 110px;
+            pointer-events: none;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 2 && isMouseOver && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 708px;
+            right: 194px;
+            pointer-events: none;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep > 5 && (
         <div
           css={css`
             position: absolute;
