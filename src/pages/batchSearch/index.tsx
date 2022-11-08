@@ -81,6 +81,8 @@ export default function BatchSearch() {
   const [dataList, setDataList] = useState<DataItem>();
   const [flowList, setFlowList] = useState<FlowItem>();
 
+  const [inCountDown, setInCountDown] = useState(false);
+
   const stepTips: StepTipItem[] = useMemo(
     () => [
       {
@@ -219,7 +221,8 @@ export default function BatchSearch() {
   //开始记录
   const onhandleStart = useCallback(() => {
     setIsStart(!isStart);
-  }, [isStart]);
+    setInCountDown(!inCountDown);
+  }, [isStart, inCountDown]);
 
   //切换模式
   const onhandleCurrentMode = useCallback((value: CurrentModeItem) => {
@@ -299,9 +302,14 @@ export default function BatchSearch() {
       icon: Icon_bee,
     };
     setShowPanel(true);
+    setTimeout(() => setIsEnd(true), 1000);
     setDataList(list);
     setFlowList(flow);
   }, []);
+
+  const onCountDown = useCallback(() => {
+    setInCountDown(!inCountDown);
+  }, [inCountDown]);
 
   return (
     <div
@@ -897,6 +905,7 @@ export default function BatchSearch() {
             handleBackValueChange={onChangeBackValue}
             handleTransmitBackInput={onTransmitBackInput}
             handleBackPanel={onBackPanel}
+            handleCountDown={onCountDown}
           />
           <CountDown
             open={isStart}
@@ -999,7 +1008,7 @@ export default function BatchSearch() {
           <StyledAnimation />
         </div>
       )}
-      {startChanllenge && !showPanel && !showAssistant && (
+      {startChanllenge && !showPanel && !showAssistant && !inCountDown && (
         <div
           css={css`
             position: absolute;

@@ -49,6 +49,7 @@ export default function BatchSearchAssistant(props: {
   handleShowData?: (show: boolean) => void;
   handleOpenPreviewTable?: (enterType?: EnterType) => void;
   handleBackPanel?: (data: any[]) => void;
+  handleCountDown?: () => void;
 }) {
   const {
     open,
@@ -70,6 +71,7 @@ export default function BatchSearchAssistant(props: {
     handleShowData,
     handleOpenPreviewTable,
     handleBackPanel,
+    handleCountDown,
   } = props;
 
   const [textValue, setTextValue] = useState("");
@@ -105,8 +107,9 @@ export default function BatchSearchAssistant(props: {
   //开始
   const onStart = useCallback(() => {
     handleStart?.();
-    handleShowAssistant?.(true);
-  }, [handleStart, handleShowAssistant]);
+    handleCountDown?.();
+    handleShowAssistant?.(false);
+  }, [handleStart, handleShowAssistant, handleCountDown]);
 
   //文本输入
   const onTextChange = useCallback(
@@ -188,7 +191,7 @@ export default function BatchSearchAssistant(props: {
     if (value) {
       setTextValue(value);
     }
-  }, [value, currentStep, handleToNextStepTip]);
+  }, [value]);
 
   const onConfirmedBackPanel = useCallback(() => {
     rowlist && handleBackPanel?.(rowlist);

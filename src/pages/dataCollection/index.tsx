@@ -56,7 +56,7 @@ export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => {
     color: "#FFFFFF",
     fontSize: "20px",
     fontWeight: "500px",
-    minWidth: "248px",
+    minWidth: "180px",
     minHeight: "76px",
     display: "flex",
     justifyContent: "center",
@@ -163,7 +163,7 @@ export default function DataCollection() {
       },
       {
         index: 2,
-        tip: "获取当前页面的数据",
+        tip: "获取当前页面数据",
       },
       // {
       //   index: 3,
