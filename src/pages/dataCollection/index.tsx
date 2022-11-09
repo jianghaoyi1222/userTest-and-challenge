@@ -19,7 +19,7 @@ import Icon_phone6 from "src/assets/dataCollection/icon_phone6.png";
 import Icon_phone7 from "src/assets/dataCollection/icon_phone7.png";
 import Icon_phone8 from "src/assets/dataCollection/icon_phone8.png";
 import Icon_bee from "src/assets/icon_bee.png";
-import Icon_loading from "src/assets/icon_loading.png";
+import Icon_loading from "src/assets/icon_loading.gif";
 import Icon_xlsx from "src/assets/icon_xlsx.png";
 import CollectDataAssistant from "../assistant/CollectDataAssistant";
 import CardList from "./components/CardList";
@@ -253,11 +253,13 @@ export default function DataCollection() {
       if (count < 8) {
         timer = setInterval(
           () => setCount((preValue) => (preValue < 8 ? preValue + 1 : 8)),
-          100
+          700
         );
       } else {
-        setIsShowCollection(false);
-        setIsShowTable(true);
+        setTimeout(() => {
+          setIsShowCollection(false);
+          setIsShowTable(true);
+        }, 100);
       }
     }
     return () => {
@@ -444,7 +446,6 @@ export default function DataCollection() {
               setIsMouseOver(false);
               setIsCollectOver(false);
             }}
-            onClick={onStartCollect}
           >
             <img
               src={Icon_bee}
@@ -494,15 +495,16 @@ export default function DataCollection() {
                 }
               `}
             >
-              <span
+              <Button
                 css={css`
                   font-size: 16px;
                   font-weight: 500;
                   color: #ffffff;
                 `}
+                onClick={onStartCollect}
               >
                 点击抓取
-              </span>
+              </Button>
             </div>
           </div>
 
@@ -534,7 +536,12 @@ export default function DataCollection() {
                 border-radius: 8px;
               `}
             >
-              <img src={Icon_loading} />
+              <img
+                src={Icon_loading}
+                css={css`
+                  border-radius: 8px;
+                `}
+              />
             </div>
             <span
               css={css`
@@ -681,21 +688,35 @@ export default function DataCollection() {
         <div
           css={css`
             position: absolute;
-            bottom: 445px;
-            right: 110px;
+            bottom: 413px;
+            right: 116px;
             pointer-events: none;
           `}
         >
           <StyledAnimation />
         </div>
       )}
-      {currentStep === 2 && isMouseOver && (
+      {currentStep === 2 && isMouseOver && !isCollectOver && (
         <div
           css={css`
             position: absolute;
             bottom: 708px;
             right: 194px;
             pointer-events: none;
+            z-index: 50;
+          `}
+        >
+          <StyledAnimation />
+        </div>
+      )}
+      {currentStep === 2 && isCollectOver && (
+        <div
+          css={css`
+            position: absolute;
+            bottom: 709px;
+            right: 252px;
+            pointer-events: none;
+            z-index: 50;
           `}
         >
           <StyledAnimation />

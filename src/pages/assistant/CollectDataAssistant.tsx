@@ -2,6 +2,7 @@
 import { jsx, css } from "@emotion/react";
 import { Button } from "@mui/material";
 import { useCallback } from "react";
+import Icon_tip from "src/assets/icon_tip.gif";
 
 export default function CollectDataAssistant(props: {
   open?: boolean;
@@ -50,8 +51,8 @@ export default function CollectDataAssistant(props: {
     >
       <div
         css={css`
-          width: 400px;
-          height: 300px;
+          width: 350px;
+          height: 340px;
           display: flex;
           flex-direction: column;
           background: #000000;
@@ -67,19 +68,27 @@ export default function CollectDataAssistant(props: {
         >
           <div
             css={css`
-              width: 368px;
-              height: 200px;
+              width: 310px;
+              height: 232.5px;
               margin-top: 10px;
               background: #ffffff;
             `}
-          ></div>
+          >
+            <img
+              src={Icon_tip}
+              css={css`
+                width: 310px;
+                height: 232.5px;
+              `}
+            />
+          </div>
 
           <span
             css={css`
               font-size: 16px;
               line-height: 24px;
               color: #ffffff;
-              margin-top: 17px;
+              margin-top: 12px;
             `}
           >
             一键采集页面数据
@@ -87,7 +96,7 @@ export default function CollectDataAssistant(props: {
         </div>
         <div
           css={css`
-            margin-top: 5px;
+            margin-top: 10px;
           `}
         >
           <Button
@@ -95,7 +104,7 @@ export default function CollectDataAssistant(props: {
             css={css`
               background: #ffffff;
               color: #1d7bff;
-              margin-left: 295px;
+              margin-left: 240px;
               :hover {
                 background: #ffffff;
               }

@@ -223,8 +223,8 @@ export default function DataPanel(props: {
                     css={css`
                       display: flex;
                       flex-direction: column;
-                      margin-top: 16px;
-                      margin-left: 16px;
+                      margin-top: 12px;
+                      margin-left: 14px;
                     `}
                   >
                     <div
