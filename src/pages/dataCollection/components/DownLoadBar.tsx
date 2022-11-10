@@ -2,7 +2,7 @@
 import { jsx, css } from "@emotion/react";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
-import Icon_excel from "src/assets/dataCollection/icon_excel.png";
+import Icon_excel from "src/assets/icon_excel.png";
 import Done from "@mui/icons-material/Done";
 
 export default function DownLoadBar(props: {

@@ -10,14 +10,14 @@ import {
   TooltipProps,
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Icon_phone1 from "src/assets/dataCollection/icon_phone1.png";
-import Icon_phone2 from "src/assets/dataCollection/icon_phone2.png";
-import Icon_phone3 from "src/assets/dataCollection/icon_phone3.png";
-import Icon_phone4 from "src/assets/dataCollection/icon_phone4.png";
-import Icon_phone5 from "src/assets/dataCollection/icon_phone5.png";
-import Icon_phone6 from "src/assets/dataCollection/icon_phone6.png";
-import Icon_phone7 from "src/assets/dataCollection/icon_phone7.png";
-import Icon_phone8 from "src/assets/dataCollection/icon_phone8.png";
+import Icon_phone1 from "src/assets/icon_phone1.png";
+import Icon_phone2 from "src/assets/icon_phone2.png";
+import Icon_phone3 from "src/assets/icon_phone3.png";
+import Icon_phone4 from "src/assets/icon_phone4.png";
+import Icon_phone5 from "src/assets/icon_phone5.png";
+import Icon_phone6 from "src/assets/icon_phone6.png";
+import Icon_phone7 from "src/assets/icon_phone7.png";
+import Icon_phone8 from "src/assets/icon_phone8.png";
 import Icon_bee from "src/assets/icon_bee.png";
 import Icon_loading from "src/assets/icon_loading.gif";
 import Icon_xlsx from "src/assets/icon_xlsx.png";

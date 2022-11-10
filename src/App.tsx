@@ -3,7 +3,6 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 const UserTest = React.lazy(() => import("./pages/userTest"));
 const DataCollection = React.lazy(() => import("./pages/dataCollection"));
 const DataProcess = React.lazy(() => import("./pages/dataProcess"));
-const Panel = React.lazy(() => import("./pages/panel/Panel"));
 const BatchSearch = React.lazy(() => import("./pages/batchSearch"));
 
 export function App() {
@@ -39,14 +38,6 @@ export function App() {
           element={
             <Suspense fallback={<></>}>
               <BatchSearch />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/panel"
-          element={
-            <Suspense fallback={<></>}>
-              <Panel />
             </Suspense>
           }
         />

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import Icon_homebee from "src/assets/icon_homebee.png";
-import Icon_closetable from "src/assets/dataCollection/icon_closetable.png";
+import Icon_closetable from "src/assets/icon_closetable.png";
 import {
   Button,
   Chip,

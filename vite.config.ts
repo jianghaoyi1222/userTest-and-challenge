@@ -1,12 +1,13 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
 export default defineConfig({
-  base: "/embed_pages",
+  base: "./",
   build: {
     chunkSizeWarningLimit: 1500,
     target: ["es2015"],
     emptyOutDir: true,
-    outDir: resolve("../../dist/web-extension/embed_pages"),
+    outDir: resolve("./dist/web-extension/embed_pages"),
+    assetsInlineLimit: 5000,
   },
   server: {
     port: 9100,
