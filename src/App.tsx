@@ -10,6 +10,14 @@ export function App() {
     <HashRouter>
       <Routes>
         <Route
+          path="/"
+          element={
+            <Suspense fallback={<></>}>
+              <BatchSearch />
+            </Suspense>
+          }
+        />
+        <Route
           path="/userTest"
           element={
             <Suspense fallback={<></>}>
